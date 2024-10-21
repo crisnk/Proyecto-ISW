@@ -27,6 +27,11 @@ const UserSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
+    direccion: {
+      type: "varchar",
+      length: 50,
+      nullable: false,
+    },
     rol: {
       type: "varchar",
       length: 50,

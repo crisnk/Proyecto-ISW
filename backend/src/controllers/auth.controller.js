@@ -13,7 +13,7 @@ import {
 export async function login(req, res) {
   try {
     const { body } = req;
-
+    console.log(body);
     const { error } = authValidation.validate(body);
 
     if (error) {
@@ -32,7 +32,7 @@ export async function login(req, res) {
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
-}
+}z
 
 export async function register(req, res) {
   try {
@@ -61,3 +61,4 @@ export async function logout(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
