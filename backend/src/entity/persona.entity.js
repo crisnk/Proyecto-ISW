@@ -29,9 +29,10 @@ const PersonaSchema = new EntitySchema({
       nullable: false,
     },
     rol: {
-      type: "varchar",
-      length: 50,
+      type: "enum",
+      enum: ["alumno", "profesor", "jefeUTP", "admin"],
       nullable: false,
+      default: "alumno",
     },
     password: {
       type: "varchar",
