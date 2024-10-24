@@ -1,7 +1,6 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-
 const ImparteSchema = new EntitySchema({
   name: "Imparte",
   tableName: "imparten",
@@ -18,9 +17,9 @@ const ImparteSchema = new EntitySchema({
       type: "int",
       primary: true,
     },
-    dia: { 
-        type: "varchar",
-      length: 50, 
+    dia: {
+      type: "varchar",
+      length: 50,
       nullable: false,
     },
     hora_inicio: {
@@ -44,7 +43,7 @@ const ImparteSchema = new EntitySchema({
     },
   },
   relations: {
-  curso: {
+    curso: {
       target: "Curso",
       type: "many-to-many", // Muchos registros en Imparte pueden estar asociados a un curso
       joinColumn: {
@@ -53,24 +52,17 @@ const ImparteSchema = new EntitySchema({
       },
       nullable: false, // Obligatoria (tiene que haber un curso)
     },
-  
-  materia: {
-    target: "Materia",
-    type: "many-to-many", // Muchas asignaciones pueden estar asociadas a una materia
-    joinColumn: {
-      name: "ID_materia", // Nombre de la columna FK
-      referencedColumnName: "ID_materia", // Referencia la columna id en Materia
-    },
-    nullable: false, // Obligatoria (tiene que haber una materia)
-  }
-},
-  indices: [
-    {
-      name: "IDX_IMPARTE",
-      columns: ["ID_imparte"],
-      unique: true,
-    },
-  ],
+
+    materia: {
+      target: "Materia",
+      type: "many-to-many", // Muchas asignaciones pueden estar asociadas a una materia
+      joinColumn: {
+        name: "ID_materia", // Nombre de la columna FK
+        referencedColumnName: "ID_materia", // Referencia la columna id en Materia
+      },
+      nullable: false, // Obligatoria (tiene que haber una materia)
+    }
+  },
 });
 
 export default ImparteSchema;

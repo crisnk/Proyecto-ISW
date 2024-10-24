@@ -21,7 +21,7 @@ const PertenceSchema = new EntitySchema({
     relations: {
       RUN: {
         type: "many-to-one", 
-        target: "Persona",
+        target: "User",
         joinColumn: {
           name: "RUN",
           referencedColumnName: "RUN"

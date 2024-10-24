@@ -27,7 +27,7 @@ const AtrasoSchema = new EntitySchema({
   relations: {
     RUN: {
       type: "many-to-one", // Definir la relación de muchos a uno (varios atrasos pueden ser de un solo usuario)
-      target: "Persona", // Referencia a la entidad User
+      target: "User", // Referencia a la entidad User
       joinColumn: {
         name: "RUN", // Nombre del campo FK en la tabla "atrasos"
         referencedColumnName: "RUN" // Campo referenciado en la tabla "users"

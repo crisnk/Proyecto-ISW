@@ -7,7 +7,6 @@ export default new EntitySchema({
   columns: {
     RUN: {
       type: "varchar",
-      primaryKey: true,
       length: 12,
       primary: true,
       nullable: false,

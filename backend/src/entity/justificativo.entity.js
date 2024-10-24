@@ -40,7 +40,7 @@ const JustificativoSchema = new EntitySchema({
     },
     RUN: {
         type: "many-to-one", 
-        target: "Persona", 
+        target: "User", 
         joinColumn: {
           name: "RUN", 
           referencedColumnName: "RUN" 

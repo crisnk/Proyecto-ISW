@@ -22,7 +22,7 @@ const PostulaSchema = new EntitySchema({
   relations: {
     RUN: {
       type: "many-to-many", 
-      target: "Persona",
+      target: "User",
       joinColumn: {
         name: "RUN",
         referencedColumnName: "RUN"
