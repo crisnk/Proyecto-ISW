@@ -1,26 +1,21 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-export default new EntitySchema({
-  name: "Curso",
-  tableName: "cursos",
+
+const MateriaSchema = new EntitySchema({
+  name: "Materia",
+  tableName: "materias",
   columns: {
-    ID_curso: {
+    ID_materia: {
       type: "int",
       primary: true,
       generated: true,
     },
     nombre: {
       type: "varchar",
-      length: 50,
+      length: 55,
       nullable: false,
-      
     },
-    aula: {
-        type: "varchar",
-        length: 30,
-        unique: true
-      },
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",
@@ -35,21 +30,11 @@ export default new EntitySchema({
   },
   indices: [
     {
-      name: "IDX_CURSO",
-      columns: ["ID_curso"],
+      name: "IDX_MATERIA",
+      columns: ["Id_materia"],
       unique: true,
     },
-  ],
-  relations: { 
-    RUN:{
-      type: "one-to-one",
-      target: "User",
-      joinColumn: {
-        name: "RUN", 
-        referencedColumnName: "RUN" 
-      },
-      nullable: false, 
-      onDelete: "CASCADE", 
-    },
-  },
+  ]
 });
+
+export default MateriaSchema;

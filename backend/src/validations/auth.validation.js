@@ -60,7 +60,7 @@ export const registerValidation = Joi.object({
     .min(9)
     .max(12)
     .required()
-    .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/)
+    .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/) //Expresion regular
     .messages({
       "string.empty": "El run no puede estar vacío.",
       "string.base": "El run debe ser de tipo string.",
@@ -95,7 +95,17 @@ export const registerValidation = Joi.object({
       "string.max": "La contraseña debe tener como máximo 26 caracteres.",
       "string.pattern.base": "La contraseña solo puede contener letras y números.",
     }),
+    rol: Joi.string()
+    .min(4)
+    .max(15)
+    .messages({
+      "any.only": "El rol debe ser uno de los siguientes: alumno, profesor, jefeUTP, admin.",
+      "string.base": "El rol debe ser de tipo string.",
+      "string.min": "El rol debe tener como mínimo 4 caracteres.",
+      "string.max": "El rol debe tener como máximo 15 caracteres.",
+    }),  
 })
+
   .unknown(false)
   .messages({
   "object.unknown": "No se permiten propiedades adicionales.",
