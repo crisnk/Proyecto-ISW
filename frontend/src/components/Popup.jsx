@@ -64,7 +64,7 @@ export default function Popup({ show, setShow, data, action }) {
                                 name: "rol",
                                 fieldType: 'select',
                                 options: [
-                                    { value: 'administrador', label: 'Administrador' },
+                                    { value: 'admin', label: 'Admin' },
                                     { value: 'usuario', label: 'Usuario' },
                                 ],
                                 required: true,

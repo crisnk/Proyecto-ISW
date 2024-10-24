@@ -120,6 +120,7 @@ export const userBodyValidation = Joi.object({
     .min(4)
     .max(15)
     .messages({
+      "any.only": "El rol debe ser uno de los siguientes: alumno, profesor, jefeUTP, admin.",
       "string.base": "El rol debe ser de tipo string.",
       "string.min": "El rol debe tener como mínimo 4 caracteres.",
       "string.max": "El rol debe tener como máximo 15 caracteres.",

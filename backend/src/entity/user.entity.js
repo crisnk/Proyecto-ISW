@@ -1,6 +1,7 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
+
 const UserSchema = new EntitySchema({
   name: "User",
   tableName: "users",
@@ -28,9 +29,10 @@ const UserSchema = new EntitySchema({
       unique: true,
     },
     rol: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
+      type: "enum",
+      enum: ["alumno", "profesor", "jefeUTP", "admin"],
+      nullable: false,  
+      default: "alumno",
     },
     password: {
       type: "varchar",
@@ -48,6 +50,23 @@ const UserSchema = new EntitySchema({
       nullable: false,
     },
   },
+
+  relations: {
+    curso: {
+      target: "Curso",
+      type: "one-to-many", // Muchos alumnos a un curso
+      joinColumn: {
+        name: "id_Curso",
+        referencedColumnName: "id_Curso",
+      },
+      nullable: true,
+    },
+    imparte: {
+      target: "Imparte",
+      type: "one-to-many",
+      inverseSide: "profesor",
+    },
+  },  
   indices: [
     {
       name: "IDX_USER",
