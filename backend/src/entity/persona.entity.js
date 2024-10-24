@@ -1,27 +1,23 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const UserSchema = new EntitySchema({
-  name: "User",
-  tableName: "users",
+const PersonaSchema = new EntitySchema({
+  name: "Persona",
+  tableName: "Personas",
   columns: {
-    id: {
-      type: "int",
-      primary: true,
-      generated: true,
-    },
-    nombreCompleto: {
+    RUN: {
       type: "varchar",
-      length: 255,
-      nullable: false,
-    },
-    rut: {
-      type: "varchar",
+      primaryKey: true,
       length: 12,
       nullable: false,
       unique: true,
     },
-    email: {
+    nombre: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    correo: {
       type: "varchar",
       length: 255,
       nullable: false,
@@ -55,21 +51,16 @@ const UserSchema = new EntitySchema({
   },
   indices: [
     {
-      name: "IDX_USER",
-      columns: ["id"],
+      name: "IDX_PERSONA_RUN",
+      columns: ["RUN"],
       unique: true,
     },
     {
-      name: "IDX_USER_RUT",
-      columns: ["rut"],
-      unique: true,
-    },
-    {
-      name: "IDX_USER_EMAIL",
-      columns: ["email"],
+      name: "IDX_PERSONA_CORREO",
+      columns: ["correo"],
       unique: true,
     },
   ],
 });
 
-export default UserSchema;
+export default PersonaSchema;

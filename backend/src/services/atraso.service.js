@@ -1,5 +1,5 @@
 "use strict";
-import Atraso from "../entity/atrasos.entity.js";  // Importa la entidad Atraso
+import Atraso from "../entity/atraso.entity.js";  // Importa la entidad Atraso
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
 
