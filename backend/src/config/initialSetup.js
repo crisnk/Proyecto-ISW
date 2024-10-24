@@ -17,7 +17,7 @@ async function createUsers() {
           rut: "21.308.770-3",
           email: "administrador2024@gmail.cl",
           password: await encryptPassword("admin1234"),
-          rol: "administrador",
+          rol: "admin",
         }),
       ),
       userRepository.save(
