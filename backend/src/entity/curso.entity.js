@@ -6,12 +6,12 @@ const CursoSchema = new EntitySchema({
   name: "Curso",
   tableName: "cursos",
   columns: {
-    id_Curso: {
+    ID_curso: {
       type: "int",
       primary: true,
       generated: true,
     },
-    nombreCurso: {
+    nombre: {
       type: "varchar",
       length: 50,
       nullable: false,
@@ -35,21 +35,21 @@ const CursoSchema = new EntitySchema({
     },
   },
   relations: { 
-    usuarios:{
-      target: "User",
-      type: "one-to-many", // Un curso tiene muchos alumnos
-      inverseSide: "curso",
-    },
-    imparte: {
-      target: "Imparte",
-      type: "one-to-many", // Un curso lo imparten muchos profesores
-      inverseSide: "curso",
+    persona:{
+      type: "one-to-one", // Un curso tiene muchos alumnos
+      target: "persona",
+      joinColumn: {
+        name: "RUN", 
+        referencedColumnName: "RUN" 
+      },
+      nullable: false, 
+      onDelete: "CASCADE", 
     },
   },
   indices: [
     {
       name: "IDX_CURSO",
-      columns: ["id_Curso"],
+      columns: ["ID_curso"],
       unique: true,
     },
   ],

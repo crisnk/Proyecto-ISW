@@ -1,13 +1,12 @@
 "use strict";
 import { EntitySchema } from "typeorm";
-import AtrasoSchema from './atraso.entity.js';
-import PersonaSchema from './persona.entity.js';
+
 
 const JustificativoSchema = new EntitySchema({
   name: "Justificativo", // Nombre de la entidad
   tableName: "justificativos", // Nombre de la tabla en la base de datos
   columns: {
-    ID_Justificativo: {
+    ID_justificativo: {
       type: "int",
       primary: true,
       generated: true, // Generar automáticamente el ID
@@ -40,7 +39,7 @@ const JustificativoSchema = new EntitySchema({
       onDelete: "CASCADE", // Si se elimina un atraso, también se eliminarán los registros de justificativo relacionados
     },
     RUN: {
-        type: "one-to-one", 
+        type: "many-to-one", 
         target: "Persona", 
         joinColumn: {
           name: "RUN", 
@@ -53,7 +52,7 @@ const JustificativoSchema = new EntitySchema({
   indices: [
     {
       name: "IDX_JUSTIFICATIVO_ID_ATRASO",
-      columns: ["ID_Atraso"],
+      columns: ["ID_atraso"],
     },
   ],
 });

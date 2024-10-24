@@ -3,7 +3,7 @@ import { EntitySchema } from "typeorm";
 
 const PersonaSchema = new EntitySchema({
   name: "Persona",
-  tableName: "Personas",
+  tableName: "personas",
   columns: {
     RUN: {
       type: "varchar",

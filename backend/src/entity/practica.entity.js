@@ -1,12 +1,11 @@
 "use strict";
 import { EntitySchema } from "typeorm";
-import Especialidad from './especialidad.entity.js';
 
 const PracticaSchema = new EntitySchema({
   name: "Practica", // Nombre de la entidad
   tableName: "practicas", // Nombre de la tabla en la base de datos
   columns: {
-      ID_Practica: {
+      ID_practica: {
       type: "int",
       primary: true,
       generated: true, // Valor autogenerado (autoincremental)

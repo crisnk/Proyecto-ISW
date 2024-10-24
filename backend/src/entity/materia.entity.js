@@ -6,12 +6,12 @@ const MateriaSchema = new EntitySchema({
   name: "Materia",
   tableName: "materias",
   columns: {
-    id_Materia: {
+    ID_materia: {
       type: "int",
       primary: true,
       generated: true,
     },
-    nombreMateria: {
+    nombre: {
       type: "varchar",
       length: 55,
       nullable: false,
@@ -28,17 +28,10 @@ const MateriaSchema = new EntitySchema({
       nullable: false,
     },
   },
-  relations: {
-    imparte: {
-      target: "Imparte",  
-      type: "one-to-many",
-      inverseSide: "materia",
-    },
-  },
   indices: [
     {
       name: "IDX_MATERIA",
-      columns: ["id_Materia"],
+      columns: ["Id_materia"],
       unique: true,
     },
   ]

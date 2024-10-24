@@ -1,11 +1,24 @@
 "use strict";
 import { EntitySchema } from "typeorm";
-import PersonaSchema from './persona.entity.js';
-import PracticaSchema from './practica.entity.js';
+
 
 const PostulaSchema = new EntitySchema({
   name: "Postula",
   tableName: "postulaciones",
+  columns: {
+    RUN: {
+      type: "varchar",
+      primaryKey: true,
+      length: 12,
+      nullable: false,
+      unique: true,
+    },
+    ID_practica: {
+      type: "int",
+      primary: true,
+      generated: true, // Valor autogenerado (autoincremental)
+    },
+  },
   relations: {
     RUN: {
       type: "many-to-many", 

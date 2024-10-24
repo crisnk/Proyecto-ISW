@@ -1,6 +1,5 @@
 "use strict";
 import { EntitySchema } from "typeorm";
-import PersonaSchema from './persona.entity.js';
 
 const AtrasoSchema = new EntitySchema({
   name: "Atraso", // Nombre de la entidad

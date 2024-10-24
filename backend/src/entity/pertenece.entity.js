@@ -2,8 +2,22 @@
 import { EntitySchema } from "typeorm";
 
 const PertenceSchema = new EntitySchema({
-    name: "Pertence",
-    tableName: "Pertenece",
+    name: "Pertenece",
+    tableName: "pertenecen",
+    columns: {
+      RUN: {
+        type: "varchar",
+        primaryKey: true,
+        length: 12,
+        nullable: false,
+        unique: true,
+      },
+      ID_curso: {
+        type: "int",
+        primary: true,
+        generated: true,
+      },
+    },
     relations: {
       RUN: {
         type: "many-to-one", 
@@ -24,3 +38,5 @@ const PertenceSchema = new EntitySchema({
       },
     },
 })
+
+export default PertenceSchema;
