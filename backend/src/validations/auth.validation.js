@@ -11,7 +11,7 @@ const domainEmailValidator = (value, helper) => {
 };
 
 export const authValidation = Joi.object({
-  email: Joi.string()
+  correo: Joi.string()
     .min(15)
     .max(35)
     .email()
