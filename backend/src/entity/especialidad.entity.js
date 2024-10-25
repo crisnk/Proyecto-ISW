@@ -1,19 +1,18 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-
-const MateriaSchema = new EntitySchema({
-  name: "Materia",
-  tableName: "materias",
+export default new EntitySchema({
+  name: "Especialidad",
+  tableName: "especialidades",
   columns: {
-    ID_materia: {
+    ID_especialidad: {
       type: "int",
       primary: true,
       generated: true,
     },
     nombre: {
       type: "varchar",
-      length: 55,
+      length: 255,
       nullable: false,
     },
     createdAt: {
@@ -30,11 +29,9 @@ const MateriaSchema = new EntitySchema({
   },
   indices: [
     {
-      name: "IDX_MATERIA",
-      columns: ["ID_materia"],
+      name: "IDX_ESPECIALIDAD",
+      columns: ["ID_especialidad"],
       unique: true,
-    },
+    }
   ]
 });
-
-export default MateriaSchema;

@@ -1,27 +1,26 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-
-const CursoSchema = new EntitySchema({
+export default new EntitySchema({
   name: "Curso",
   tableName: "cursos",
   columns: {
-    id_Curso: {
+    ID_curso: {
       type: "int",
       primary: true,
       generated: true,
     },
-    nombreCurso: {
+    nombre: {
       type: "varchar",
       length: 50,
       nullable: false,
-      
+
     },
     aula: {
-        type: "varchar",
-        length: 30,
-        unique: true
-      },
+      type: "varchar",
+      length: 30,
+      unique: true
+    },
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",
@@ -34,25 +33,23 @@ const CursoSchema = new EntitySchema({
       nullable: false,
     },
   },
-  relations: { 
-    usuarios:{
-      target: "User",
-      type: "one-to-many", // Un curso tiene muchos alumnos
-      inverseSide: "curso",
-    },
-    imparte: {
-      target: "Imparte",
-      type: "one-to-many", // Un curso lo imparten muchos profesores
-      inverseSide: "curso",
-    },
-  },
   indices: [
     {
       name: "IDX_CURSO",
-      columns: ["id_Curso"],
+      columns: ["ID_curso"],
       unique: true,
     },
   ],
+  relations: {
+    RUN: {
+      type: "one-to-one",
+      target: "User",
+      joinColumn: {
+        name: "RUN",
+        referencedColumnName: "RUN"
+      },
+      nullable: false,
+      onDelete: "CASCADE",
+    },
+  },
 });
-
-export default CursoSchema;
