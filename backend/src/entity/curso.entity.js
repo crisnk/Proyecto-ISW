@@ -14,13 +14,13 @@ export default new EntitySchema({
       type: "varchar",
       length: 50,
       nullable: false,
-      
+
     },
     aula: {
-        type: "varchar",
-        length: 30,
-        unique: true
-      },
+      type: "varchar",
+      length: 30,
+      unique: true
+    },
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",
@@ -40,16 +40,16 @@ export default new EntitySchema({
       unique: true,
     },
   ],
-  relations: { 
-    RUN:{
+  relations: {
+    RUN: {
       type: "one-to-one",
       target: "User",
       joinColumn: {
-        name: "RUN", 
-        referencedColumnName: "RUN" 
+        name: "RUN",
+        referencedColumnName: "RUN"
       },
-      nullable: false, 
-      onDelete: "CASCADE", 
+      nullable: false,
+      onDelete: "CASCADE",
     },
   },
 });

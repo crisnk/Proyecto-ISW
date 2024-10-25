@@ -5,7 +5,7 @@ const AtrasoSchema = new EntitySchema({
   name: "Atraso", // Nombre de la entidad
   tableName: "atrasos", // Nombre de la tabla en la base de datos
   columns: {
-      ID_atraso: {
+    ID_atraso: {
       type: "int",
       primary: true,
       generated: true, // Generar automáticamente el ID

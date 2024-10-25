@@ -5,7 +5,7 @@ const PracticaSchema = new EntitySchema({
   name: "Practica", // Nombre de la entidad
   tableName: "practicas", // Nombre de la tabla en la base de datos
   columns: {
-      ID_practica: {
+    ID_practica: {
       type: "int",
       primary: true,
       generated: true, // Valor autogenerado (autoincremental)
@@ -25,14 +25,14 @@ const PracticaSchema = new EntitySchema({
       nullable: false, // Puede no haberse completado aún
     },
     direccion: {
-        type: "varchar",
-        length: 255,
-        nullable: false, // no nula
+      type: "varchar",
+      length: 255,
+      nullable: false, // no nula
     },
     estado: {
-        type: "varchar",
-        length: 255,
-        nullable: false, // no nula
+      type: "varchar",
+      length: 255,
+      nullable: false, // no nula
     },
   },
   relations: {

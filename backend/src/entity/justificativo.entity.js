@@ -39,14 +39,14 @@ const JustificativoSchema = new EntitySchema({
       onDelete: "CASCADE", // Si se elimina un atraso, también se eliminarán los registros de justificativo relacionados
     },
     RUN: {
-        type: "many-to-one", 
-        target: "User", 
-        joinColumn: {
-          name: "RUN", 
-          referencedColumnName: "RUN" 
-        },
-        nullable: false, 
-        onDelete: "CASCADE", 
+      type: "many-to-one",
+      target: "User",
+      joinColumn: {
+        name: "RUN",
+        referencedColumnName: "RUN"
+      },
+      nullable: false,
+      onDelete: "CASCADE",
     },
   },
   indices: [
