@@ -22,6 +22,24 @@ async function createUsers() {
       ),
       userRepository.save(
         userRepository.create({
+          nombreCompleto: "Jefe UTP Predeterminado",
+          rut: "12.345.678-9",
+          email: "jefeutp@gmail.cl",
+          password: await encryptPassword("jefe1234"),
+          rol: "jefeUTP",
+        })
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Profesor Predeterminado",
+          rut: "11.223.344-5",
+          email: "profesor@gmail.cl",
+          password: await encryptPassword("profesor1234"),
+          rol: "profesor",
+        })
+      ),
+      userRepository.save(
+        userRepository.create({
           nombreCompleto: "Diego Sebastián Ampuero Belmar",
           rut: "21.151.897-9",
           email: "usuario1.2024@gmail.cl",

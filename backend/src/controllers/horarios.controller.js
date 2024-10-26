@@ -41,6 +41,8 @@ export const asignaHorario = async (req, res) => {
             `Se ha asignado la materia ${ID_materia} al curso ${ID_curso} 
             para el día ${dia} de ${hora_Inicio} a ${hora_Fin}`
         );
+        console.log(`Notificación enviada a ${rut}: Nuevo horario asignado para el curso
+             ${ID_curso} en ${dia}, ${hora_Inicio}-${hora_Fin}`);
 
         res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
     } catch (error) {

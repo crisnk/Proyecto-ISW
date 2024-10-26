@@ -5,7 +5,8 @@ handleErrorClient,
 handleErrorServer,
 } from "../handlers/responseHandlers.js";
 
-export async function isAdmin(req, res, next) {
+export function isAuthorized(...allowedRoles) {
+    return async function (req, res, next) {
 try {
     const userRepository = AppDataSource.getRepository(User);
 
@@ -19,16 +20,14 @@ try {
     );
     }
 
-    const rolUser = userFound.rol;
-
-    if (rolUser !== "administrador") {
+    if (!allowedRoles.includes(userFound.rol)) {
         return handleErrorClient(
-            res,
-            403,
-            "Error al acceder al recurso",
-            "Se requiere un rol de administrador para realizar esta acción."
+          res,
+          403,
+          "Error al acceder al recurso",
+          `Se requiere uno de los siguientes roles: ${allowedRoles.join(", ")} para realizar esta acción.`
         );
-    }
+      }
     next();
 } catch (error) {
     handleErrorServer(
@@ -36,5 +35,6 @@ try {
     500,
     error.message,
     );
+}
 }
 }

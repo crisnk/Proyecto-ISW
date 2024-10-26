@@ -1,13 +1,16 @@
-import express from "express";
+"use strict";
+import { Router } from "express";
 import { asignaHorario, modificaHorario, verHorario } from "../controllers/horarios.controller.js";
-import { isAuthenticated, isAuthorized } from "../middlewares/auth.js";
+import { authenticateJwt } from "../middlewares/authentication.middleware.js";
+import { isAuthorized } from "../middlewares/authorization.middleware.js";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/asignar", isAuthenticated, isAuthorized("jefeUTP"), asignaHorario);
+router.use(authenticateJwt);
 
-router.put("/modificar", isAuthenticated, isAuthorized("jefeUTP"), modificaHorario);
-
-router.get("/ver", isAuthenticated, isAuthorized, verHorario);
+router
+  .post("/asignar", isAuthorized("jefeUTP"), asignaHorario)
+  .put("/modificar", isAuthorized("jefeUTP"), modificaHorario)
+  .get("/ver", isAuthorized("jefeUTP", "profesor", "alumno"), verHorario);
 
 export default router;
