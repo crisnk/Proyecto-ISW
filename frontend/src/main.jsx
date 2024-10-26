@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       {
         path: '/users',
         element: (
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['administrador']}>
           <Users />
         </ProtectedRoute>
         ),

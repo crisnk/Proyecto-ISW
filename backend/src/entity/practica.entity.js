@@ -2,13 +2,13 @@
 import { EntitySchema } from "typeorm";
 
 const PracticaSchema = new EntitySchema({
-  name: "Practica", // Nombre de la entidad
-  tableName: "practicas", // Nombre de la tabla en la base de datos
+  name: "Practica", 
+  tableName: "practicas", 
   columns: {
     ID_practica: {
       type: "int",
       primary: true,
-      generated: true, // Valor autogenerado (autoincremental)
+      generated: true, 
     },
     nombre: {
       type: "varchar",
@@ -18,30 +18,30 @@ const PracticaSchema = new EntitySchema({
     descripcion: {
       type: "varchar",
       length: 255,
-      nullable: false, // no nula
+      nullable: false,
     },
     cupo: {
       type: "int",
-      nullable: false, // Puede no haberse completado aún
+      nullable: false, 
     },
     direccion: {
       type: "varchar",
       length: 255,
-      nullable: false, // no nula
+      nullable: false, 
     },
     estado: {
       type: "varchar",
       length: 255,
-      nullable: false, // no nula
+      nullable: false, 
     },
   },
   relations: {
     ID_especialidad: {
-      type: "many-to-one", // Relación muchos a uno (muchas prácticas son realizadas por una persona)
-      target: "Especialidad", // Referencia a la entidad Persona
+      type: "many-to-one", 
+      target: "Especialidad", 
       joinColumn: {
-        name: "ID_especialidad", // Nombre del campo FK en la tabla "practicas"
-        referencedColumnName: "ID_especialidad", // Referencia al campo "RUN" de la tabla "personas"
+        name: "ID_especialidad", 
+        referencedColumnName: "ID_especialidad", 
       },
       nullable: false,
       onDelete: "CASCADE",
