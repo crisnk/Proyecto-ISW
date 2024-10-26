@@ -53,7 +53,7 @@ const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d
                     {
                         label: "Correo electrónico",
                         name: "email",
-                        placeholder: "example@gmail.com",
+                        placeholder: "example@gmail.cl",
                         fieldType: 'input',
                         type: "email",
                         required: true,
@@ -61,7 +61,7 @@ const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d
                         maxLength: 35,
                         errorMessageData: errorEmail,
                         validate: {
-                            emailDomain: (value) => value.endsWith('@gmail.com') || 'El correo debe terminar en @gmail.com'
+                            emailDomain: (value) => value.endsWith('@gmail.cl') || 'El correo debe terminar en @gmail.cl'
                         },
                         onChange: (e) => handleInputChange('email', e.target.value)
                     },
@@ -90,6 +90,18 @@ const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d
                         maxLength: 26,
                         pattern: /^[a-zA-Z0-9]+$/,
                         patternMessage: "Debe contener solo letras y números",
+                    },
+                    {
+                        label: "Rol",
+                        name: "rol",
+                        placeholder: "alumno - profesor - jefeUTP",
+                        fieldType: 'input',
+                        type: "text",
+                        required: true,
+                        minLength: 6,
+                        maxLength: 8,
+                        pattern: /^[a-zA-Z0-9]+$/,
+                        patternMessage: "Debe contener solo letras",
                     },
 				]}
 				buttonText="Registrarse"

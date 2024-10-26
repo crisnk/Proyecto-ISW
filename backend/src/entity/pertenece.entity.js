@@ -26,7 +26,7 @@ const PertenceSchema = new EntitySchema({
         name: "rut",
         referencedColumnName: "rut"
       },
-      nullable: false, // No puede ser nulo, se debe asignar siempre un usuario
+      nullable: false, 
     },
     ID_Curso: {
       type: "one-to-many",

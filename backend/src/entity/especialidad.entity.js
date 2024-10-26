@@ -1,7 +1,7 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-export default new EntitySchema({
+const EspecialidadSchema =  new EntitySchema({
   name: "Especialidad",
   tableName: "especialidades",
   columns: {
@@ -35,3 +35,5 @@ export default new EntitySchema({
     }
   ]
 });
+
+export default EspecialidadSchema;
