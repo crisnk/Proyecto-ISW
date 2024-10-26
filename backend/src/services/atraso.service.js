@@ -13,7 +13,7 @@ export async function createAtrasoService(rut) {
 
     // Crear el objeto de atraso
     const nuevoAtraso = atrasoRepository.create({
-      RUN: rut,  // Relacionar el atraso con el RUN del usuario
+      rut: rut,  // Relacionar el atraso con el RUN del usuario
       fecha: fechaActual,
       hora: horaActual,
       estado: 'activo',
