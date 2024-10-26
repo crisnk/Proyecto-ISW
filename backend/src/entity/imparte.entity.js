@@ -13,7 +13,7 @@ const ImparteSchema = new EntitySchema({
       type: "int",
       primary: true,
     },
-    RUN: {
+    rut: {
       type: "int",
       primary: true,
     },
