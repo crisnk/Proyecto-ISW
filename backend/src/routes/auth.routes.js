@@ -10,7 +10,7 @@ router
   .post("/login", login)
   .post("/logout", logout)
 
-  .post("/register", authenticateJwt, isRole("admin"), register);
+  .post("/register", authenticateJwt, register);
   
 
 export default router;

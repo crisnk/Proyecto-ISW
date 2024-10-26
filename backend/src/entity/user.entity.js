@@ -5,7 +5,7 @@ export default new EntitySchema({
   name: "User",
   tableName: "users",
   columns: {
-    RUN: {
+    rut: {
       type: "varchar",
       length: 12,
       primary: true,
