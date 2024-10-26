@@ -6,7 +6,7 @@ const PostulaSchema = new EntitySchema({
   name: "Postula",
   tableName: "postulaciones",
   columns: {
-    RUN: {
+    rut: {
       type: "varchar",
       primaryKey: true,
       length: 12,
@@ -20,12 +20,12 @@ const PostulaSchema = new EntitySchema({
     },
   },
   relations: {
-    RUN: {
+    rut: {
       type: "many-to-many",
       target: "User",
       joinColumn: {
-        name: "RUN",
-        referencedColumnName: "RUN"
+        name: "rut",
+        referencedColumnName: "rut"
       },
       nullable: false, // No puede ser nulo, se debe asignar siempre un usuario
     },

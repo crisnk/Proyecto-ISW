@@ -56,7 +56,7 @@ export const registerValidation = Joi.object({
       "string.max": "El nombre completo debe tener como máximo 50 caracteres.",
       "string.pattern.base": "El nombre completo solo puede contener letras y espacios.",
     }),
-  run: Joi.string()
+  rut: Joi.string()
     .min(9)
     .max(12)
     .required()
@@ -95,6 +95,17 @@ export const registerValidation = Joi.object({
       "string.max": "La contraseña debe tener como máximo 26 caracteres.",
       "string.pattern.base": "La contraseña solo puede contener letras y números.",
     }),
+    direccion: Joi.string()
+      .min(5)
+      .max(20)
+      .required() // Asegura que la dirección es obligatoria
+      .messages({
+        "string.empty": "La dirección no puede estar vacía.",
+        "any.required": "La dirección es obligatoria.",
+        "string.base": "La dirección debe ser de tipo texto.",
+        "string.min": "La dirección debe tener al menos 5 caracteres.",
+        "string.max": "La dirección debe tener como máximo 20 caracteres.",
+      }),
     rol: Joi.string()
     .min(4)
     .max(15)

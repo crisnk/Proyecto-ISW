@@ -12,12 +12,12 @@ export default new EntitySchema({
       nullable: false,
       unique: true,
     },
-    nombre: {
+    nombreCompleto: {
       type: "varchar",
       length: 255,
       nullable: false,
     },
-    correo: {
+    email: {
       type: "varchar",
       length: 255,
       nullable: false,
@@ -30,7 +30,7 @@ export default new EntitySchema({
     direccion: {
       type: "varchar",
       length: 255,
-      nullable: false,
+      nullable: true,
     },
     rol: {
       type: "enum",
@@ -51,13 +51,13 @@ export default new EntitySchema({
   },
   indices: [
     {
-      name: "IDX_USER_RUN",
-      columns: ["RUN"],
+      name: "IDX_USER_rut",
+      columns: ["rut"],
       unique: true,
     },
     {
-      name: "IDX_USER_correo",
-      columns: ["correo"],
+      name: "IDX_USER_email",
+      columns: ["email"],
       unique: true,
     },
   ],

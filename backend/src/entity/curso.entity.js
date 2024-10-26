@@ -41,12 +41,12 @@ export default new EntitySchema({
     },
   ],
   relations: {
-    RUN: {
+    rut: {
       type: "one-to-one",
       target: "User",
       joinColumn: {
-        name: "RUN",
-        referencedColumnName: "RUN"
+        name: "rut",
+        referencedColumnName: "rut"
       },
       nullable: false,
       onDelete: "CASCADE",
