@@ -38,12 +38,12 @@ const JustificativoSchema = new EntitySchema({
       nullable: false, // No puede ser nulo, se debe asignar siempre un atraso
       onDelete: "CASCADE", // Si se elimina un atraso, también se eliminarán los registros de justificativo relacionados
     },
-    RUN: {
+    rut: {
       type: "many-to-one",
       target: "User",
       joinColumn: {
-        name: "RUN",
-        referencedColumnName: "RUN"
+        name: "rut",
+        referencedColumnName: "rut"
       },
       nullable: false,
       onDelete: "CASCADE",

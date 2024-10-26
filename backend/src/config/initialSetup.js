@@ -13,9 +13,9 @@ export async function createUsers() {
     await Promise.all([
       userRepository.save(
         userRepository.create({
-          RUN: "21.308.770-3",
-          nombre: "Admin Generico",
-          correo: "admin@gmail.com",
+          rut: "21.308.770-3",
+          nombreCompleto: "Admin Generico",
+          email: "admin@gmail.com",
           password: await encryptPassword("admin1234"),
           direccion: "Concepcion",
           rol: "admin",
@@ -23,9 +23,9 @@ export async function createUsers() {
       ),
       userRepository.save(
         userRepository.create({
-          RUN: "21.151.897-9",
-          nombre: "Usuario Generico",
-          correo: "usuario@gmail.com",
+          rut: "21.151.897-9",
+          nombreCompleto: "Usuario Generico",
+          email: "usuario@gmail.com",
           password: await encryptPassword("user1234"),
           direccion: "Concepcion",
           rol: "alumno",

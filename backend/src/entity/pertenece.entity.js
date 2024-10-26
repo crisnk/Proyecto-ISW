@@ -5,7 +5,7 @@ const PertenceSchema = new EntitySchema({
   name: "Pertenece",
   tableName: "pertenecen",
   columns: {
-    RUN: {
+    rut: {
       type: "varchar",
       primaryKey: true,
       length: 12,
@@ -19,12 +19,12 @@ const PertenceSchema = new EntitySchema({
     },
   },
   relations: {
-    RUN: {
+    rut: {
       type: "many-to-one",
       target: "User",
       joinColumn: {
-        name: "RUN",
-        referencedColumnName: "RUN"
+        name: "rut",
+        referencedColumnName: "rut"
       },
       nullable: false, // No puede ser nulo, se debe asignar siempre un usuario
     },
