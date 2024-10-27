@@ -23,7 +23,7 @@ const useEditUser = (setUsers) => {
 
             setUsers(prevUsers => prevUsers.map(user => {
                 console.log("Usuario actual:", user);
-                if (user.id === formattedUser.id) {
+                if (user.rut === formattedUser.rut) {
                     console.log("Reemplazando con:", formattedUser);
                 }
                 return user.email === formattedUser.email ? formattedUser : user;

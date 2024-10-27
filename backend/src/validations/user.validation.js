@@ -11,14 +11,6 @@ const domainEmailValidator = (value, helper) => {
 };
 
 export const userQueryValidation = Joi.object({
-  id: Joi.number()
-    .integer()
-    .positive()
-    .messages({
-      "number.base": "El id debe ser un número.",
-      "number.integer": "El id debe ser un número entero.",
-      "number.positive": "El id debe ser un número positivo.",
-    }),
   email: Joi.string()
     .min(15)
     .max(35)
@@ -45,12 +37,12 @@ export const userQueryValidation = Joi.object({
       "string.pattern.base": "Formato rut inválido, debe ser xx.xxx.xxx-x o xxxxxxxx-x.",
     }),
 })
-  .or("id", "email", "rut")
+  .or("email", "rut")
   .unknown(false)
   .messages({
     "object.unknown": "No se permiten propiedades adicionales.",
     "object.missing":
-      "Debes proporcionar al menos un parámetro: id, email o rut.",
+      "Debes proporcionar al menos un parámetro: email o rut.",
   });
 
 export const userBodyValidation = Joi.object({
