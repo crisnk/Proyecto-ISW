@@ -13,22 +13,26 @@ const transporter = nodemailer.createTransport({
 
 export const sendNotificacion = async (rut, subject, mensaje) => {
     try {
+        if (!AppDataSource.isInitialized) {
+            await AppDataSource.initialize();
+        }
+
         const userRepository = AppDataSource.getRepository(User);
         const user = await userRepository.findOneBy({ rut });
 
-        if (!user || !user.correo) {
+        if (!user || !user.email) {
             throw new Error("No se encontró el usuario o su correo electrónico");
         }
 
         await transporter.sendMail({
             from: `"Notificación Liceo" <${process.env.NOTIFICATION_EMAIL}>`,
-            to: user.correo,
+            to: user.email,
             subject,
             text: mensaje,
         });
 
-        console.log("Notificación enviada a:", user.correo);
+        console.log("Notificación enviada a:", user.email);
     } catch (error) {
-        console.error("Error al enviar la notificación:", error);
+        console.error("Error al enviar la notificación:", error.message);
     }
 };
