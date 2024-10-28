@@ -1,71 +1,97 @@
 "use strict";
-import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
-import {
-    assignHorarioService, 
-    createHorarioService, 
-    getAlumnoHorarioService,
-    getProfesorHorarioService,
+import { AppDataSource } from "../config/configDb.js";
+import Imparte from "../entity/imparte.entity.js";
+import Pertenece from "../entity/pertenece.entity.js";
+import { sendNotificacion } from "../services/notificacion.service.js";
+import { horarioValidation } from "../validations/horario.validation.js";
+import { asignaHorarioService, modificaHorarioService } from "../services/horario.service.js";
+
+
+export const asignaHorario = async (req, res) => {
+    const { rol } = req.user;
+   
+    if (rol !== "jefeUTP") {
+        return res.status(403).json({ message: "No tienes permisos para realizar esta acción" });
+    }
     
-} from "../services/horarios.service.js";
- async function createHorario(req, res) {
+    const { error } = horarioValidation.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const { ID_materia, ID_curso, rut, dia, hora_Inicio, hora_Fin } = req.body;
+
     try {
-        const { dia, hora_inicio, hora_fin,
-            id_materia, id_curso } = req.body;
-
-        if (req.user.rol !== "jefeUTP") {
-            return handleErrorClient(res, 403, "Solo el jefe de UTP puede crear horarios");
-
-        } 
-        const [horario, error] = await createHorarioService({
-            dia, hora_inicio, hora_fin, id_materia, id_curso   
+        
+        const horarioExistente = await AppDataSource.getRepository(Imparte).findOne({
+            where: { ID_curso, dia, hora_Inicio }
         });
-        if (error) return handleErrorClient( res, 400, "Error al crear horario", error);
-        handleSuccess(res, 201, "Horario creado correctamente", horario);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-async function assignHorario(req, res) {
-    try {
-        const { id_horario, id_profesor } = req.body;
-        //verifica que el usuario sea jefeUTP
-        if (req.user.rol !== "jefeUTP") {
-            return handleErrorClient(res, 403, "Solo el jefe de UTP puede asignar horarios");
+
+        if (horarioExistente) {
+            return res.status(400).json({
+                message: `Ya existe una asignación en ${dia} a las ${hora_Inicio} para el curso: ${ID_curso}.`
+            });
         }
-        const [asignacion, error] = await assignHorarioService({ id_horario, id_profesor });
-        if (error) return handleErrorClient(res, 400, "Error al asignar horario", error);
-        handleSuccess(res, 200, "Horario asignado correctamente", asignacion);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
+       
+        const horarioAsignado = await asignaHorarioService(req.body);
+        
+        await sendNotificacion(
+            rut,
+            "Nuevo horario asignado",
+            `Se ha asignado la materia ${ID_materia} al curso ${ID_curso} 
+            para el día ${dia} de ${hora_Inicio} a ${hora_Fin}`
+        );
+        console.log(`Notificación enviada a ${rut}: Nuevo horario asignado para el curso
+             ${ID_curso} en ${dia}, ${hora_Inicio}-${hora_Fin}`);
 
-    }
-}
-async function getProfesorHorario(req, res) {
-    try {
-      const profesorId = req.user.id;
-  
-      const [horarios, error] = await getProfesorHorarioService(profesorId);
-  
-      if (error) return handleErrorClient(res, 404, "Error al obtener los horarios", error);
-  
-      handleSuccess(res, 200, "Horarios del profesor obtenidos correctamente", horarios);
+        res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
     } catch (error) {
-      handleErrorServer(res, 500, error.message);
+        console.error("Error al asignar horario:", error);
+        res.status(500).json({ message: "Error interno del servidor", error });
     }
-  }
-  
-async function getAlumnoHorario(req, res) {
-    try {
-      const alumnoId = req.user.id;
-  
-      const [horarios, error] = await getAlumnoHorarioService(alumnoId);
-  
-      if (error) return handleErrorClient(res, 404, "Error al obtener los horarios", error);
-  
-      handleSuccess(res, 200, "Horarios del alumno obtenidos correctamente", horarios);
-    } catch (error) {
-      handleErrorServer(res, 500, error.message);
-    }
-  }  
+};
 
-  export { createHorario, getAlumnoHorario, getProfesorHorario, assignHorario };    
+
+export const modificaHorario = async (req, res) => {
+    const { rol } = req.user;
+    
+    if (rol !== "jefeUTP") {
+        return res.status(403).json({ message: "No tienes permisos para realizar esta acción" });
+    } 
+    const { error } = horarioValidation.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    try {  
+        const horarioModificado = await modificaHorarioService(req.params.id, req.body);
+        res.status(200).json({ message: "Horario modificado correctamente", horario: horarioModificado });
+    } catch (error) {
+        console.error("Error al modificar horario:", error);
+        res.status(500).json({ message: "Error interno del servidor", error });
+    }
+};
+
+export const verHorario = async (req, res) => {
+    const { rol, rut } = req.user;
+
+    try {
+        let horarios;
+        
+        if (rol === "jefeUTP") {
+            horarios = await AppDataSource.getRepository(Imparte).find();
+        }    
+        else if (rol === "profesor") {
+            horarios = await AppDataSource.getRepository(Imparte).find({ where: { rut } });
+        } 
+        else if (rol === "alumno") {
+            const cursoAlumno = await AppDataSource.getRepository(Pertenece).findOne({ where: { rut } });
+            if (!cursoAlumno) return res.status(404).json({ message: "Curso no encontrado para el alumno" });
+
+            horarios = await AppDataSource.getRepository(Imparte).find({ where: { ID_curso: cursoAlumno.ID_curso } });
+        }  
+        res.status(200).json({ horarios });
+    } catch (error) {
+        console.error("Error al ver horario:", error);
+        res.status(500).json({ message: "Error interno del servidor", error });
+    }
+};

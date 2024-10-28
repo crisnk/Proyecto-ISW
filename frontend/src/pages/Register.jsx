@@ -91,6 +91,18 @@ const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d
                         pattern: /^[a-zA-Z0-9]+$/,
                         patternMessage: "Debe contener solo letras y números",
                     },
+                    {
+                        label: "Rol",
+                        name: "rol",
+                        placeholder: "alumno - profesor - jefeUTP",
+                        fieldType: 'input',
+                        type: "text",
+                        required: true,
+                        minLength: 6,
+                        maxLength: 8,
+                        pattern: /^[a-zA-Z0-9]+$/,
+                        patternMessage: "Debe contener solo letras",
+                    },
 				]}
 				buttonText="Registrarse"
 				onSubmit={registerSubmit}

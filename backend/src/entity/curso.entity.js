@@ -1,7 +1,7 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-export default new EntitySchema({
+const CursoSchema = new EntitySchema({
   name: "Curso",
   tableName: "cursos",
   columns: {
@@ -41,15 +41,17 @@ export default new EntitySchema({
     },
   ],
   relations: {
-    RUN: {
-      type: "one-to-one",
+    rut: {
+      type: "many-to-one",
       target: "User",
       joinColumn: {
-        name: "RUN",
-        referencedColumnName: "RUN"
+        name: "rut",
+        referencedColumnName: "rut"
       },
       nullable: false,
       onDelete: "CASCADE",
     },
   },
 });
+
+export default CursoSchema;

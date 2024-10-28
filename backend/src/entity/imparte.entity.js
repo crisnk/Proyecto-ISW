@@ -13,7 +13,7 @@ const ImparteSchema = new EntitySchema({
       type: "int",
       primary: true,
     },
-    RUN: {
+    rut: {
       type: "int",
       primary: true,
     },
@@ -22,7 +22,7 @@ const ImparteSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
-    hora_inicio: {
+    hora_Inicio: {
       type: "time",
       nullable: false,
     },
@@ -43,24 +43,36 @@ const ImparteSchema = new EntitySchema({
     },
   },
   relations: {
+    profesor:{
+      target: "User",
+      type: "many-to-one",
+      joinColumn: {
+        name: "rut",
+        referencedColumnName: "rut",
+      },
+      onDelete: "CASCADE",
+      nullable: false,
+    },
     curso: {
       target: "Curso",
-      type: "many-to-many", // Muchos registros en Imparte pueden estar asociados a un curso
+      type: "many-to-one", 
       joinColumn: {
-        name: "ID_curso", // Nombre de la columna FK
-        referencedColumnName: "ID_curso", // Referencia la columna id en Curso
+        name: "ID_curso", 
+        referencedColumnName: "ID_curso", 
       },
-      nullable: false, // Obligatoria (tiene que haber un curso)
+      onDelete: "CASCADE",
+      nullable: false,
     },
 
     materia: {
       target: "Materia",
-      type: "many-to-many", // Muchas asignaciones pueden estar asociadas a una materia
+      type: "many-to-one", 
       joinColumn: {
-        name: "ID_materia", // Nombre de la columna FK
-        referencedColumnName: "ID_materia", // Referencia la columna id en Materia
+        name: "ID_materia", 
+        referencedColumnName: "ID_materia", 
       },
-      nullable: false, // Obligatoria (tiene que haber una materia)
+      onDelete: "CASCADE",
+      nullable: false,
     }
   },
 });

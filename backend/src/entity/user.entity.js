@@ -1,18 +1,18 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-export default new EntitySchema({
+const UserSchema = new EntitySchema({
   name: "User",
   tableName: "users",
   columns: {
-    RUN: {
+    rut: {
       type: "varchar",
       length: 12,
       primary: true,
       nullable: false,
       unique: true,
     },
-    nombre: {
+    nombreCompleto: {
       type: "varchar",
       length: 255,
       nullable: false,
@@ -23,18 +23,13 @@ export default new EntitySchema({
       nullable: false,
       unique: true,
     },
-    password: {
-      type: "varchar",
-      nullable: false,
-    },
-    direccion: {
-      type: "varchar",
-      length: 255,
-      nullable: false,
-    },
     rol: {
       type: "enum",
-      enum: ["alumno", "profesor", "jefeUTP", "admin"],
+      enum: ["alumno", "profesor", "jefeUTP","administrador"],
+      nullable: false,
+    },
+    password: {
+      type: "varchar",
       nullable: false,
     },
     createdAt: {
@@ -51,14 +46,16 @@ export default new EntitySchema({
   },
   indices: [
     {
-      name: "IDX_USER_RUN",
-      columns: ["RUN"],
+      name: "IDX_USER_RUT",
+      columns: ["rut"],
       unique: true,
     },
     {
-      name: "IDX_USER_email",
+      name: "IDX_USER_EMAIL",
       columns: ["email"],
       unique: true,
     },
   ],
 });
+
+export default UserSchema;

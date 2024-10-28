@@ -2,17 +2,24 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import atrasoRoutes from "./atraso.routes.js";
-import practicaRoutes from "./practica.routes.js";
+import horarioRoutes from "./horario.routes.js";
+import { sendNotificacion } from "../services/notificacion.service.js"; 
+
+
 const router = Router();
-router.get("/", (req, res) => {
-    res.status(200).json({ message: "API is running" });
-});
 
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/atraso", atrasoRoutes)
-    .use("/practica", practicaRoutes);
+    .use("/horarios", horarioRoutes)
+    .post("/test-email", async (req, res) => {
+        const { rut, subject, mensaje } = req.body;
+        try {
+            await sendNotificacion(rut, subject, mensaje);
+            res.status(200).json({ message: "Correo enviado exitosamente" });
+        } catch (error) {
+            res.status(500).json({ message: "Error al enviar correo", error: error.message });
+        }
+    });
 
 export default router;
