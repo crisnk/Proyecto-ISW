@@ -2,7 +2,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import Imparte from "../entity/imparte.entity.js";
 import Pertenece from "../entity/pertenece.entity.js";
-import { sendNotificacion } from "../services/notificacion.service.js";
 import { horarioValidation } from "../validations/horario.validation.js";
 import { asignaHorarioService, modificaHorarioService } from "../services/horario.service.js";
 
@@ -34,15 +33,6 @@ export const asignaHorario = async (req, res) => {
         }
        
         const horarioAsignado = await asignaHorarioService(req.body);
-        
-        await sendNotificacion(
-            rut,
-            "Nuevo horario asignado",
-            `Se ha asignado la materia ${ID_materia} al curso ${ID_curso} 
-            para el día ${dia} de ${hora_Inicio} a ${hora_Fin}`
-        );
-        console.log(`Notificación enviada a ${rut}: Nuevo horario asignado para el curso
-             ${ID_curso} en ${dia}, ${hora_Inicio}-${hora_Fin}`);
 
         res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
     } catch (error) {

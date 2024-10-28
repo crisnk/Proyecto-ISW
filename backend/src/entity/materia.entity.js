@@ -32,7 +32,7 @@ const MateriaSchema = new EntitySchema({
     {
       name: "IDX_MATERIA",
       columns: ["ID_materia"],
-      unique: true,
+      unique: false,
     },
   ]
 });

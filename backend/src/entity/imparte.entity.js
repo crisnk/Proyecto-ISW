@@ -50,8 +50,7 @@ const ImparteSchema = new EntitySchema({
         name: "rut",
         referencedColumnName: "rut",
       },
-      onDelete: "CASCADE",
-      nullable: false,
+      
     },
     curso: {
       target: "Curso",
@@ -60,8 +59,7 @@ const ImparteSchema = new EntitySchema({
         name: "ID_curso", 
         referencedColumnName: "ID_curso", 
       },
-      onDelete: "CASCADE",
-      nullable: false,
+      
     },
 
     materia: {
@@ -71,8 +69,7 @@ const ImparteSchema = new EntitySchema({
         name: "ID_materia", 
         referencedColumnName: "ID_materia", 
       },
-      onDelete: "CASCADE",
-      nullable: false,
+
     }
   },
 });

@@ -10,12 +10,16 @@ export const horarioValidation = Joi.object({
       "number.base": "El curso debe ser un número.",
     }),
     rut: Joi.string()
-      .pattern(/^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/)
-      .required()
-      .messages({
-        "any.required": "El rut es obligatorio.",
-        "string.pattern.base": "Formato de rut inválido.",
-      }),
+    .min(9)
+    .max(12)
+    .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/)
+    .messages({
+      "string.empty": "El rut no puede estar vacío.",
+      "string.base": "El rut debe ser de tipo string.",
+      "string.min": "El rut debe tener como mínimo 9 caracteres.",
+      "string.max": "El rut debe tener como máximo 12 caracteres.",
+      "string.pattern.base": "Formato rut inválido, debe ser xx.xxx.xxx-x o xxxxxxxx-x.",
+    }),
     dia: Joi.string().valid("lunes", "martes", "miércoles", "jueves", "viernes").required().messages({
       "any.required": "El día es obligatorio.",
       "any.only": "El día debe ser un valor válido (lunes a viernes).",

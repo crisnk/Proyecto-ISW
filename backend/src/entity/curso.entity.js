@@ -19,7 +19,7 @@ const CursoSchema = new EntitySchema({
     aula: {
       type: "varchar",
       length: 30,
-      unique: true
+      
     },
     createdAt: {
       type: "timestamp with time zone",
@@ -37,7 +37,7 @@ const CursoSchema = new EntitySchema({
     {
       name: "IDX_CURSO",
       columns: ["ID_curso"],
-      unique: true,
+      
     },
   ],
   relations: {
@@ -48,8 +48,7 @@ const CursoSchema = new EntitySchema({
         name: "rut",
         referencedColumnName: "rut"
       },
-      nullable: false,
-      onDelete: "CASCADE",
+     
     },
   },
 });

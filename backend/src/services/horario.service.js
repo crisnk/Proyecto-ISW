@@ -1,7 +1,6 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
 import Imparte from "../entity/imparte.entity.js";
-import { sendNotificacion } from "./notificacion.service.js";
 
 export const asignaHorarioService = async (horarioData) => {
     const { ID_materia, ID_curso, rut, dia, hora_Inicio, hora_Fin } = horarioData;
@@ -24,9 +23,6 @@ export const asignaHorarioService = async (horarioData) => {
     });
 
     await AppDataSource.getRepository(Imparte).save(nuevoHorario);
-    await sendNotificacion(rut, "Nuevo horario asignado", 
-        `Materia ${ID_materia},
-         Curso ${ID_curso}, Día ${dia} de ${hora_Inicio} a ${hora_Fin}`);
 
     return nuevoHorario;
 };
@@ -44,8 +40,6 @@ export const modificaHorarioService = async (id, horarioData) => {
     horario.hora_Fin = hora_Fin;
 
     await AppDataSource.getRepository(Imparte).save(horario);
-    await sendNotificacion(horario.rut, "Horario modificado", `Nuevo horario para el curso 
-        ${horario.ID_curso} en el día ${dia} de ${hora_Inicio} a ${hora_Fin}`);
 
     return horario;
 };

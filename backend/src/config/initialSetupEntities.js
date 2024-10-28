@@ -15,7 +15,6 @@ async function createCursos() {
         rut: "11.223.344-5"
       });
       await cursoRepository.save(nuevoCurso);
-      console.log("* => Curso por defecto creado");
     }
   } catch (error) {
     console.error("Error al crear curso predeterminado:", error);
@@ -32,7 +31,6 @@ async function createMaterias() {
         nombre: "Matemáticas",
       });
       await materiaRepository.save(nuevaMateria);
-      console.log("* => Materia por defecto creada");
     }
   } catch (error) {
     console.error("Error al crear materia predeterminada:", error);
@@ -42,7 +40,7 @@ async function createMaterias() {
 async function createDefaultEntities() {
   await createCursos();
   await createMaterias();
-  console.log("* => Configuración inicial de entidades completada");
+  
 }
 
 export { createDefaultEntities };
