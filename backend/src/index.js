@@ -17,7 +17,6 @@ async function setupServer() {
     const app = express();
 
     app.disable("x-powered-by");
-
     app.use(
       cors({
         credentials: true,
