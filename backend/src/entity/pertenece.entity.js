@@ -29,7 +29,7 @@ const PertenceSchema = new EntitySchema({
       nullable: false, 
     },
     ID_Curso: {
-      type: "one-to-many",
+      type: "many-to-one",
       target: "Curso",
       joinColumn: {
         name: "ID_curso",

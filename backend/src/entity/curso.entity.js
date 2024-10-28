@@ -42,7 +42,7 @@ const CursoSchema = new EntitySchema({
   ],
   relations: {
     rut: {
-      type: "one-to-one",
+      type: "many-to-one",
       target: "User",
       joinColumn: {
         name: "rut",
