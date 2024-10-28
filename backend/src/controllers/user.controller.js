@@ -17,13 +17,13 @@ import {
 
 export async function getUser(req, res) {
   try {
-    const { rut, id, email } = req.query;
+    const { rut,  email } = req.query;
 
-    const { error } = userQueryValidation.validate({ rut, id, email });
+    const { error } = userQueryValidation.validate({ rut, email });
 
     if (error) return handleErrorClient(res, 400, error.message);
 
-    const [user, errorUser] = await getUserService({ rut, id, email });
+    const [user, errorUser] = await getUserService({ rut,  email });
 
     if (errorUser) return handleErrorClient(res, 404, errorUser);
 
@@ -53,12 +53,11 @@ export async function getUsers(req, res) {
 
 export async function updateUser(req, res) {
   try {
-    const { rut, id, email } = req.query;
+    const { rut, email } = req.query;
     const { body } = req;
 
     const { error: queryError } = userQueryValidation.validate({
       rut,
-      id,
       email,
     });
 
@@ -81,7 +80,7 @@ export async function updateUser(req, res) {
         bodyError.message,
       );
 
-    const [user, userError] = await updateUserService({ rut, id, email }, body);
+    const [user, userError] = await updateUserService({ rut,  email }, body);
 
     if (userError) return handleErrorClient(res, 400, "Error modificando al usuario", userError);
 
@@ -93,11 +92,10 @@ export async function updateUser(req, res) {
 
 export async function deleteUser(req, res) {
   try {
-    const { rut, id, email } = req.query;
+    const { rut, email } = req.query;
 
     const { error: queryError } = userQueryValidation.validate({
       rut,
-      id,
       email,
     });
 
@@ -112,7 +110,6 @@ export async function deleteUser(req, res) {
 
     const [userDelete, errorUserDelete] = await deleteUserService({
       rut,
-      id,
       email,
     });
 
