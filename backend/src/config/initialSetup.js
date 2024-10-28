@@ -1,9 +1,10 @@
 "use strict";
 import User from "../entity/user.entity.js";
+import Especialidad from "../entity/especialidad.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
-async function createUsers() {
+export async function createUsers() {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
@@ -99,4 +100,47 @@ async function createUsers() {
   }
 }
 
-export { createUsers };
+export async function crearEspecialidades() {
+  try {
+    const especialidadRepository = AppDataSource.getRepository(Especialidad);
+
+    const count = await especialidadRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      especialidadRepository.save(
+        especialidadRepository.create({
+          ID_especialidad: 1,
+          nombre: "Mecánica automotriz",
+        })
+      ),
+      especialidadRepository.save(
+        especialidadRepository.create({
+          ID_especialidad: 2,
+          nombre: "Mecánica Industrial",
+        })
+      ),
+      especialidadRepository.save(
+        especialidadRepository.create({
+          ID_especialidad: 3,
+          nombre: "Electricidad",
+        })
+      ),
+      especialidadRepository.save(
+        especialidadRepository.create({
+          ID_especialidad: 4,
+          nombre: "Electrónica",
+        })
+      ),
+      especialidadRepository.save(
+        especialidadRepository.create({
+          ID_especialidad: 5,
+          nombre: "Telecomunicación",
+        })
+      ),
+    ]);
+    console.log("* => Especialidades creadas exitosamente");
+  } catch (error) {
+    console.error("Error al crear especialidades:", error);
+  }
+}
