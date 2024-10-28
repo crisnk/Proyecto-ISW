@@ -28,3 +28,24 @@ export async function createAtrasoService(rut) {
     return [null, "Error interno del servidor"];
   }
 }
+
+export async function obtenerAtrasos(){
+  try {
+    const atrasoRepository = AppDataSource.getRepository(Atraso);
+
+    const atrasos = await atrasoRepository.find();
+
+    if(!atrasos || atrasos.length === 0) return [null, "No hay Atrasos"];
+
+    const atrasosData = atrasos.map (({ fecha, hora, estado }) => ({
+      fecha,
+      hora,
+      estado,
+    }));
+    
+    return [atrasosData, null];
+  } catch (error) {
+    console.error("Error al obtener a los atrasos:", error);
+    return [null, "Error interno del servidor"];
+  }
+}

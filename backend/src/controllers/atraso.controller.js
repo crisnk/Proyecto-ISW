@@ -1,12 +1,13 @@
 "use strict";
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
-import { createAtrasoService } from "../services/atraso.service.js";
+import { createAtrasoService, obtenerAtrasos } from "../services/atraso.service.js";
 import {
   handleErrorClient,
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
+
 
 export async function registrarAtraso(req, res) {
   try {
@@ -39,4 +40,22 @@ export async function registrarAtraso(req, res) {
 
     handleErrorServer(res, 500, error.message);
   }
-}
+};
+
+export async function verAtrasos(req,res) {
+  try {
+    const [atrasos, errorAtrasos] = await obtenerAtrasos();
+
+    if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
+    
+    atrasos.length === 0
+    ? handleSuccess(res, 204)
+    : handleSuccess(res, 200, "Atrasos encontrados", atrasos);
+  } catch (error) {
+    handleErrorServer(
+      res,
+      500,
+      error.message,
+    );
+  }
+};
