@@ -15,7 +15,7 @@ export async function createUsers() {
         userRepository.create({
           RUN: "21.308.770-3",
           nombre: "Admin Generico",
-          correo: "admin@gmail.com",
+          email: "admin@gmail.com",
           password: await encryptPassword("admin1234"),
           direccion: "Concepcion",
           rol: "admin",
@@ -25,7 +25,7 @@ export async function createUsers() {
         userRepository.create({
           RUN: "21.151.897-9",
           nombre: "Usuario Generico",
-          correo: "usuario@gmail.com",
+          email: "usuario@gmail.com",
           password: await encryptPassword("user1234"),
           direccion: "Concepcion",
           rol: "alumno",

@@ -17,7 +17,7 @@ export default new EntitySchema({
       length: 255,
       nullable: false,
     },
-    correo: {
+    email: {
       type: "varchar",
       length: 255,
       nullable: false,
@@ -56,8 +56,8 @@ export default new EntitySchema({
       unique: true,
     },
     {
-      name: "IDX_USER_correo",
-      columns: ["correo"],
+      name: "IDX_USER_email",
+      columns: ["email"],
       unique: true,
     },
   ],
