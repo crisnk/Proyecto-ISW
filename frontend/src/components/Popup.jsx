@@ -44,7 +44,7 @@ export default function Popup({ show, setShow, data, action }) {
                                 type: "email",
                                 required: true,
                                 minLength: 15,
-                                maxLength: 30,
+                                maxLength: 50,
                             },
                             {
                                 label: "Rut",

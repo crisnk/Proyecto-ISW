@@ -13,7 +13,7 @@ const domainEmailValidator = (value, helper) => {
 export const userQueryValidation = Joi.object({
   email: Joi.string()
     .min(15)
-    .max(35)
+    .max(50)
     .email()
     .messages({
       "string.empty": "El correo electrónico no puede estar vacío.",
@@ -60,7 +60,7 @@ export const userBodyValidation = Joi.object({
     }),
   email: Joi.string()
     .min(15)
-    .max(35)
+    .max(50)
     .email()
     .messages({
       "string.empty": "El correo electrónico no puede estar vacío.",
