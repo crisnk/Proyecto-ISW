@@ -19,7 +19,7 @@ const JustificativoSchema = new EntitySchema({
     documento: {
       type: "varchar",
       length: 255,
-      nullable: false,
+      nullable: true,
     },
     estado: {
       type: "varchar",
