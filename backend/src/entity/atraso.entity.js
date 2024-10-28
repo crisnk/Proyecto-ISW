@@ -26,14 +26,13 @@ const AtrasoSchema = new EntitySchema({
   },
   relations: {
     rut: {
-      type: "many-to-one", // Definir la relación de muchos a uno (varios atrasos pueden ser de un solo usuario)
-      target: "User", // Referencia a la entidad User
+      type: "many-to-one",
+      target: "User", 
       joinColumn: {
-        name: "rut", // Nombre del campo FK en la tabla "atrasos"
-        referencedColumnName: "rut" // Campo referenciado en la tabla "users"
+        name: "rut", 
+        referencedColumnName: "rut" 
       },
-      nullable: false, // No puede ser nulo, se debe asignar siempre un usuario
-      onDelete: "CASCADE", // Si se elimina un usuario, también se eliminarán los registros de atraso relacionados
+      nullable: false, // No puede ser nulo, se debe asignar siempre un usuario.  OJO preguntar al tarro acerca de esto
     },
   },
   indices: [

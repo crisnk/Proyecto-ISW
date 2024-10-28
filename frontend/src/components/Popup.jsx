@@ -39,7 +39,7 @@ export default function Popup({ show, setShow, data, action }) {
                                 label: "Correo electrónico",
                                 name: "email",
                                 defaultValue: userData.email || "",
-                                placeholder: 'example@gmail.com',
+                                placeholder: 'example@gmail.cl',
                                 fieldType: 'input',
                                 type: "email",
                                 required: true,
@@ -64,7 +64,7 @@ export default function Popup({ show, setShow, data, action }) {
                                 name: "rol",
                                 fieldType: 'select',
                                 options: [
-                                    { value: 'admin', label: 'Admin' },
+                                    { value: 'administrador', label: 'Administrador' },
                                     { value: 'usuario', label: 'Usuario' },
                                 ],
                                 required: true,
