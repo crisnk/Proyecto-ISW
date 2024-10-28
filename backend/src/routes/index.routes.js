@@ -3,6 +3,7 @@ import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
 import atrasoRoutes from "./atraso.routes.js";
+import practicaRoutes from "./practica.routes.js";
 const router = Router();
 router.get("/", (req, res) => {
     res.status(200).json({ message: "API is running" });
@@ -11,6 +12,7 @@ router.get("/", (req, res) => {
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/atraso", atrasoRoutes);
+    .use("/atraso", atrasoRoutes)
+    .use("/practica", practicaRoutes);
 
 export default router;
