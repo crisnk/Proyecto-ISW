@@ -17,7 +17,7 @@ const router = Router();
 router.use(authenticateJwt);
 router  
     .post("/registrar", registrarAtraso)
-    .post("/generar",  isAuthorized("alumno"), generarJustificativo);
+    .post("/generar",  isAuthorized("alumno"), generarJustificativo)
     .get("/atrasos", verAtrasos)
     .post("/aprobar/:ID_atraso", manejarAprobarJustificativo)
     .post("/rechazar/:ID_atraso", manejarRechazarJustificativo)
