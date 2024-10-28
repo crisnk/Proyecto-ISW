@@ -71,3 +71,60 @@ export async function modificarPracticaService(data) {
     return [null, "Error interno del servidor"];
   }
 }
+
+export async function obtenerPracticasService() {
+  try {
+    const practicaRepository = AppDataSource.getRepository(Practica);
+    const practicas = await practicaRepository.find();
+
+    return [practicas, null];
+  } catch (error) {
+    console.error("Error al obtener las prácticas:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function obtenerPracticaService(ID_practica) {
+  try {
+    const practicaRepository = AppDataSource.getRepository(Practica);
+
+    const practica = await practicaRepository.findOne({ where: { ID_practica } });
+
+    const createErrorMessage = (dataInfo, message) => ({
+      dataInfo,
+      message,
+    });
+
+    if (!practica) {
+      return [null, createErrorMessage(ID_practica, `No se ha encontrado una práctica con ID: ${ID_practica}`)];
+    }
+
+    return [practica, null];
+  } catch (error) {
+    console.error("Error al obtener las prácticas:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function eliminarPracticaService(ID_practica) {
+  try {
+    const practicaRepository = AppDataSource.getRepository(Practica);
+
+    const practicaEncontrada = await practicaRepository.findOne({ where: { ID_practica } });
+
+    const createErrorMessage = (dataInfo, message) => ({
+      dataInfo,
+      message,
+    });
+
+    if (!practicaEncontrada) {
+      return [null, createErrorMessage(ID_practica, "No se ha encontrado una práctica con ese ID")];
+    }
+
+    await practicaRepository.delete(ID_practica);
+    return [practicaEncontrada, null];
+  } catch (error) {
+    console.error("Error al eliminar la práctica:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
