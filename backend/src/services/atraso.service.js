@@ -61,3 +61,24 @@ export async function createJustificativo(justificativoData){
     throw new Error('No se pudo crear el justificativo');
   }
 }
+
+export async function obtenerAtrasos(){
+  try {
+    const atrasoRepository = AppDataSource.getRepository(Atraso);
+
+    const atrasos = await atrasoRepository.find();
+
+    if(!atrasos || atrasos.length === 0) return [null, "No hay Atrasos"];
+
+    const atrasosData = atrasos.map (({ fecha, hora, estado }) => ({
+      fecha,
+      hora,
+      estado,
+    }));
+    
+    return [atrasosData, null];
+  } catch (error) {
+    console.error("Error al obtener a los atrasos:", error);
+    return [null, "Error interno del servidor"];
+  }
+}

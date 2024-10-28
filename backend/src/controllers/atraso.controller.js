@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 import { createAtrasoService,
          findAtraso,
-         createJustificativo
+         createJustificativo,
+         obtenerAtrasos
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -88,3 +89,22 @@ export async function generarJustificativo(req, res){
     res.status(500).json({ message: "Error al procesar justificativo" });
   }
 }
+
+
+export async function verAtrasos(req,res) {
+  try {
+    const [atrasos, errorAtrasos] = await obtenerAtrasos();
+
+    if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
+    
+    atrasos.length === 0
+    ? handleSuccess(res, 204)
+    : handleSuccess(res, 200, "Atrasos encontrados", atrasos);
+  } catch (error) {
+    handleErrorServer(
+      res,
+      500,
+      error.message,
+    );
+  }
+};
