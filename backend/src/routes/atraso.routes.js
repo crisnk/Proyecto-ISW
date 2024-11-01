@@ -1,8 +1,8 @@
 "use strict";
 import { Router } from "express";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
-import { registrarAtraso,
-         generarJustificativo,
+import { generarJustificativo,
+         registrarAtraso,
          verAtrasos
         } from "../controllers/atraso.controller.js";
 import { isAuthorized } from "../middlewares/authorization.middleware.js";

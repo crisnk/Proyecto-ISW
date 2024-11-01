@@ -2,7 +2,7 @@
 import Joi from "joi";
 
 const domainEmailValidator = (value, helper) => {
-  const validDomains = ['@gmail.cl', '@alumnos.ubiobio.cl', '@gmail.com'];
+  const validDomains = ["@gmail.cl", "@alumnos.ubiobio.cl", "@gmail.com"];
   const isValid = validDomains.some(domain => value.endsWith(domain));
 
   if (!isValid) {
