@@ -67,9 +67,7 @@ export const horarioValidation = Joi.object({
   const [horaInicioHoras, horaInicioMinutos] = values.hora_Inicio.split(":").map(Number);
   const [horaFinHoras, horaFinMinutos] = values.hora_Fin.split(":").map(Number);
   
-  if (
-    horaFinHoras < horaInicioHoras || (horaFinHoras === horaInicioHoras && horaFinMinutos <= horaInicioMinutos)
-  ) {
+  if (horaFinHoras < horaInicioHoras || (horaFinHoras === horaInicioHoras && horaFinMinutos <= horaInicioMinutos)) {
     return helpers.message("La hora de fin debe ser mayor que la hora de inicio.");
   }
   return values;
