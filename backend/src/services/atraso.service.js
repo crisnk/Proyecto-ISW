@@ -1,5 +1,5 @@
 "use strict";
-import Atraso from "../entity/atraso.entity.js";  // Importa la entidad Atraso
+import Atraso from "../entity/atraso.entity.js";  
 import Justificativo  from "../entity/justificativo.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
@@ -12,13 +12,13 @@ export async function createAtrasoService(rut) {
     const horaActual = moment().tz("America/Santiago").format("HH:mm:ss");
 
     const nuevoAtraso = atrasoRepository.create({
-      rut: rut,  // Relacionar el atraso con el RUN del usuario
+      rut: rut,  
       fecha: fechaActual,
       hora: horaActual,
       estado: 'activo',
     });
 
-    // Guardar el nuevo atraso en la base de datos
+   
     await atrasoRepository.save(nuevoAtraso);
 
     return [nuevoAtraso, null];
@@ -62,15 +62,16 @@ export async function createJustificativo(justificativoData){
   }
 }
 
-export async function obtenerAtrasos(){
+export async function obtenerAtrasos(rut){
   try {
     const atrasoRepository = AppDataSource.getRepository(Atraso);
 
-    const atrasos = await atrasoRepository.find();
+    const atrasos = await atrasoRepository.find({ where: { rut } });
 
     if(!atrasos || atrasos.length === 0) return [null, "No hay Atrasos"];
 
-    const atrasosData = atrasos.map (({ fecha, hora, estado }) => ({
+    const atrasosData = atrasos.map (({ ID_atraso, fecha, hora, estado }) => ({
+      ID_atraso,
       fecha,
       hora,
       estado,
