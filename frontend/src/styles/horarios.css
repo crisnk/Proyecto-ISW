@@ -1,0 +1,112 @@
+
+.container-horarios {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  padding-top: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.selector-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.selector-contenedor label {
+  display: flex;
+  flex-direction: column;
+}
+
+.selector-contenedor select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.horarios-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.cuadricula-horario {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.columna-dia {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.columna-dia h3 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.bloque-horario {
+  padding: 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+.bloque-horario:hover {
+  background-color: #f0f8ff;
+}
+.bloque-horario.clase {
+  background-color: #e0f7fa;
+}
+
+.bloque-horario.recreo {
+  background-color: #ffe0b2;
+  cursor: not-allowed;
+  color: #888;
+}
+
+.bloque-horario:hover:not(.recreo) {
+  background-color: #b2ebf2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.form-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.form-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .cuadricula-horario {
+      grid-template-columns: 1fr;
+  }
+
+  .container-horarios {
+      padding: 10px;
+  }
+
+  .form-button {
+      width: 100%;
+  }
+}

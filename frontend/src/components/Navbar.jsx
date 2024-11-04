@@ -48,13 +48,10 @@ const Navbar = () => {
                 <ul>
                     <li>
                         <NavLink 
-                            to="/home" 
-                            onClick={() => { 
-                                setMenuOpen(false); 
-                                addActiveClass();
-                            }} 
-                            activeClassName="active"
-                        >
+                                to="/home" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
                             Inicio
                         </NavLink>
                     </li>
@@ -71,6 +68,34 @@ const Navbar = () => {
                             Usuarios
                         </NavLink>
                     </li>
+                    )}
+                                        {userRole === 'jefeUTP' && (
+                        <>
+                            <li>
+                                <NavLink to="/horarios/asignar" className={({ isActive }) => (isActive ? 'active' : '')}>
+                                    Asignar Horario
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/horarios/curso" className={({ isActive }) => (isActive ? 'active' : '')}>
+                                    Horarios de Curso
+                                </NavLink>
+                            </li>
+                        </>
+                    )}
+                    {userRole === 'profesor' && (
+                        <li>
+                            <NavLink to="/horarios/profesor" className={({ isActive }) => (isActive ? 'active' : '')}>
+                                Horarios de Profesores
+                            </NavLink>
+                        </li>
+                    )}
+                    {userRole === 'alumno' && (
+                        <li>
+                            <NavLink to="/horarios/alumno" className={({ isActive }) => (isActive ? 'active' : '')}>
+                                Mi Horario
+                                </NavLink>
+                        </li>
                     )}
                     <li>
                         <NavLink 

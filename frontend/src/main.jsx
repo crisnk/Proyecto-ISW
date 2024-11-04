@@ -6,6 +6,10 @@ import Users from '@pages/Users';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
+import AsignarHorario from '@pages/AsignarHorario';
+import HorariosAlumno from '@pages/HorariosAlumno';
+import HorariosProfesor from '@pages/HorariosProfesor';
+import HorariosCurso from '@pages/HorariosCurso';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -25,10 +29,42 @@ const router = createBrowserRouter([
         <ProtectedRoute allowedRoles={['administrador']}>
           <Users />
         </ProtectedRoute>
-        ),
-    }
-    ]
-  },
+         ),
+        },
+        {
+          path: '/horarios/asignar',
+          element: (
+            <ProtectedRoute allowedRoles={['jefeUTP', 'administrador']}>
+              <AsignarHorario />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: '/horarios/alumno',
+          element: (
+            <ProtectedRoute allowedRoles={['alumno', 'administrador']}>
+              <HorariosAlumno />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: '/horarios/profesor',
+          element: (
+            <ProtectedRoute allowedRoles={['profesor', 'jefeUTP', 'administrador']}>
+              <HorariosProfesor />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: '/horarios/curso',
+          element: (
+            <ProtectedRoute allowedRoles={['alumno', 'profesor', 'jefeUTP', 'administrador']}>
+              <HorariosCurso />
+            </ProtectedRoute>
+          ),
+        }
+      ]
+    },
   {
     path: '/auth',
     element: <Login/>

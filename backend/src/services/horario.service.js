@@ -6,6 +6,34 @@ import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
 import { horarioValidation } from "../validations/horario.validation.js";
 
+export const getMaterias = async () => {
+  const repository = AppDataSource.getRepository(Materia);
+  const materias = await repository.find();
+  if (materias.length === 0) {
+    throw new Error("No se encontraron materias.");
+  }
+  return materias;
+};
+
+export const getCursos = async () => {
+  const repository = AppDataSource.getRepository(Curso);
+  const cursos = await repository.find();
+  if (cursos.length === 0) {
+    throw new Error("No se encontraron cursos.");
+  }
+  return cursos;
+};
+
+export const getProfesores = async () => {
+  const repository = AppDataSource.getRepository(User);
+  // Asumiendo que tienes una propiedad que identifica a los profesores, como un rol
+  const profesores = await repository.find({ where: { rol: "profesor" } });
+  if (profesores.length === 0) {
+    throw new Error("No se encontraron profesores.");
+  }
+  return profesores;
+};
+
 const validarDatosHorario = async (ID_materia, ID_curso, rut) => {
   const materia = await AppDataSource.getRepository(Materia).findOneBy({ ID_materia });
   if (!materia) {

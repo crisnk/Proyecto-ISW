@@ -3,9 +3,12 @@ import {
   asignaHorarioService,
   eliminarHorarioService,
   getAllHorarios,
+  getCursos,
   getHorariosByCurso,
   getHorariosByProfesor,
-  modificaHorarioService,
+  getMaterias,
+  getProfesores,
+  modificaHorarioService
 } from "../services/horario.service.js";
 
 export const crearHorario = async (req, res) => {
@@ -35,6 +38,32 @@ export const eliminarHorario = async (req, res) => {
   }
 };
 
+export const verMaterias = async (req, res) => {
+  try {
+    const materias = await getMaterias();
+    res.status(200).json(materias);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const verCursos = async (req, res) => {
+  try {
+    const cursos = await getCursos();
+    res.status(200).json(cursos);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const verProfesores = async (req, res) => {
+  try {
+    const profesores = await getProfesores();
+    res.status(200).json(profesores);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
 export const verHorarioProfesor = async (req, res) => {
   try {
     const horarios = await getHorariosByProfesor(req.user.rut);
@@ -61,3 +90,4 @@ export const verTodosHorarios = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
