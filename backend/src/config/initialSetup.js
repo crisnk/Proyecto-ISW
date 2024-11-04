@@ -93,6 +93,15 @@ export async function createUsers() {
           rol: "alumno",
         }),
       ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Cristóbal Ariel Alarcón Pérez",
+          rut: "20.738.415-2",
+          email: "profesorEDP@gmail.cl",
+          password: await encryptPassword("profesorEDP1234"),
+          rol: "EDP",
+        }),
+      ),
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
