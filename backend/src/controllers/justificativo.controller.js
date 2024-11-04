@@ -43,6 +43,19 @@ export async function manejarAprobarJustificativo(req, res) {
 
 export async function manejarRechazarJustificativo(req, res) {
   try {
+    const token = req.cookies.jwt;
+
+    if (!token) {
+        return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
+    }
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+
+    const { email } = decoded;
+
+    if (!email) {
+        return handleErrorClient(res, 401, "Token inválido o email no presente en el token");
+    }
     const { ID_atraso, motivo } = req.body;
   
     const [justificativo, error] = await rechazarJustificativo(ID_atraso, motivo);

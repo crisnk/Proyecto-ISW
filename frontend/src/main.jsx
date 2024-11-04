@@ -7,6 +7,7 @@ import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
+import AtrasosAlumno from '@pages/AtrasosAlumno';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <Register/>
+  },
+  {
+    path:'/atrasos',
+    element: <AtrasosAlumno/>
   }
 ])
 
