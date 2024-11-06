@@ -1,7 +1,45 @@
 "use strict";
 import Joi from "joi";
 
+export const materiaValidation = Joi.object({
+  nombre: Joi.string()
+    .max(55)
+    .required()
+    .messages({
+      "any.required": "El nombre de la materia es obligatorio.",
+      "string.empty": "El nombre de la materia no puede estar vacío.",
+      "string.max": "El nombre de la materia no puede tener más de 55 caracteres.",
+      "string.base": "El nombre de la materia debe ser un texto."
+    })
+});
+
+export const cursoValidation = Joi.object({
+  nombre: Joi.string()
+    .pattern(/^(1ro|2do|3ro|4to) medio [A-D]$/)
+    .required()
+    .messages({
+      "any.required": "El nombre del curso es obligatorio.",
+      "string.empty": "El nombre del curso no puede estar vacío.",
+      "string.pattern.base": 
+      "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a D. Ejemplo: '1ro medio A'.",
+      "string.base": "El nombre del curso debe ser un texto."
+    }),
+    aula: Joi.number()
+    .integer()
+    .min(1)
+    .max(100)
+    .required()
+    .messages({
+      "any.required": "El número del aula es obligatorio.",
+      "number.base": "El aula debe ser un número.",
+      "number.empty": "El número del aula no puede estar vacío.",
+      "number.min": "El número del aula debe ser al menos 1.",
+      "number.max": "El número del aula no puede ser mayor a 100."
+    })
+});
+
 export const horarioValidation = Joi.object({
+  
   ID_materia: Joi.number().integer().required().messages({
     "any.required": "La materia es obligatoria.",
     "number.base": "La materia debe ser un número entero.",

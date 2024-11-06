@@ -1,36 +1,26 @@
 import { useState, useEffect } from 'react';
-import { obtenerMaterias, obtenerCursos } from '@services/horario.service.js';
+import { obtenerMaterias, obtenerCursos, obtenerProfesores } from '@services/horario.service.js';
 import '@styles/horarios.css';
 
-const materiaColores = {
-  Matemáticas: 'lightblue',
-  Historia: 'lightyellow',
-  Lenguaje: 'lightcoral',
-  Biología: 'lightgreen',
-  Química: 'lightpink',
-  Física: 'lightgoldenrodyellow',
-  'Educación Física': 'lightgray',
-  Tecnología: 'lightseagreen',
-  'Especialidad de Mecánica': 'lightsalmon',
-  'Especialidad de Electricidad': 'lightsteelblue',
-};
-
-const AsignarHorarioCurso = () => {
+const AsignarHorarioProfesor = () => {
   const [materias, setMaterias] = useState([]);
+  const [profesores, setProfesores] = useState([]);
   const [cursos, setCursos] = useState([]);
-  const [cursoSeleccionado, setCursoSeleccionado] = useState('');
-  const [horario, setHorario] = useState([]);
+  const [profesorSeleccionado, setProfesorSeleccionado] = useState('');
   const [bloqueActivo, setBloqueActivo] = useState(null);
+  const [horario, setHorario] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const materiasData = await obtenerMaterias();
+        const profesoresData = await obtenerProfesores();
         const cursosData = await obtenerCursos();
         setMaterias(materiasData);
+        setProfesores(profesoresData);
         setCursos(cursosData);
       } catch (error) {
-        console.error('Error al obtener materias o cursos:', error);
+        console.error('Error al obtener datos:', error);
       }
     };
     fetchData();
@@ -45,11 +35,11 @@ const AsignarHorarioCurso = () => {
     }
   };
 
-  const guardarSeleccion = (materia) => {
-    if (materia && cursoSeleccionado) {
+  const guardarSeleccion = (materia, curso) => {
+    if (materia && curso && profesorSeleccionado) {
       setHorario((prevHorario) => [
         ...prevHorario,
-        { ...bloqueActivo, materia, profesor: 'Asignado', curso: cursoSeleccionado }
+        { ...bloqueActivo, materia, profesor: profesorSeleccionado, curso }
       ]);
       setBloqueActivo(null);
     }
@@ -57,17 +47,17 @@ const AsignarHorarioCurso = () => {
 
   return (
     <div>
-      <h2>Asignar Horario a Curso</h2>
+      <h2>Asignar Horario a Profesor</h2>
       <label>
-        Seleccione un curso:
-        <select onChange={(e) => setCursoSeleccionado(e.target.value)}>
-          <option value="">Seleccione un curso</option>
-          {cursos.map((curso) => (
-            <option key={curso.ID_curso} value={curso.nombre}>{curso.nombre}</option>
+        Seleccione un profesor:
+        <select onChange={(e) => setProfesorSeleccionado(e.target.value)} value={profesorSeleccionado}>
+          <option value="">Seleccione un profesor</option>
+          {profesores.map((profesor) => (
+            <option key={profesor.rut} value={profesor.nombre}>{profesor.nombre}</option>
           ))}
         </select>
       </label>
-      {cursoSeleccionado && (
+      {profesorSeleccionado && (
         <div className="cuadricula-horario">
           {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((dia) => (
             <div key={dia} className="columna-dia">
@@ -76,12 +66,6 @@ const AsignarHorarioCurso = () => {
                 <div
                   key={`${dia}-${hora}`}
                   className={`bloque-horario ${hora === 'Recreo' ? 'recreo' : 'clase'}`}
-                  style={{
-                    backgroundColor:
-                      horario.find(h => h.dia === dia && h.hora === hora)?.materia
-                        ? materiaColores[horario.find(h => h.dia === dia && h.hora === hora).materia]
-                        : 'transparent'
-                  }}
                   onClick={hora !== 'Recreo' ? (e) => manejarClickBloque(e, dia, hora) : undefined}
                 >
                   <span className="hora-lateral">{hora}</span>
@@ -90,10 +74,19 @@ const AsignarHorarioCurso = () => {
                     <div className="selector-contenedor">
                       <label>
                         Materia:
-                        <select onChange={(e) => guardarSeleccion(e.target.value)}>
+                        <select onChange={(e) => guardarSeleccion(e.target.value, 'cursoSeleccionado')}>
                           <option value="">Seleccione una materia</option>
                           {materias.map((materia) => (
                             <option key={materia.ID_materia} value={materia.nombre}>{materia.nombre}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Curso:
+                        <select onChange={(e) => guardarSeleccion('materiaSeleccionada', e.target.value)}>
+                          <option value="">Seleccione un curso</option>
+                          {cursos.map((curso) => (
+                            <option key={curso.ID_curso} value={curso.nombre}>{curso.nombre}</option>
                           ))}
                         </select>
                       </label>
@@ -105,9 +98,9 @@ const AsignarHorarioCurso = () => {
           ))}
         </div>
       )}
-      <button className="form-button" onClick={() => console.log(horario)}>Guardar Horario Curso</button>
+      <button className="form-button" onClick={() => console.log(horario)}>Guardar Horario Profesor</button>
     </div>
   );
 };
 
-export default AsignarHorarioCurso;
+export default AsignarHorarioProfesor;

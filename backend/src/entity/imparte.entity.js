@@ -64,6 +64,7 @@ const ImparteSchema = new EntitySchema({
         name: "ID_curso", 
         referencedColumnName: "ID_curso", 
       },
+      onDelete: "CASCADE",
       
     },
 
@@ -74,6 +75,7 @@ const ImparteSchema = new EntitySchema({
         name: "ID_materia", 
         referencedColumnName: "ID_materia", 
       },
+      onDelete: "CASCADE", 
 
     }
   },

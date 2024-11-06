@@ -1,7 +1,11 @@
 "use strict";
 import {
   asignaHorarioService,
+  crearCursoService,
+  crearMateriaService,
+  eliminarCursoService,
   eliminarHorarioService,
+  eliminarMateriaService,
   getAllHorarios,
   getCursos,
   getHorariosByCurso,
@@ -90,4 +94,43 @@ export const verTodosHorarios = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+export const crearMateria = async (req, res) => {
+  try {
+    const nuevaMateria = await crearMateriaService(req.body);
+    res.status(201).json({ message: "Materia creada correctamente", materia: nuevaMateria });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const crearCurso = async (req, res) => {
+  try {
+    const nuevoCurso = await crearCursoService(req.body);
+    res.status(201).json({ message: "Curso creado correctamente", curso: nuevoCurso });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const eliminarMateria = async (req, res) => {
+  try {
+    const { ID_materia } = req.params;
+    const materiaEliminada = await eliminarMateriaService(ID_materia);
+    res.status(200).json({ message: "Materia eliminada correctamente", materia: materiaEliminada });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const eliminarCurso = async (req, res) => {
+  try {
+    const { ID_curso } = req.params;
+    const cursoEliminado = await eliminarCursoService(ID_curso);
+    res.status(200).json({ message: "Curso eliminado correctamente", curso: cursoEliminado });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
 

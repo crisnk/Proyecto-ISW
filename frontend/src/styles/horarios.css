@@ -58,9 +58,9 @@
 }
 
 .bloque-horario {
-  padding: 15px;
-  text-align: center;
-  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #ccc;
   cursor: pointer;
 }
 .bloque-horario:hover {
@@ -71,9 +71,8 @@
 }
 
 .bloque-horario.recreo {
-  background-color: #ffe0b2;
-  cursor: not-allowed;
-  color: #888;
+  background-color: #f0f0f0;
+  cursor: default;
 }
 
 .bloque-horario:hover:not(.recreo) {
@@ -92,10 +91,41 @@
   font-size: 1rem;
   transition: background-color 0.3s;
 }
+.error-message {
+  color: red;
+  font-size: 12px;
+}
 
 .form-button:hover {
   background-color: #0056b3;
 }
+.selector-modo {
+  margin-left: 20px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.color-palette {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.color-block {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  transition: transform 0.2s;
+}
+
+.color-block:hover {
+  transform: scale(1.1);
+}
+
 
 @media (max-width: 768px) {
   .cuadricula-horario {

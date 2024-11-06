@@ -5,7 +5,7 @@ import HideIcon from '../assets/HideIcon.svg';
 import ViewIcon from '../assets/ViewIcon.svg';
 
 const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundColor }) => {
-    const { register, handleSubmit, formState: { errors }, clearErrors } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -48,10 +48,7 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                                 field.type}
                             defaultValue={field.defaultValue || ''}
                             disabled={field.disabled}
-                            onChange={(e) => {
-                                clearErrors(field.name); 
-                                field.onChange && field.onChange(e); 
-                            }}
+                            onChange={field.onChange}
                         />
                     )}
                     {field.fieldType === 'textarea' && (

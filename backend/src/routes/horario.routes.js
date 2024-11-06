@@ -1,7 +1,11 @@
 import { Router } from "express";
 import {
+  crearCurso,
   crearHorario,
+  crearMateria,
+  eliminarCurso,
   eliminarHorario,
+  eliminarMateria,
   modificarHorario,
   verCursos,
   verHorarioCurso,
@@ -26,5 +30,11 @@ router.get("/ver/todos", isAuthorized(["jefeUTP", "profesor", "administrador"]),
 router.get("/materias", verMaterias);
 router.get("/cursos", isAuthorized(["jefeUTP", "administrador"]), verCursos);
 router.get("/profesores", isAuthorized(["jefeUTP", "administrador"]), verProfesores);
+router.post("/materias/crear", isAuthorized(["jefeUTP", "administrador"]), crearMateria);
+router.post("/cursos/crear", isAuthorized(["jefeUTP", "administrador"]), crearCurso);
+router.delete("/materias/eliminar/:ID_materia", isAuthorized(["jefeUTP", "administrador"]), eliminarMateria);
+router.delete("/cursos/eliminar/:ID_curso", isAuthorized(["jefeUTP", "administrador"]), eliminarCurso);
+
+
 
 export default router;

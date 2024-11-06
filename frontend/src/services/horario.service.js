@@ -73,17 +73,17 @@ export async function obtenerHorariosCurso() {
 }
 export async function obtenerMaterias() {
     try {
-      const response = await axios.get('/api/materias');
-      return response.data;
+        const response = await axios.get('/horarios/materias');
+        return response.data;
     } catch (error) {
-      console.error('Error al obtener materias:', error);
-      return [];
+        console.error('Error al obtener materias:', error);
+        return [];
     }
-  }
+}
   
   export async function obtenerCursos() {
     try {
-      const response = await axios.get('/api/cursos');
+      const response = await axios.get('horarios/cursos');
       return response.data;
     } catch (error) {
       console.error('Error al obtener cursos:', error);
@@ -93,7 +93,8 @@ export async function obtenerMaterias() {
   
   export async function obtenerProfesores() {
     try {
-      const response = await axios.get('/api/profesores');
+      const response = await axios.get('/horarios/profesores');
+      console.log('Respuesta de profesores:', response.data); 
       return response.data;
     } catch (error) {
       console.error('Error al obtener profesores:', error);
