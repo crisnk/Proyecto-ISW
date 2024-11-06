@@ -88,12 +88,13 @@ export const verHorarioCurso = async (req, res) => {
 
 export const verTodosHorarios = async (req, res) => {
   try {
-    const horarios = await getAllHorarios();
+    const horarios = await getAllHorarios(req.query);
     res.status(200).json(horarios);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
+
 export const crearMateria = async (req, res) => {
   try {
     const nuevaMateria = await crearMateriaService(req.body);

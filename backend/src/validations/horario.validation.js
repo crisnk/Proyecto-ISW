@@ -110,3 +110,22 @@ export const horarioValidation = Joi.object({
   }
   return values;
 });
+export const paginationAndFilterValidation = Joi.object({
+  page: Joi.number().integer().min(1).optional().messages({
+    "number.base": "La página debe ser un número.",
+    "number.min": "La página debe ser al menos 1.",
+  }),
+  limit: Joi.number().integer().min(1).optional().messages({
+    "number.base": "El límite debe ser un número.",
+    "number.min": "El límite debe ser al menos 1.",
+  }),
+  materia: Joi.number().integer().optional().messages({
+    "number.base": "La materia debe ser un número.",
+  }),
+  curso: Joi.number().integer().optional().messages({
+    "number.base": "El curso debe ser un número.",
+  }),
+  profesor: Joi.string().optional().messages({
+    "string.base": "El profesor debe ser un string (RUT).",
+  }),
+});

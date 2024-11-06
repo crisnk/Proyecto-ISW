@@ -69,7 +69,21 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
-                                        {userRole === 'jefeUTP' && (
+                     {(userRole === 'administrador' || userRole === 'jefeUTP') && (
+                    <li>
+                    <NavLink 
+                        to="/horarios" 
+                        onClick={() => { 
+                            setMenuOpen(false); 
+                            addActiveClass();
+                                }}
+                                className={({ isActive }) => (isActive ? 'active' : '')}
+                                    >
+                                    Gestión de Horarios
+                                        </NavLink>
+                                        </li>
+                        )}
+                         {userRole === 'jefeUTP' && (
                         <>
                             <li>
                                 <NavLink to="/horarios/asignar" className={({ isActive }) => (isActive ? 'active' : '')}>

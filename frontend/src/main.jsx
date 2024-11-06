@@ -1,15 +1,12 @@
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login from '@pages/Login';
-import Home from '@pages/Home';
-import Users from '@pages/Users';
-import Register from '@pages/Register';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Error404 from '@pages/Error404';
+import Horarios from '@pages/Horarios'; 
+import Home from '@pages/Home';
+import Login from '@pages/Login';
+import Register from '@pages/Register';
 import Root from '@pages/Root';
-import AsignarHorario from '@pages/AsignarHorario';
-import HorariosAlumno from '@pages/HorariosAlumno';
-import HorariosProfesor from '@pages/HorariosProfesor';
-import HorariosCurso from '@pages/HorariosCurso';
+import Users from '@pages/Users';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -32,49 +29,32 @@ const router = createBrowserRouter([
          ),
         },
         {
-          path: '/horarios/asignar',
+          path: '/register',
+          element: <Register />,
+        },
+        {
+          path: '/horarios', 
           element: (
-            <ProtectedRoute allowedRoles={['jefeUTP', 'administrador']}>
-              <AsignarHorario />
+            <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
+              <Horarios />
             </ProtectedRoute>
           ),
         },
         {
-          path: '/horarios/alumno',
+          path: '/users',
           element: (
-            <ProtectedRoute allowedRoles={['alumno', 'administrador']}>
-              <HorariosAlumno />
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Users />
             </ProtectedRoute>
           ),
         },
-        {
-          path: '/horarios/profesor',
-          element: (
-            <ProtectedRoute allowedRoles={['profesor', 'jefeUTP', 'administrador']}>
-              <HorariosProfesor />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: '/horarios/curso',
-          element: (
-            <ProtectedRoute allowedRoles={['alumno', 'profesor', 'jefeUTP', 'administrador']}>
-              <HorariosCurso />
-            </ProtectedRoute>
-          ),
-        }
-      ]
+      ],
     },
-  {
-    path: '/auth',
-    element: <Login/>
-  },
-  {
-    path: '/register',
-    element: <Register/>
-  }
-])
-
+    {
+      path: '/auth',
+      element: <Login />,
+    },
+  ]);
 ReactDOM.createRoot(document.getElementById('root')).render(
   <RouterProvider router={router}/>
 )
