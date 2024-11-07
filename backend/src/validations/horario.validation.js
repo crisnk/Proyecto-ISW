@@ -119,13 +119,11 @@ export const paginationAndFilterValidation = Joi.object({
     "number.base": "El límite debe ser un número.",
     "number.min": "El límite debe ser al menos 1.",
   }),
-  materia: Joi.number().integer().optional().messages({
-    "number.base": "La materia debe ser un número.",
+  curso: Joi.string().allow("").optional().messages({
+    "string.base": "El curso debe ser un string.",
   }),
-  curso: Joi.number().integer().optional().messages({
-    "number.base": "El curso debe ser un número.",
-  }),
-  profesor: Joi.string().optional().messages({
-    "string.base": "El profesor debe ser un string (RUT).",
+  profesor: Joi.string().allow("").optional().messages({
+    "string.base": "El profesor debe ser un string.",
   }),
 });
+

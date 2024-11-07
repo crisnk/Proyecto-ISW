@@ -1,43 +1,58 @@
-import usePaginatedTable from "../hooks/usePaginatedTable";
-import Table from "./Table"; 
-import FilterBar from "./FilterBar"; 
-import "@styles/tablaHorarios.css"; 
+const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) => {
+  if (loading) {
+    return <p>Cargando horarios...</p>;
+  }
 
-export default function PaginatedTable({ columns }) {
-  const { data, page, totalPages, isLoading, setPage, setFilters } = usePaginatedTable(1, 6);
-
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
+  const getCellValue = (row, field) => {
+    const keys = field.split(".");
+    return keys.reduce((value, key) => value?.[key], row) || "N/A"; 
   };
-
+  
   return (
     <div>
-      {/* FilterBar debe estar aquí */}
-      <FilterBar onFilterChange={setFilters} />
-
-      {isLoading ? (
-        <p>Cargando datos...</p>
-      ) : (
-        <>
-          <Table data={data} columns={columns} />
-
-          <div className="pagination-controls">
-            <button onClick={() => handlePageChange(1)} disabled={page === 1}>
-              Primero
-            </button>
-            <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
-              Anterior
-            </button>
-            <span>Página {page} de {totalPages}</span>
-            <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>
-              Siguiente
-            </button>
-            <button onClick={() => handlePageChange(totalPages)} disabled={page === totalPages}>
-              Último
-            </button>
-          </div>
-        </>
-      )}
+      <table border="1" style={{ width: "100%", textAlign: "center" }}>
+        <thead>
+          <tr>
+            {columns.map((col) => (
+              <th key={col.field}>{col.title}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.length > 0 ? (
+            data.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {columns.map((col) => (
+                  <td key={col.field}>{getCellValue(row, col.field)}</td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length}>No hay datos disponibles</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <div style={{ marginTop: "10px" }}>
+        <button
+          onClick={() => onPageChange(pagination.page - 1)}
+          disabled={pagination.page === 1}
+        >
+          Anterior
+        </button>
+        <span>
+          Página {pagination.page} de {pagination.totalPages}
+        </span>
+        <button
+          onClick={() => onPageChange(pagination.page + 1)}
+          disabled={pagination.page === pagination.totalPages}
+        >
+          Siguiente
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default PaginatedTable;

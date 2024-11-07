@@ -102,29 +102,29 @@ export const getHorariosByCurso = async (ID_curso) => {
 };
 
 export const getAllHorarios = async (query) => {
-  const { error } = paginationAndFilterValidation.validate(query, { abortEarly: false });
+  const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
+
   if (error) {
-    throw new Error(error.details.map(err => err.message).join(", "));
+    throw new Error(error.details.map((err) => err.message).join(", "));
   }
 
-  const { page = 1, limit = 10, materia, curso, profesor } = query;
+  const { page = 1, limit = 10, curso, profesor } = value; 
+
   const repository = AppDataSource.getRepository(Imparte);
 
   const queryBuilder = repository
-  .createQueryBuilder("horario")
-  .leftJoinAndSelect("horario.materia", "materia")
-  .leftJoinAndSelect("horario.curso", "curso")
-  .leftJoinAndSelect("horario.profesor", "profesor");
+    .createQueryBuilder("horario")
+    .leftJoinAndSelect("horario.materia", "materia") 
+    .leftJoinAndSelect("horario.curso", "curso")
+    .leftJoinAndSelect("horario.profesor", "profesor");
 
-if (materia) {
-  queryBuilder.andWhere("materia.ID_materia = :materia", { materia });
-}
-if (curso) {
-  queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
-}
-if (profesor) {
-  queryBuilder.andWhere("profesor.rut = :profesor", { profesor });
-}
+  if (curso) {
+    queryBuilder.andWhere("curso.nombre = :curso", { curso });
+  }
+  if (profesor) {
+    queryBuilder.andWhere("profesor.nombreCompleto = :profesor", { profesor });
+  }
+
   const total = await queryBuilder.getCount();
   const data = await queryBuilder
     .skip((page - 1) * limit)
@@ -132,30 +132,15 @@ if (profesor) {
     .getMany();
 
   return {
-    data: data.map((horario) => ({
-      id: horario.id,
-      dia: horario.dia,
-      hora_Inicio: horario.hora_Inicio,
-      hora_Fin: horario.hora_Fin,
-      materia: {
-        id: horario.materia.ID_materia,
-        nombre: horario.materia.nombre,
-      },
-      curso: {
-        id: horario.curso.ID_curso,
-        nombre: horario.curso.nombre,
-        aula: horario.curso.aula,
-      },
-      profesor: {
-        rut: horario.profesor.rut,
-        nombreCompleto: horario.profesor.nombreCompleto,
-      },
-    })),
+    data,
     total,
     page: Number(page),
     pages: Math.ceil(total / limit),
   };
 };
+
+
+
 
 export const getMaterias = async () => {
   const repository = AppDataSource.getRepository(Materia);
