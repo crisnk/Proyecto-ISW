@@ -70,7 +70,7 @@ export const verProfesores = async (req, res) => {
 };
 export const verHorarioProfesor = async (req, res) => {
   try {
-    const horarios = await getHorariosByProfesor(req.user.rut);
+    const horarios = await getHorariosByProfesor(req.query.rut, req.user.rut);
     res.status(200).json(horarios);
   } catch (error) {
     res.status(404).json({ message: error.message });

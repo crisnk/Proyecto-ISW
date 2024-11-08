@@ -5,20 +5,16 @@ export const getHorarios = async (params) => {
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(([, value]) => value)
     );
-
     const response = await axios.get("/horarios/ver/todos", { params: filteredParams });
-    console.log("Datos recibidos:", response.data);
     return {
       data: response.data.data || [],
-      totalPages: response.data.pages || 1,
+      totalPages: response.data.totalPages || 1,
     };
   } catch (error) {
     console.error("Error al obtener horarios:", error);
     throw error;
   }
 };
-
-
 
 export const getCursos = async () => {
   try {
@@ -29,6 +25,16 @@ export const getCursos = async () => {
     return [];
   }
 };
+export const getHorarioCurso = async (cursoId) => {
+  try {
+    const response = await axios.get(`/horarios/ver/curso/${cursoId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener el horario del curso:", error);
+    throw error;
+  }
+};
+
 
 export const getProfesores = async () => {
   try {
@@ -39,6 +45,16 @@ export const getProfesores = async () => {
     return [];
   }
 };
+export const getHorarioProfesor = async (rut) => {
+  try {
+    const response = await axios.get(`/horarios/ver/profesor?rut=${rut}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener el horario del profesor:", error);
+    throw error;
+  }
+};
+
 
 export const getMaterias = async () => {
   try {
@@ -49,3 +65,23 @@ export const getMaterias = async () => {
     return [];
   }
 };
+
+export const saveHorarioCurso = async (cursoId, horario) => {
+  try {
+    const response = await axios.post("/horarios/asignar", { cursoId, horario });
+    return response.data;
+  } catch (error) {
+    console.error("Error al asignar horario:", error);
+    throw error;
+  }
+};
+export const saveHorarioProfesor = async (rut, horario) => {
+  try {
+    const response = await axios.post("/horarios/asignar", { rut, horario });
+    return response.data;
+  } catch (error) {
+    console.error("Error al asignar horario al profesor:", error);
+    throw error;
+  }
+};
+

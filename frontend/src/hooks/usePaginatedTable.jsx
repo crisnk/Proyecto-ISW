@@ -26,6 +26,7 @@ export default function usePaginatedTable(initialPage = 1, initialLimit = 6) {
     fetchData();
   }, [page, limit, filters]);
   
+  
 
   return { data, page, totalPages, isLoading, setPage, setFilters };
 }

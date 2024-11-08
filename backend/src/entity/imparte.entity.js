@@ -19,7 +19,9 @@ const ImparteSchema = new EntitySchema({
       
     },
     rut: {
-      type: "int",
+      type: "varchar",
+      length: 12,
+      nullable: false,
       
     },
     dia: {
@@ -27,12 +29,9 @@ const ImparteSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
-    hora_Inicio: {
-      type: "time",
-      nullable: false,
-    },
-    hora_Fin: {
-      type: "time",
+    bloque: {
+      type: "varchar", 
+      length: 15, 
       nullable: false,
     },
     createdAt: {

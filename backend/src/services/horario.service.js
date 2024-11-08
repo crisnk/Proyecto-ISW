@@ -4,8 +4,9 @@ import Curso from "../entity/curso.entity.js";
 import Imparte from "../entity/imparte.entity.js";
 import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
+import { Not } from "typeorm";
 import { cursoValidation, horarioValidation, materiaValidation, 
-  paginationAndFilterValidation } from "../validations/horario.validation.js";
+  paginationAndFilterValidation, validarHorario  } from "../validations/horario.validation.js";
 
 export const asignaHorarioService = async (horarioData) => {
   const { error } = horarioValidation.validate(horarioData, { abortEarly: false });
@@ -13,7 +14,8 @@ export const asignaHorarioService = async (horarioData) => {
     throw new Error(error.details.map(err => err.message).join(", "));
   }
 
-  const { ID_materia, ID_curso, rut, dia, hora_Inicio, hora_Fin } = horarioData;
+  const { ID_materia, ID_curso, rut, dia, bloque } = horarioData;
+  validarHorario(dia, bloque);
   const repository = AppDataSource.getRepository(Imparte);
 
   const materia = await AppDataSource.getRepository(Materia).findOneBy({ ID_materia });
@@ -33,8 +35,8 @@ export const asignaHorarioService = async (horarioData) => {
 
   const conflictoHorario = await repository.findOne({
     where: [
-      { rut, dia, hora_Inicio },
-      { ID_curso, dia, hora_Inicio },
+      { rut, dia, bloque }, 
+      { ID_curso, dia, bloque },
     ],
   });
 
@@ -42,7 +44,7 @@ export const asignaHorarioService = async (horarioData) => {
     throw new Error("Conflicto de horario detectado. El profesor o curso ya tiene una clase en este horario.");
   }
 
-  const nuevoHorario = repository.create({ ID_materia, ID_curso, rut, dia, hora_Inicio, hora_Fin });
+  const nuevoHorario = repository.create({ ID_materia, ID_curso, rut, dia, bloque });
   await repository.save(nuevoHorario);
 
   return nuevoHorario;
@@ -51,25 +53,40 @@ export const asignaHorarioService = async (horarioData) => {
 export const modificaHorarioService = async (id, horarioData) => {
   const { error } = horarioValidation.validate(horarioData, { abortEarly: false });
   if (error) {
-    throw new Error(error.details.map(err => err.message).join(", "));
+    throw new Error(error.details.map((err) => err.message).join(", "));
   }
 
-  const { ID_materia, ID_curso, rut } = horarioData;
+  const { ID_materia, ID_curso, rut, dia, bloque } = horarioData;
+  validarHorario(dia, bloque);
   await validarDatosHorario(ID_materia, ID_curso, rut);
 
   const repository = AppDataSource.getRepository(Imparte);
+
   const horarioExistente = await repository.findOneBy({ id });
 
   if (!horarioExistente) {
     throw new Error("Horario no encontrado.");
   }
 
-  Object.assign(horarioExistente, horarioData);
+  const conflictoHorario = await repository.findOne({
+    where: [
+      { rut, dia, bloque, id: Not(id) },
+      { ID_curso, dia, bloque, id: Not(id) },
+    ],
+  });
+
+  if (conflictoHorario) {
+    throw new Error(
+      "Conflicto de horario detectado. El profesor o curso ya tiene una clase en este bloque."
+    );
+  }
+
+  Object.assign(horarioExistente, { ID_materia, ID_curso, rut, dia, bloque });
+
   await repository.save(horarioExistente);
 
   return horarioExistente;
 };
-
 
 export const eliminarHorarioService = async (id) => {
   const repository = AppDataSource.getRepository(Imparte);
@@ -82,52 +99,74 @@ export const eliminarHorarioService = async (id) => {
   await repository.remove(horario);
   return horario;
 };
+export const getHorariosByProfesor = async (rut, userRut) => {
+  const finalRut = rut || userRut; 
+  if (!finalRut) {
+    throw new Error("El RUT es obligatorio para consultar horarios.");
+  }
 
-export const getHorariosByProfesor = async (rut) => {
   const repository = AppDataSource.getRepository(Imparte);
-  const horarios = await repository.find({ where: { rut } });
+ 
+  const horarios = await repository.find({
+    where: { rut: finalRut },
+    relations: ["materia", "curso", "profesor"],
+  });
+
+  console.log("Consultando horarios para RUT:", finalRut);
+  console.log("Horarios obtenidos:", horarios);
+
   if (horarios.length === 0) {
     throw new Error("No se encontraron horarios para este profesor.");
   }
+
   return horarios;
 };
 
 export const getHorariosByCurso = async (ID_curso) => {
   const repository = AppDataSource.getRepository(Imparte);
-  const horarios = await repository.find({ where: { ID_curso } });
-  if (horarios.length === 0) {
-    throw new Error("No se encontraron horarios para este curso.");
-  }
-  return horarios;
+  
+  const horarios = await repository.find({
+    where: { ID_curso },
+    relations: ["materia", "curso", "profesor"], 
+  });
+  
+  return horarios; 
 };
 
-export const getAllHorarios = async (query) => {
-  const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
 
+
+export const getAllHorarios = async (query) => {
+ 
+  const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
   if (error) {
     throw new Error(error.details.map((err) => err.message).join(", "));
   }
 
-  const { page = 1, limit = 10, curso, profesor } = value; 
+  const { profesor, curso, page = 1, limit = 10 } = value;
 
   const repository = AppDataSource.getRepository(Imparte);
 
   const queryBuilder = repository
     .createQueryBuilder("horario")
-    .leftJoinAndSelect("horario.materia", "materia") 
+    .leftJoinAndSelect("horario.materia", "materia")
     .leftJoinAndSelect("horario.curso", "curso")
     .leftJoinAndSelect("horario.profesor", "profesor");
+
+  if (profesor) {
+    queryBuilder.andWhere(
+      "(profesor.rut = :profesor OR LOWER(profesor.nombreCompleto) = LOWER(:profesor))", 
+      { profesor }
+    );
+  }
 
   if (curso) {
     queryBuilder.andWhere("curso.nombre = :curso", { curso });
   }
-  if (profesor) {
-    queryBuilder.andWhere("profesor.nombreCompleto = :profesor", { profesor });
-  }
 
   const total = await queryBuilder.getCount();
+
   const data = await queryBuilder
-    .skip((page - 1) * limit)
+    .skip((page - 1) * limit) 
     .take(limit)
     .getMany();
 
@@ -135,11 +174,9 @@ export const getAllHorarios = async (query) => {
     data,
     total,
     page: Number(page),
-    pages: Math.ceil(total / limit),
+    totalPages: Math.ceil(total / limit),
   };
 };
-
-
 
 
 export const getMaterias = async () => {

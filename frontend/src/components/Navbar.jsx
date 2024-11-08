@@ -2,6 +2,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
 import '@styles/navbar.css';
 import { useState } from "react";
+import NavbarHorarios from './NavbarHorarios';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -48,68 +49,32 @@ const Navbar = () => {
                 <ul>
                     <li>
                         <NavLink 
-                                to="/home" 
-                                onClick={() => setMenuOpen(false)} 
-                                className={({ isActive }) => isActive ? 'active' : ''}
-                            >
-                            Inicio
-                        </NavLink>
-                    </li>
-                    {userRole === 'administrador' && (
-                    <li>
-                        <NavLink 
-                            to="/users" 
+                            to="/home" 
                             onClick={() => { 
                                 setMenuOpen(false); 
                                 addActiveClass();
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => isActive ? 'active' : ''}
                         >
-                            Usuarios
+                            Inicio
                         </NavLink>
                     </li>
-                    )}
-                     {(userRole === 'administrador' || userRole === 'jefeUTP') && (
-                    <li>
-                    <NavLink 
-                        to="/horarios" 
-                        onClick={() => { 
-                            setMenuOpen(false); 
-                            addActiveClass();
-                                }}
-                                className={({ isActive }) => (isActive ? 'active' : '')}
-                                    >
-                                    Gestión de Horarios
-                                        </NavLink>
-                                        </li>
-                        )}
-                         {userRole === 'jefeUTP' && (
-                        <>
-                            <li>
-                                <NavLink to="/horarios/asignar" className={({ isActive }) => (isActive ? 'active' : '')}>
-                                    Asignar Horario
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/horarios/curso" className={({ isActive }) => (isActive ? 'active' : '')}>
-                                    Horarios de Curso
-                                </NavLink>
-                            </li>
-                        </>
-                    )}
-                    {userRole === 'profesor' && (
+                    {userRole === 'administrador' && (
                         <li>
-                            <NavLink to="/horarios/profesor" className={({ isActive }) => (isActive ? 'active' : '')}>
-                                Horarios de Profesores
+                            <NavLink 
+                                to="/users" 
+                                onClick={() => { 
+                                    setMenuOpen(false); 
+                                    addActiveClass();
+                                }} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
+                                Usuarios
                             </NavLink>
                         </li>
                     )}
-                    {userRole === 'alumno' && (
-                        <li>
-                            <NavLink to="/horarios/alumno" className={({ isActive }) => (isActive ? 'active' : '')}>
-                                Mi Horario
-                                </NavLink>
-                        </li>
+                    {(userRole === 'administrador' || userRole === 'jefeUTP') && (
+                        <NavbarHorarios />
                     )}
                     <li>
                         <NavLink 
@@ -118,7 +83,7 @@ const Navbar = () => {
                                 logoutSubmit(); 
                                 setMenuOpen(false); 
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => isActive ? 'active' : ''}
                         >
                             Cerrar sesión
                         </NavLink>

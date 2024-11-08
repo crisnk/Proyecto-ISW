@@ -1,59 +1,59 @@
 import { useState, useEffect } from "react";
-import { getCursos, getProfesores } from "../services/horario.service"; 
+import { getCursos, getProfesores } from "../services/horario.service";
 
 const Filters = ({ onChange }) => {
-  const [cursos, setCursos] = useState([]);
-  const [profesores, setProfesores] = useState([]);
-  const [filters, setFilters] = useState({
-    curso: "",
-    profesor: "",
-  });
+  const [filterType, setFilterType] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+  const [options, setOptions] = useState([]);
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const cursosData = await getCursos();
-        const profesoresData = await getProfesores();
-        setCursos(cursosData);
-        setProfesores(profesoresData);
+        if (filterType === "curso") {
+          const cursos = await getCursos();
+          setOptions(cursos.map((curso) => curso.nombre));
+        } else if (filterType === "profesor") {
+          const profesores = await getProfesores();
+          setOptions(profesores.map((profesor) => profesor.nombreCompleto));
+        }
       } catch (error) {
-        console.error("Error al cargar opciones de filtro:", error);
+        console.error("Error al cargar opciones:", error);
       }
     };
-    fetchOptions();
-  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updatedFilters = { ...filters, [name]: value };
-    setFilters(updatedFilters);
-    onChange(updatedFilters);
+    if (filterType) fetchOptions();
+  }, [filterType]);
+
+  const handleFilterTypeChange = (e) => {
+    setFilterType(e.target.value);
+    setFilterValue("");
+    setOptions([]);
+    onChange({ [e.target.value]: "" });
+  };
+
+  const handleFilterValueChange = (e) => {
+    setFilterValue(e.target.value);
+    onChange({ [filterType]: e.target.value });
   };
 
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <label>
-        Curso:
-        <select name="curso" value={filters.curso} onChange={handleChange}>
-          <option value="">Todos</option>
-          {cursos.map((curso) => (
-            <option key={curso.id} value={curso.nombre}>
-              {curso.nombre}
+    <div>
+      <select value={filterType} onChange={handleFilterTypeChange}>
+        <option value="">Selecciona filtro</option>
+        <option value="curso">Curso</option>
+        <option value="profesor">Profesor</option>
+      </select>
+
+      {filterType && (
+        <select value={filterValue} onChange={handleFilterValueChange}>
+          <option value="">Selecciona {filterType}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
             </option>
           ))}
         </select>
-      </label>
-      <label>
-        Profesor:
-        <select name="profesor" value={filters.profesor} onChange={handleChange}>
-          <option value="">Todos</option>
-          {profesores.map((profesor) => (
-            <option key={profesor.id} value={profesor.nombreCompleto}>
-              {profesor.nombreCompleto}
-            </option>
-          ))}
-        </select>
-      </label>
+      )}
     </div>
   );
 };

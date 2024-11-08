@@ -39,7 +39,6 @@ export const cursoValidation = Joi.object({
 });
 
 export const horarioValidation = Joi.object({
-  
   ID_materia: Joi.number().integer().required().messages({
     "any.required": "La materia es obligatoria.",
     "number.base": "La materia debe ser un número entero.",
@@ -51,16 +50,11 @@ export const horarioValidation = Joi.object({
     "number.empty": "El curso no puede estar vacío.",
   }),
   rut: Joi.string()
-    .min(9)
-    .max(12)
     .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/)
     .required()
     .messages({
       "any.required": "El RUT es obligatorio.",
       "string.empty": "El RUT no puede estar vacío.",
-      "string.base": "El RUT debe ser de tipo string.",
-      "string.min": "El RUT debe tener como mínimo 9 caracteres.",
-      "string.max": "El RUT debe tener como máximo 12 caracteres.",
       "string.pattern.base": "Formato RUT inválido. Debe ser xx.xxx.xxx-x o xxxxxxxx-x.",
     }),
   dia: Joi.string()
@@ -68,48 +62,29 @@ export const horarioValidation = Joi.object({
     .required()
     .messages({
       "any.required": "El día es obligatorio.",
-      "any.only": "El día debe ser un valor válido (lunes a viernes).",
-      "string.empty": "El día no puede estar vacío.",
+      "any.only": "El día debe ser válido (lunes a viernes).",
     }),
-  hora_Inicio: Joi.string()
-    .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
+  bloque: Joi.string()
+    .valid(
+      "08:00 - 08:45",
+      "08:50 - 09:35",
+      "09:40 - 10:25",
+      "10:30 - 11:15",
+      "11:20 - 12:05",
+      "12:10 - 12:55",
+      "13:00 - 13:45",
+      "14:30 - 15:15",
+      "15:20 - 16:05",
+      "16:10 - 16:55",
+      "17:00 - 17:45"
+    )
     .required()
-    .custom((value, helpers) => {
-      const [hour] = value.split(":").map(Number);
-      if (hour < 8 || hour > 18) {
-        return helpers.message("La hora de inicio debe estar entre las 08:00 y las 18:00.");
-      }
-      return value;
-    })
     .messages({
-      "any.required": "La hora de inicio es obligatoria.",
-      "string.pattern.base": "La hora de inicio debe estar en formato HH:mm.",
-      "string.empty": "La hora de inicio no puede estar vacía.",
+      "any.required": "El bloque horario es obligatorio.",
+      "any.only": "El bloque debe ser uno de los horarios disponibles.",
     }),
-  hora_Fin: Joi.string()
-    .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .required()
-    .custom((value, helpers) => {
-      const [hour] = value.split(":").map(Number);
-      if (hour < 9 || hour > 20) {
-        return helpers.message("La hora de fin debe estar entre las 09:00 y las 20:00.");
-      }
-      return value;
-    })
-    .messages({
-      "any.required": "La hora de fin es obligatoria.",
-      "string.pattern.base": "La hora de fin debe estar en formato HH:mm.",
-      "string.empty": "La hora de fin no puede estar vacía.",
-    }),
-}).custom((values, helpers) => {
-  const [horaInicioHoras, horaInicioMinutos] = values.hora_Inicio.split(":").map(Number);
-  const [horaFinHoras, horaFinMinutos] = values.hora_Fin.split(":").map(Number);
-  
-  if (horaFinHoras < horaInicioHoras || (horaFinHoras === horaInicioHoras && horaFinMinutos <= horaInicioMinutos)) {
-    return helpers.message("La hora de fin debe ser mayor que la hora de inicio.");
-  }
-  return values;
 });
+
 export const paginationAndFilterValidation = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
     "number.base": "La página debe ser un número.",
@@ -126,4 +101,12 @@ export const paginationAndFilterValidation = Joi.object({
     "string.base": "El profesor debe ser un string.",
   }),
 });
+export const validarHorario = (dia, bloque) => {
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
+  
+  if (recreoHoras.includes(bloque)) {
+    throw new Error(`No se puede asignar una materia en el bloque de recreo (${dia}, ${bloque}).`);
+  }
+};
+
 
