@@ -22,15 +22,6 @@ export const getCursos = async () => {
     return response.data;
   } catch (error) {
     console.error("Error al obtener cursos:", error);
-    return [];
-  }
-};
-export const getHorarioCurso = async (cursoId) => {
-  try {
-    const response = await axios.get(`/horarios/ver/curso/${cursoId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener el horario del curso:", error);
     throw error;
   }
 };
@@ -42,19 +33,9 @@ export const getProfesores = async () => {
     return response.data;
   } catch (error) {
     console.error("Error al obtener profesores:", error);
-    return [];
-  }
-};
-export const getHorarioProfesor = async (rut) => {
-  try {
-    const response = await axios.get(`/horarios/ver/profesor?rut=${rut}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener el horario del profesor:", error);
     throw error;
   }
 };
-
 
 export const getMaterias = async () => {
   try {
@@ -62,26 +43,95 @@ export const getMaterias = async () => {
     return response.data;
   } catch (error) {
     console.error("Error al obtener materias:", error);
-    return [];
+    throw error;
+  }
+};
+
+export const getHorarioCurso = async (ID_curso) => {
+  try {
+    const response = await axios.get(`/horarios/ver/curso/${ID_curso}`);
+    return response.data.data; 
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return {}; 
+    }
+    throw error;
+  }
+};
+
+
+export const getHorarioProfesor = async (rut) => {
+  try {
+    const response = await axios.get(`/horarios/ver/profesor`, { params: { rut } });
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener horario del profesor:", error);
+    throw error;
   }
 };
 
 export const saveHorarioCurso = async (cursoId, horario) => {
   try {
-    const response = await axios.post("/horarios/asignar", { cursoId, horario });
+    if (!cursoId || !horario || Object.keys(horario).length === 0) {
+      throw new Error("Datos de horario incompletos o mal estructurados.");
+    }
+   
+    const payload = {
+      cursoId,
+      horario: Object.entries(horario).flatMap(([dia, bloques]) =>
+        Object.entries(bloques)
+          .filter(([, { materia }]) => materia !== "Sin asignar")
+          .map(([bloque, { materia }]) => ({
+            ID_materia: materia,
+            dia,
+            bloque,
+          }))
+      ),
+    };
+
+    if (payload.horario.length === 0) {
+      throw new Error("No se han asignado bloques válidos para guardar.");
+    }
+
+    const response = await axios.post("/horarios/asignar/curso", payload);
     return response.data;
   } catch (error) {
-    console.error("Error al asignar horario:", error);
+    console.error("Error al guardar horario del curso:", error.response?.data || error.message);
     throw error;
   }
 };
+
+
 export const saveHorarioProfesor = async (rut, horario) => {
   try {
-    const response = await axios.post("/horarios/asignar", { rut, horario });
+    if (!rut || !horario || Object.keys(horario).length === 0) {
+      throw new Error("Datos de horario incompletos o mal estructurados.");
+    }
+
+    const payload = {
+      rut,
+      horario: Object.entries(horario).flatMap(([dia, bloques]) =>
+        Object.entries(bloques)
+          .filter(([, { materia, curso }]) => materia !== "Sin asignar" && curso !== "Sin asignar")
+          .map(([bloque, { materia, curso }]) => ({
+            ID_materia: materia,
+            ID_curso: curso,
+            dia,
+            bloque,
+          }))
+      ),
+    };
+
+    if (payload.horario.length === 0) {
+      throw new Error("No se han asignado bloques válidos para guardar.");
+    }
+
+    const response = await axios.post("/horarios/asignar", payload);
     return response.data;
   } catch (error) {
-    console.error("Error al asignar horario al profesor:", error);
+    console.error("Error al guardar el horario del profesor:", error.response?.data || error.message);
     throw error;
   }
 };
+
 

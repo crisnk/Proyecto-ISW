@@ -2,7 +2,6 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
 import '@styles/navbar.css';
 import { useState } from "react";
-import NavbarHorarios from './NavbarHorarios';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -10,6 +9,7 @@ const Navbar = () => {
     const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
     const userRole = user?.rol;
     const [menuOpen, setMenuOpen] = useState(false);
+    const [submenuOpen, setSubmenuOpen] = useState(false);
 
     const logoutSubmit = () => {
         try {
@@ -27,6 +27,10 @@ const Navbar = () => {
             addActiveClass();
         }
         setMenuOpen(!menuOpen);
+    };
+
+    const toggleSubmenu = () => {
+        setSubmenuOpen(!submenuOpen);
     };
 
     const removeActiveClass = () => {
@@ -54,7 +58,7 @@ const Navbar = () => {
                                 setMenuOpen(false); 
                                 addActiveClass();
                             }} 
-                            className={({ isActive }) => isActive ? 'active' : ''}
+                            activeClassName="active"
                         >
                             Inicio
                         </NavLink>
@@ -67,15 +71,45 @@ const Navbar = () => {
                                     setMenuOpen(false); 
                                     addActiveClass();
                                 }} 
-                                className={({ isActive }) => isActive ? 'active' : ''}
+                                activeClassName="active"
                             >
                                 Usuarios
                             </NavLink>
                         </li>
                     )}
-                    {(userRole === 'administrador' || userRole === 'jefeUTP') && (
-                        <NavbarHorarios />
-                    )}
+                    <li className="nav-item">
+                        <div className="submenu" onClick={toggleSubmenu}>
+                            Horarios <span className={`arrow ${submenuOpen ? 'open' : ''}`}></span>
+                        </div>
+                        {submenuOpen && (
+                            <ul className="submenu-items">
+                                <li>
+                                    <NavLink 
+                                        to="/horarios" 
+                                        onClick={() => { 
+                                            setMenuOpen(false); 
+                                            addActiveClass();
+                                        }} 
+                                        activeClassName="active"
+                                    >
+                                        Ver Horarios
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink 
+                                        to="/horarios/asignar" 
+                                        onClick={() => { 
+                                            setMenuOpen(false); 
+                                            addActiveClass();
+                                        }} 
+                                        activeClassName="active"
+                                    >
+                                        Asignar Horarios
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
                     <li>
                         <NavLink 
                             to="/auth" 
@@ -83,7 +117,7 @@ const Navbar = () => {
                                 logoutSubmit(); 
                                 setMenuOpen(false); 
                             }} 
-                            className={({ isActive }) => isActive ? 'active' : ''}
+                            activeClassName="active"
                         >
                             Cerrar sesión
                         </NavLink>

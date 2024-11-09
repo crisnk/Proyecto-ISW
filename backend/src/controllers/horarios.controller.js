@@ -79,12 +79,17 @@ export const verHorarioProfesor = async (req, res) => {
 
 export const verHorarioCurso = async (req, res) => {
   try {
-    const horarios = await getHorariosByCurso(req.params.ID_curso);
-    res.status(200).json(horarios);
+    const result = await getHorariosByCurso(req.params.ID_curso);
+    res.status(200).json(result);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    if (error.message === "El curso no existe en la base de datos.") {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
+
 
 export const verTodosHorarios = async (req, res) => {
   try {

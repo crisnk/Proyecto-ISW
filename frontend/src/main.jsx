@@ -7,10 +7,10 @@ import Register from '@pages/Register';
 import Root from '@pages/Root';
 import Users from '@pages/Users';
 import ProtectedRoute from '@components/ProtectedRoute';
-import AsignarHorarios from '@pages/AsignarHorarios';
-import AsignarHorarioProfesor from '@pages/AsignarHorarioProfesor'; 
-import AsignarHorarioCurso from '@pages/AsignarHorarioCurso';
-import VerHorarios from '@pages/VerHorarios';
+import AsignarHorarios from '@pages/Horarios/AsignarHorarios';
+import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
+import AsignarHorarioCurso from '@pages/Horarios/AsignarHorarioCurso';
+import VerHorarios from '@pages/Horarios/VerHorarios';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([

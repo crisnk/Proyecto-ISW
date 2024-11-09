@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { getCursos, getMaterias, getHorarioCurso, saveHorarioCurso } from "../services/horario.service";
-import EditarTablaHorario from "../components/EditarTablaHorario";
+import {
+  getCursos,
+  getMaterias,
+  getHorarioCurso,
+  saveHorarioCurso,
+} from "../../services/horario.service";
+import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
 
 const niveles = ["1ro", "2do", "3ro", "4to"];
 const horas = [
@@ -16,7 +21,6 @@ const horas = [
   "16:10 - 16:55",
   "17:00 - 17:45",
 ];
-const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
 
 const AsignarHorarioCurso = () => {
@@ -34,65 +38,60 @@ const AsignarHorarioCurso = () => {
     diasSemana.forEach((dia) => {
       newHorario[dia] = {};
       horas.forEach((hora) => {
-        newHorario[dia][hora] = recreoHoras.includes(hora) ? "Recreo" : "Sin asignar";
+        newHorario[dia][hora] = "Sin asignar";
       });
     });
     return newHorario;
   }, []);
 
-  const fetchHorario = useCallback(async () => {
+  const fetchHorarioCurso = useCallback(async () => {
     if (!cursoEspecifico) return;
     setLoading(true);
     try {
-      const existingHorario = await getHorarioCurso(cursoEspecifico);
-      if (existingHorario.length > 0) {
-        const formattedHorario = initializeHorario();
-        existingHorario.forEach((item) => {
-          formattedHorario[item.dia][item.bloque] = item.materia.nombre;
+      const response = await getHorarioCurso(cursoEspecifico);
+      const formattedHorario = initializeHorario();
+      Object.entries(response).forEach(([dia, bloques]) => {
+        Object.entries(bloques).forEach(([bloque, materia]) => {
+          formattedHorario[dia][bloque] = materia;
         });
-        setHorario(formattedHorario);
-      } else {
-        setHorario(initializeHorario());
-      }
-      setError("");
+      });
+      setHorario(formattedHorario);
     } catch (err) {
-      console.error("Error al cargar el horario:", err);
+      console.error("Error al cargar el horario del curso:", err);
       setError("Error al cargar el horario.");
     } finally {
       setLoading(false);
     }
   }, [cursoEspecifico, initializeHorario]);
+  
 
   useEffect(() => {
-    fetchHorario();
-  }, [cursoEspecifico, fetchHorario]);
+    fetchHorarioCurso();
+  }, [cursoEspecifico, fetchHorarioCurso]);
+
+  useEffect(() => {
+    const fetchCursosPorNivel = async () => {
+      if (!nivel) return setCursosPorNivel([]);
+      try {
+        const cursos = await getCursos();
+        setCursosPorNivel(cursos.filter((curso) => curso.nombre.startsWith(nivel)));
+      } catch (err) {
+        console.error("Error al cargar cursos:", err);
+      }
+    };
+    fetchCursosPorNivel();
+  }, [nivel]);
 
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
-        const response = await getMaterias();
-        setMaterias(response);
+        setMaterias(await getMaterias());
       } catch (err) {
         console.error("Error al cargar materias:", err);
       }
     };
     fetchMaterias();
   }, []);
-
-  useEffect(() => {
-    const fetchCursosPorNivel = async () => {
-      if (nivel) {
-        try {
-          const response = await getCursos();
-          const cursosFiltrados = response.filter((curso) => curso.nombre.startsWith(nivel));
-          setCursosPorNivel(cursosFiltrados.map((curso) => curso.nombre));
-        } catch (err) {
-          console.error("Error al cargar cursos:", err);
-        }
-      }
-    };
-    fetchCursosPorNivel();
-  }, [nivel]);
 
   const handleGuardarHorario = async () => {
     try {
@@ -101,8 +100,7 @@ const AsignarHorarioCurso = () => {
       setError("");
     } catch (err) {
       console.error("Error al guardar el horario:", err);
-      setError("Error al guardar el horario. Intenta nuevamente.");
-      setSuccess("");
+      setError("Error al guardar el horario.");
     }
   };
 
@@ -126,26 +124,29 @@ const AsignarHorarioCurso = () => {
           <select value={cursoEspecifico} onChange={(e) => setCursoEspecifico(e.target.value)}>
             <option value="">Selecciona curso</option>
             {cursosPorNivel.map((curso) => (
-              <option key={curso} value={curso}>
-                {curso}
+              <option key={curso.ID_curso} value={curso.ID_curso}>
+                {curso.nombre}
               </option>
             ))}
           </select>
         </div>
       )}
       {cursoEspecifico && !loading && (
-        <div style={{ marginTop: "20px" }}>
-          <EditarTablaHorario
+        <div>
+          <EditarTablaHorarioCurso
             horario={horario}
             diasSemana={diasSemana}
             horas={horas}
             materias={materias}
-            onMateriaChange={(dia, hora, materia) =>
+            onMateriaChange={(dia, hora, materia) => {
               setHorario((prev) => ({
                 ...prev,
-                [dia]: { ...prev[dia], [hora]: materia },
-              }))
-            }
+                [dia]: {
+                  ...prev[dia],
+                  [hora]: materia,
+                },
+              }));
+            }}
           />
           <button onClick={handleGuardarHorario}>Guardar Horario</button>
         </div>
@@ -157,11 +158,6 @@ const AsignarHorarioCurso = () => {
 };
 
 export default AsignarHorarioCurso;
-
-
-
-
-
 
 
 

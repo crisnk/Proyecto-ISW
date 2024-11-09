@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCursos, getProfesores } from "../services/horario.service";
+import { getCursos, getProfesores } from "../../services/horario.service";
 
 const Filters = ({ onChange }) => {
   const [filterType, setFilterType] = useState("");
