@@ -50,25 +50,29 @@ export const getMaterias = async () => {
 export const getHorarioCurso = async (ID_curso) => {
   try {
     const response = await axios.get(`/horarios/ver/curso/${ID_curso}`);
-    return response.data.data; 
+    return response.data.data || {}; 
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      return {}; 
+      return { data: [] }; 
     }
     throw error;
   }
 };
 
 
+
 export const getHorarioProfesor = async (rut) => {
   try {
     const response = await axios.get(`/horarios/ver/profesor`, { params: { rut } });
-    return response.data;
+    return response.data.data || []; 
   } catch (error) {
-    console.error("Error al obtener horario del profesor:", error);
+    if (error.response && error.response.status === 404) {
+      return []; 
+    }
     throw error;
   }
 };
+
 
 export const saveHorarioCurso = async (cursoId, horario) => {
   try {
@@ -133,5 +137,20 @@ export const saveHorarioProfesor = async (rut, horario) => {
     throw error;
   }
 };
+export const eliminarHorario = async (id) => {
+  try {
+    const response = await axios.delete(`/horarios/eliminar/${id}`);
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      console.error("El horario no existe o ya fue eliminado.");
+      throw new Error("El horario no existe o ya fue eliminado.");
+    }
+    console.error("Error al eliminar horario:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
 
 

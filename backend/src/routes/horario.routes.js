@@ -22,6 +22,8 @@ const router = Router();
 router.use(authenticateJwt);
 
 router.post("/asignar", isAuthorized(["jefeUTP", "administrador"]), crearHorario);
+router.post("/asignar/curso", isAuthorized(["jefeUTP", "administrador"]), crearHorario);
+router.post("/asignar/profesor", isAuthorized(["jefeUTP", "administrador"]), crearHorario);
 router.patch("/modificar/:id", isAuthorized(["jefeUTP", "administrador"]), modificarHorario);
 router.delete("/eliminar/:id", isAuthorized(["jefeUTP", "administrador"]), eliminarHorario);
 router.get("/ver/profesor", isAuthorized(["profesor", "jefeUTP", "administrador"]), verHorarioProfesor);

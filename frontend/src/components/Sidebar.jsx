@@ -24,16 +24,19 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
             <li>
               <NavLink to="/horarios/asignar/curso">Asignar a Cursos</NavLink>
             </li>
+            <li>
+              <NavLink to="/horarios">Ver todos</NavLink>
+            </li>
+            <li>
+              <NavLink to="/horarios/eliminar">Eliminar Horarios</NavLink>
+            </li>
           </>
         );
       case "profesor":
         return (
           <>
             <li>
-              <NavLink to="/horarios/ver/profesor">Mi Horario</NavLink>
-            </li>
-            <li>
-              <NavLink to="/horarios/ver/cursos">Horarios de Cursos</NavLink>
+              <NavLink to="/horarios">Ver todos</NavLink>
             </li>
           </>
         );
@@ -52,7 +55,9 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
     <aside className={`sidebar ${isVisible ? "visible" : ""}`} onMouseLeave={toggleSidebar}>
       <ul>
         <li>
-          <button onClick={toggleHorarios}>Horarios</button>
+          <button onClick={toggleHorarios} className="sidebar-button">
+            Horarios
+          </button>
           {isHorariosOpen && <ul>{renderHorariosOptions()}</ul>}
         </li>
       </ul>

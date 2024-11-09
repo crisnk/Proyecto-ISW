@@ -11,6 +11,8 @@ import AsignarHorarios from '@pages/Horarios/AsignarHorarios';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
 import AsignarHorarioCurso from '@pages/Horarios/AsignarHorarioCurso';
 import VerHorarios from '@pages/Horarios/VerHorarios';
+import EliminarHorario from '@pages/Horarios/EliminarHorario';
+import MiHorario from '@pages/Horarios/MiHorario';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -32,11 +34,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/register',
-        element: <Register />,
-      },
-      {
-        path: 'horarios',
+        path: '/horarios',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor', 'alumno']}>
             <VerHorarios />
@@ -44,7 +42,16 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'horarios/asignar',
+        path: '/horarios/ver/alumno',
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <MiHorario />
+          </ProtectedRoute>
+        ),
+      },
+      
+      {
+        path: '/horarios/asignar',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
             <AsignarHorarios />
@@ -61,13 +68,26 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: '/horarios/eliminar',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
+            <EliminarHorario />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
     path: '/auth',
     element: <Login />,
   },
+  {
+    path: '/register',
+    element: <Register/>
+  }
 ]);
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <RouterProvider router={router}/>
 )
