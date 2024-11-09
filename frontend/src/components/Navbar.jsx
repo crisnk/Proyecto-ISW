@@ -9,7 +9,6 @@ const Navbar = () => {
     const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
     const userRole = user?.rol;
     const [menuOpen, setMenuOpen] = useState(false);
-    const [submenuOpen, setSubmenuOpen] = useState(false);
 
     const logoutSubmit = () => {
         try {
@@ -27,10 +26,6 @@ const Navbar = () => {
             addActiveClass();
         }
         setMenuOpen(!menuOpen);
-    };
-
-    const toggleSubmenu = () => {
-        setSubmenuOpen(!submenuOpen);
     };
 
     const removeActiveClass = () => {
@@ -56,7 +51,7 @@ const Navbar = () => {
                             to="/home" 
                             onClick={() => { 
                                 setMenuOpen(false); 
-                                addActiveClass();
+                                addActiveClass(false);
                             }} 
                             activeClassName="active"
                         >
@@ -64,52 +59,19 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     {userRole === 'administrador' && (
-                        <li>
-                            <NavLink 
-                                to="/users" 
-                                onClick={() => { 
-                                    setMenuOpen(false); 
-                                    addActiveClass();
-                                }} 
-                                activeClassName="active"
-                            >
-                                Usuarios
-                            </NavLink>
-                        </li>
-                    )}
-                    <li className="nav-item">
-                        <div className="submenu" onClick={toggleSubmenu}>
-                            Horarios <span className={`arrow ${submenuOpen ? 'open' : ''}`}></span>
-                        </div>
-                        {submenuOpen && (
-                            <ul className="submenu-items">
-                                <li>
-                                    <NavLink 
-                                        to="/horarios" 
-                                        onClick={() => { 
-                                            setMenuOpen(false); 
-                                            addActiveClass();
-                                        }} 
-                                        activeClassName="active"
-                                    >
-                                        Ver Horarios
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink 
-                                        to="/horarios/asignar" 
-                                        onClick={() => { 
-                                            setMenuOpen(false); 
-                                            addActiveClass();
-                                        }} 
-                                        activeClassName="active"
-                                    >
-                                        Asignar Horarios
-                                    </NavLink>
-                                </li>
-                            </ul>
-                        )}
+                    <li>
+                        <NavLink 
+                            to="/users" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Usuarios
+                        </NavLink>
                     </li>
+                    )}
                     <li>
                         <NavLink 
                             to="/auth" 
@@ -132,5 +94,6 @@ const Navbar = () => {
         </nav>
     );
 };
+  
 
 export default Navbar;

@@ -36,7 +36,7 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: '/horarios',
+        path: 'horarios',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor', 'alumno']}>
             <VerHorarios />
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/horarios/asignar',
+        path: 'horarios/asignar',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
             <AsignarHorarios />
@@ -53,13 +53,13 @@ const router = createBrowserRouter([
         children: [
           {
             path: 'profesor',
-            element: <AsignarHorarioProfesor />
+            element: <AsignarHorarioProfesor />,
           },
           {
             path: 'curso',
-            element: <AsignarHorarioCurso />
-          }
-        ]
+            element: <AsignarHorarioCurso />,
+          },
+        ],
       },
     ],
   },

@@ -1,25 +1,33 @@
-import { Outlet, NavLink } from 'react-router-dom';
-
+import { Outlet, NavLink } from "react-router-dom";
+import "@styles/asignarHorarios.css"; 
 
 const AsignarHorarios = () => {
   return (
-    <div>
+    <div className="asignar-horarios">
       <h1>Asignar Horarios</h1>
-      <nav>
+      <nav className="asignar-horarios-nav">
         <ul>
           <li>
-            <NavLink to="profesor" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <NavLink
+              to="profesor"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
               Asignar a Profesores
             </NavLink>
           </li>
           <li>
-            <NavLink to="curso" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <NavLink
+              to="curso"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
               Asignar a Cursos
             </NavLink>
           </li>
         </ul>
       </nav>
-      <Outlet />
+      <div className="outlet-container">
+        <Outlet /> 
+      </div>
     </div>
   );
 };
