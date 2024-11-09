@@ -1,7 +1,15 @@
 "use strict";
 
 import { Router } from "express";
-import { crearPractica, obtenerPracticas, obtenerPractica, modificarPractica, eliminarPractica } from "../controllers/practica.controller.js";
+import {
+    crearPractica,
+    obtenerPracticas,
+    obtenerPractica,
+    modificarPractica,
+    eliminarPractica,
+    postularPractica,
+    cancelarPostulacion,
+} from "../controllers/practica.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { isAuthorized } from "../middlewares/authorization.middleware.js";
 
@@ -16,6 +24,12 @@ router
 
     // Usuarios
     .get("/all", obtenerPracticas)
-    .get("/:ID_practica", obtenerPractica);
+    .get("/:ID_practica", obtenerPractica)
+    .put("/modificar/:ID_practica", modificarPractica)
+    .delete("/:ID_practica", eliminarPractica)
+
+    .post("/postular/:ID_practica", postularPractica)
+    .delete("/postulacion/:ID_practica", cancelarPostulacion);
+
 
 export default router;
