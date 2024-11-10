@@ -18,6 +18,8 @@ import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import isAuthorized from "../middlewares/authorization.middleware.js";
 
 const router = Router();
+router.get("/cursosregister", verCursos);
+
 
 router.use(authenticateJwt);
 
@@ -36,6 +38,7 @@ router.post("/materias/crear", isAuthorized(["jefeUTP", "administrador"]), crear
 router.post("/cursos/crear", isAuthorized(["jefeUTP", "administrador"]), crearCurso);
 router.delete("/materias/eliminar/:ID_materia", isAuthorized(["jefeUTP", "administrador"]), eliminarMateria);
 router.delete("/cursos/eliminar/:ID_curso", isAuthorized(["jefeUTP", "administrador"]), eliminarCurso);
+
 
 
 

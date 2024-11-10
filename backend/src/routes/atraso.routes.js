@@ -22,5 +22,6 @@ router
     .post("/aprobar/:ID_atraso", manejarAprobarJustificativo)
     .post("/rechazar/:ID_atraso", manejarRechazarJustificativo)
     .post("/enviar", sendCustomEmail);
+    
 
 export default router;

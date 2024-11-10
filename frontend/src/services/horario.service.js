@@ -19,13 +19,25 @@ export const getHorarios = async (params) => {
 export const getCursos = async () => {
   try {
     const response = await axios.get("/horarios/cursos");
-    return response.data;
+    if (!response.data || response.data.length === 0) {
+      console.warn("No se encontraron cursos disponibles.");
+      return [];
+    }
+    return response.data; 
   } catch (error) {
-    console.error("Error al obtener cursos:", error);
+    console.error("Error al obtener cursos:", error.response?.data || error.message);
     throw error;
   }
 };
-
+export const getCursosRegister = async () => {
+  try {
+    const response = await axios.get("/horarios/cursosregister");
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener cursos para registro:", error);
+    throw error;
+  }
+};
 
 export const getProfesores = async () => {
   try {
