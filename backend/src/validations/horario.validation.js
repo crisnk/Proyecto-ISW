@@ -24,7 +24,7 @@ export const cursoValidation = Joi.object({
       "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a D. Ejemplo: '1ro medio A'.",
       "string.base": "El nombre del curso debe ser un texto."
     }),
-    aula: Joi.number()
+  aula: Joi.number()
     .integer()
     .min(1)
     .max(100)
@@ -69,10 +69,10 @@ export const horarioValidation = Joi.object({
       "08:00 - 08:45",
       "08:50 - 09:35",
       "09:40 - 10:25",
-      "10:30 - 11:15",
+      "10:30 - 11:15",  // Recreo
       "11:20 - 12:05",
       "12:10 - 12:55",
-      "13:00 - 13:45",
+      "13:00 - 13:45",  // Recreo
       "14:30 - 15:15",
       "15:20 - 16:05",
       "16:10 - 16:55",
@@ -101,12 +101,11 @@ export const paginationAndFilterValidation = Joi.object({
     "string.base": "El profesor debe ser un string.",
   }),
 });
+
 export const validarHorario = (dia, bloque) => {
   const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
-  
+
   if (recreoHoras.includes(bloque)) {
     throw new Error(`No se puede asignar una materia en el bloque de recreo (${dia}, ${bloque}).`);
   }
 };
-
-

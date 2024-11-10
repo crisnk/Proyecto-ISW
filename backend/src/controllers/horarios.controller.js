@@ -20,9 +20,11 @@ export const crearHorario = async (req, res) => {
     const horarioAsignado = await asignaHorarioService(req.body);
     res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
   } catch (error) {
+    console.error("Error al asignar horario:", error);
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const modificarHorario = async (req, res) => {
   try {

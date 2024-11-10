@@ -3,11 +3,9 @@ import Curso from "../entity/curso.entity.js";
 import Materia from "../entity/materia.entity.js";
 import { AppDataSource } from "./configDb.js";
 
-
 async function createMaterias() {
   try {
     const materiaRepository = AppDataSource.getRepository(Materia);
-
     const materias = [
       "Matemáticas",
       "Historia",
@@ -18,7 +16,7 @@ async function createMaterias() {
       "Educación Física",
       "Tecnología",
       "Especialidad de Mecánica",
-      "Especialidad de Electricidad"
+      "Especialidad de Electricidad",
     ];
 
     for (const nombre of materias) {
@@ -33,11 +31,9 @@ async function createMaterias() {
   }
 }
 
-
 async function createCursos() {
   try {
     const cursoRepository = AppDataSource.getRepository(Curso);
-
     const cursos = [
       { nombre: "1ro Medio A", aula: "Sala 1" },
       { nombre: "1ro Medio B", aula: "Sala 2" },
@@ -50,7 +46,7 @@ async function createCursos() {
       { nombre: "3ro Medio C", aula: "Sala 9" },
       { nombre: "4to Medio A", aula: "Sala 10" },
       { nombre: "4to Medio B", aula: "Sala 11" },
-      { nombre: "4to Medio C", aula: "Sala 12" }
+      { nombre: "4to Medio C", aula: "Sala 12" },
     ];
 
     for (const { nombre, aula } of cursos) {
@@ -58,18 +54,34 @@ async function createCursos() {
       if (!cursoExistente) {
         const nuevoCurso = cursoRepository.create({ nombre, aula });
         await cursoRepository.save(nuevoCurso);
-      } 
+      } else {
+       
+      }
     }
   } catch (error) {
-    console.error("Error al crear cursos predeterminados:", error);
+    
   }
 }
 
+async function ensureCursoPredeterminado() {
+  try {
+    const cursoRepository = AppDataSource.getRepository(Curso);
+    const cursoPredeterminado = await cursoRepository.findOneBy({ nombre: "1ro Medio A" });
+    if (!cursoPredeterminado) {
+      throw new Error("Curso predeterminado no encontrado.");
+    }
+    return cursoPredeterminado;
+  } catch (error) {
+    console.error("Error al verificar curso predeterminado:", error);
+    throw error;
+  }
+}
 
 async function createDefaultEntities() {
   await createMaterias();
   await createCursos();
+  await ensureCursoPredeterminado(); 
 }
 
-
 export { createDefaultEntities };
+

@@ -7,67 +7,61 @@ import User from "../entity/user.entity.js";
 import { Not } from "typeorm";
 import { cursoValidation, horarioValidation, materiaValidation, 
   paginationAndFilterValidation, validarHorario  } from "../validations/horario.validation.js";
-  export const asignaHorarioService = async (horarioData) => {
-    console.log("Datos recibidos en el backend:", horarioData);
-  
-    const { rut, horario } = horarioData;
-    
-    if (!rut || !horario || !Array.isArray(horario) || horario.length === 0) {
-      throw new Error("Datos incompletos para asignar el horario.");
-    }
-  
-    const repository = AppDataSource.getRepository(Imparte);
-  
-    for (const bloque of horario) {
-      const { ID_materia, ID_curso, dia, bloque: hora } = bloque;
-     
-      if (ID_materia === "Sin asignar" || ID_curso === "Sin asignar") {
-        console.log(`Bloque ignorado para ${dia} ${hora}: Materia o Curso sin asignar`);
-        continue;
-      }
-  
-      const { error } = horarioValidation.validate(
-        { ID_materia, ID_curso, rut, dia, bloque: hora },
-        { abortEarly: false }
-      );
-      if (error) {
-        throw new Error(error.details.map((err) => err.message).join(", "));
-      }
-  
-      validarHorario(dia, hora);
- 
-      const materia = await AppDataSource.getRepository(Materia).findOneBy({ ID_materia });
-      if (!materia) {
-        throw new Error(`La materia con ID ${ID_materia} no existe.`);
-      }
-   
-      const curso = await AppDataSource.getRepository(Curso).findOneBy({ ID_curso });
-      if (!curso) {
-        throw new Error(`El curso con ID ${ID_curso} no existe.`);
-      }
-      const user = await AppDataSource.getRepository(User).findOneBy({ rut });
-      if (!user) {
-        throw new Error(`El usuario con RUT ${rut} no existe.`);
-      }
 
-      const conflictoHorario = await repository.findOne({
-        where: [
-          { rut, dia, bloque: hora },
-          { ID_curso, dia, bloque: hora },
-        ],
-      });
+
+export const asignaHorarioService = async (horarioData) => {
+  const { rut, horario } = horarioData; 
+
+  if (!rut || !Array.isArray(horario) || horario.length === 0) {
+    throw new Error("Datos incompletos para asignar el horario.");
+  }
+
+  const repository = AppDataSource.getRepository(Imparte);
+
+  for (const bloque of horario) {
+    const { ID_materia, ID_curso, dia, bloque: hora } = bloque;
   
-      if (conflictoHorario) {
-        console.log(`Conflicto encontrado en ${dia} ${hora}, eliminando conflicto.`);
-        await repository.remove(conflictoHorario);
-      }
-    
-      const nuevoHorario = repository.create({ ID_materia, ID_curso, rut, dia, bloque: hora });
-      await repository.save(nuevoHorario);
+    if (!ID_materia || !ID_curso || !dia || !hora) {
+      throw new Error("Datos incompletos en el bloque de horario.");
     }
+    
+    validarHorario(dia, hora);
+
+    const { error } = horarioValidation.validate(
+      { ID_materia, ID_curso, rut, dia, bloque: hora },
+      { abortEarly: false }
+    );
+
+    if (error) {
+      throw new Error(`Errores de validación: ${error.details.map((err) => err.message).join(", ")}`);
+    }
+    
+    const conflicto = await repository.findOne({
+      where: [
+        { rut, dia, bloque: hora }, 
+        { ID_curso, dia, bloque: hora }, 
+      ],
+    });
+
+    if (conflicto) {
+      console.log(`Conflicto encontrado en ${dia} ${hora}, eliminando conflicto.`);
+      await repository.remove(conflicto);
+    }
+
+    const nuevoHorario = repository.create({
+      ID_materia,
+      ID_curso,
+      rut,
+      dia,
+      bloque: hora,
+    });
   
-    return { message: "Horario asignado correctamente." };
-  };
+    await repository.save(nuevoHorario);
+  }
+
+  return { message: "Horario asignado correctamente." };
+};
+
   
   export const modificaHorarioService = async (id, horarioData) => {
     const { error } = horarioValidation.validate(horarioData, { abortEarly: false });

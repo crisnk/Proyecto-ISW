@@ -10,10 +10,17 @@ import EditarTablaHorarioProfesor from "../../components/Horarios/EditarTablaHor
 
 const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
 const horas = [
-  "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
-  "10:30 - 11:15", "11:20 - 12:05", "12:10 - 12:55",
-  "13:00 - 13:45", "14:30 - 15:15", "15:20 - 16:05",
-  "16:10 - 16:55", "17:00 - 17:45",
+  "08:00 - 08:45",
+  "08:50 - 09:35",
+  "09:40 - 10:25",
+  "10:30 - 11:15",
+  "11:20 - 12:05",
+  "12:10 - 12:55",
+  "13:00 - 13:45",
+  "14:30 - 15:15",
+  "15:20 - 16:05",
+  "16:10 - 16:55",
+  "17:00 - 17:45",
 ];
 
 const AsignarHorarioProfesor = () => {
@@ -26,39 +33,38 @@ const AsignarHorarioProfesor = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const initializeHorario = useCallback(() => {
-    const newHorario = {};
+  const initializeHorario = useCallback((existingHorario) => {
+    const formattedHorario = {};
+
     diasSemana.forEach((dia) => {
-      newHorario[dia] = {};
+      formattedHorario[dia] = {};
       horas.forEach((hora) => {
-        newHorario[dia][hora] = { materia: "Sin asignar", curso: "Sin asignar" };
+        formattedHorario[dia][hora] = { materia: "Sin asignar", curso: "Sin asignar" };
       });
     });
-    return newHorario;
+
+    if (existingHorario) {
+      existingHorario.forEach((item) => {
+        formattedHorario[item.dia][item.bloque] = {
+          materia: item.ID_materia.toString(),
+          curso: item.ID_curso.toString(),
+        };
+      });
+    }
+
+    return formattedHorario;
   }, []);
 
   const fetchHorarioProfesor = useCallback(async () => {
     if (!profesor) return;
+
     setLoading(true);
     try {
       const existingHorario = await getHorarioProfesor(profesor);
-      const formattedHorario = initializeHorario();
-
-      if (Array.isArray(existingHorario) && existingHorario.length > 0) {
-        existingHorario.forEach((item) => {
-          formattedHorario[item.dia][item.bloque] = {
-            materia: item.materia.ID_materia,
-            curso: item.curso.ID_curso,
-          };
-        });
-      }
-
-      setHorario(formattedHorario);
-      setError("");
-    } catch (err) {
-      console.error("Error al cargar el horario:", err);
+      setHorario(initializeHorario(existingHorario));
+    } catch (error) {
+      console.error("Error al cargar el horario:", error);
       setError("Error al cargar el horario.");
-      setHorario(initializeHorario());
     } finally {
       setLoading(false);
     }
@@ -103,42 +109,51 @@ const AsignarHorarioProfesor = () => {
 
   const handleGuardarHorario = async () => {
     try {
-      const cambios = [];
-
-      diasSemana.forEach((dia) => {
-        horas.forEach((hora) => {
-          const bloque = horario[dia][hora];
-          if (
-            bloque.materia !== "Sin asignar" &&
-            bloque.materia !== "Recreo" &&
-            bloque.curso !== "Sin asignar"
-          ) {
-            cambios.push({
-              ID_materia: bloque.materia,
-              ID_curso: bloque.curso,
+      const cambios = diasSemana.flatMap((dia) =>
+        horas.map((hora) => {
+          const { materia, curso } = horario[dia]?.[hora] || {};
+          if (materia !== "Sin asignar" && curso !== "Sin asignar") {
+            return {
+              ID_materia: parseInt(materia, 10),
+              ID_curso: parseInt(curso, 10),
               dia,
               bloque: hora,
-            });
+            };
           }
-        });
-      });
+          return null;
+        }).filter(Boolean)
+      );
 
-      if (cambios.length === 0) {
-        setError("No hay cambios para guardar.");
+      const payload = {
+        rut: profesor,
+        horario: cambios,
+      };
+
+      if (payload.horario.length === 0) {
+        setError("No se han asignado bloques válidos para guardar.");
         return;
       }
 
-      console.log("Datos a enviar al backend:", { rut: profesor, horario: cambios });
-
-      await saveHorarioProfesor(profesor, cambios);
-
-      setSuccess("Horarios guardados correctamente.");
+      await saveHorarioProfesor(payload);
+      setSuccess("Horario guardado correctamente.");
       setError("");
-      fetchHorarioProfesor(); // Actualizamos los horarios
-    } catch (err) {
-      console.error("Error al guardar el horario:", err);
+    } catch (error) {
+      console.error("Error al guardar el horario:", error.response?.data || error.message);
       setError("Error al guardar el horario.");
     }
+  };
+
+  const handleMateriaCursoChange = (dia, bloque, key, value) => {
+    setHorario((prev) => ({
+      ...prev,
+      [dia]: {
+        ...prev[dia],
+        [bloque]: {
+          ...prev[dia][bloque],
+          [key]: value,
+        },
+      },
+    }));
   };
 
   return (
@@ -162,15 +177,7 @@ const AsignarHorarioProfesor = () => {
           horas={horas}
           materias={materias}
           cursos={cursos}
-          onMateriaCursoChange={(dia, hora, value, type) =>
-            setHorario((prev) => ({
-              ...prev,
-              [dia]: {
-                ...prev[dia],
-                [hora]: { ...prev[dia][hora], [type]: value },
-              },
-            }))
-          }
+          onMateriaCursoChange={handleMateriaCursoChange}
         />
       )}
       <button onClick={handleGuardarHorario} disabled={loading}>

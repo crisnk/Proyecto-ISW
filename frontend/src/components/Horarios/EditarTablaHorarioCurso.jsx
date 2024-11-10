@@ -1,4 +1,10 @@
-const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMateriaChange }) => {
+const EditarTablaHorarioCurso = ({
+  horario,
+  diasSemana,
+  horas,
+  materias,
+  onMateriaChange,
+}) => {
   return (
     <table>
       <thead>
@@ -15,21 +21,17 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
             <td>{hora}</td>
             {diasSemana.map((dia) => (
               <td key={`${dia}-${hora}`}>
-                {horario[dia]?.[hora] === "Recreo" ? (
-                  <span>Recreo</span>
-                ) : (
-                  <select
-                    value={materias.find((m) => m.nombre === horario[dia]?.[hora])?.ID_materia || "Sin asignar"}
-                    onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
-                  >
-                    <option value="Sin asignar">Sin asignar</option>
-                    {materias.map((materia) => (
-                      <option key={materia.ID_materia} value={materia.ID_materia}>
-                        {materia.nombre}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                <select
+                  value={horario[dia]?.[hora] || ""}
+                  onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
+                >
+                  <option value="">Sin asignar</option>
+                  {materias.map((materia) => (
+                    <option key={materia.ID_materia} value={materia.ID_materia}>
+                      {materia.nombre}
+                    </option>
+                  ))}
+                </select>
               </td>
             ))}
           </tr>
@@ -40,9 +42,4 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
 };
 
 export default EditarTablaHorarioCurso;
-
-
-
-
-
 

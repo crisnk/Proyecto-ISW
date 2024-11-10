@@ -7,7 +7,7 @@ import {
 } from "../../services/horario.service";
 import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
 
-const niveles = ["1ro", "2do", "3ro", "4to"];
+const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
 const horas = [
   "08:00 - 08:45",
   "08:50 - 09:35",
@@ -21,12 +21,10 @@ const horas = [
   "16:10 - 16:55",
   "17:00 - 17:45",
 ];
-const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
 
 const AsignarHorarioCurso = () => {
-  const [nivel, setNivel] = useState("");
   const [cursoEspecifico, setCursoEspecifico] = useState("");
-  const [cursosPorNivel, setCursosPorNivel] = useState([]);
+  const [cursos, setCursos] = useState([]);
   const [materias, setMaterias] = useState([]);
   const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(false);
@@ -48,14 +46,17 @@ const AsignarHorarioCurso = () => {
     if (!cursoEspecifico) return;
     setLoading(true);
     try {
-      const response = await getHorarioCurso(cursoEspecifico);
+      const existingHorario = await getHorarioCurso(cursoEspecifico);
       const formattedHorario = initializeHorario();
-      Object.entries(response).forEach(([dia, bloques]) => {
-        Object.entries(bloques).forEach(([bloque, materia]) => {
-          formattedHorario[dia][bloque] = materia;
+
+      if (existingHorario && Array.isArray(existingHorario)) {
+        existingHorario.forEach((item) => {
+          formattedHorario[item.dia][item.bloque] = item.ID_materia;
         });
-      });
+      }
+
       setHorario(formattedHorario);
+      setError("");
     } catch (err) {
       console.error("Error al cargar el horario del curso:", err);
       setError("Error al cargar el horario.");
@@ -63,24 +64,21 @@ const AsignarHorarioCurso = () => {
       setLoading(false);
     }
   }, [cursoEspecifico, initializeHorario]);
-  
 
   useEffect(() => {
     fetchHorarioCurso();
   }, [cursoEspecifico, fetchHorarioCurso]);
 
   useEffect(() => {
-    const fetchCursosPorNivel = async () => {
-      if (!nivel) return setCursosPorNivel([]);
+    const fetchCursos = async () => {
       try {
-        const cursos = await getCursos();
-        setCursosPorNivel(cursos.filter((curso) => curso.nombre.startsWith(nivel)));
+        setCursos(await getCursos());
       } catch (err) {
         console.error("Error al cargar cursos:", err);
       }
     };
-    fetchCursosPorNivel();
-  }, [nivel]);
+    fetchCursos();
+  }, []);
 
   useEffect(() => {
     const fetchMaterias = async () => {
@@ -95,11 +93,33 @@ const AsignarHorarioCurso = () => {
 
   const handleGuardarHorario = async () => {
     try {
-      await saveHorarioCurso(cursoEspecifico, horario);
-      setSuccess("Horario guardado correctamente.");
+      const cambios = [];
+
+      diasSemana.forEach((dia) => {
+        horas.forEach((hora) => {
+          const materia = horario[dia]?.[hora];
+          if (materia && materia !== "Sin asignar") {
+            cambios.push({
+              ID_materia: parseInt(materia, 10), // Convertimos a entero
+              dia,
+              bloque: hora,
+            });
+          }
+        });
+      });
+
+      if (cambios.length === 0) {
+        setError("No hay cambios válidos para guardar.");
+        return;
+      }
+
+      console.log("Datos preparados para guardar en curso:", { cursoId: cursoEspecifico, horario: cambios });
+
+      await saveHorarioCurso(cursoEspecifico, cambios);
+      setSuccess("Horario del curso guardado correctamente.");
       setError("");
-    } catch (err) {
-      console.error("Error al guardar el horario:", err);
+    } catch (error) {
+      console.error("Error al guardar el horario del curso:", error);
       setError("Error al guardar el horario.");
     }
   };
@@ -108,49 +128,36 @@ const AsignarHorarioCurso = () => {
     <div>
       <h2>Asignar Horario a Cursos</h2>
       <div>
-        <label>Nivel: </label>
-        <select value={nivel} onChange={(e) => setNivel(e.target.value)}>
-          <option value="">Selecciona nivel</option>
-          {niveles.map((nivelOption) => (
-            <option key={nivelOption} value={nivelOption}>
-              {nivelOption}
+        <label>Curso: </label>
+        <select value={cursoEspecifico} onChange={(e) => setCursoEspecifico(e.target.value)}>
+          <option value="">Selecciona curso</option>
+          {cursos.map((curso) => (
+            <option key={curso.ID_curso} value={curso.ID_curso}>
+              {curso.nombre}
             </option>
           ))}
         </select>
       </div>
-      {nivel && (
-        <div>
-          <label>Curso: </label>
-          <select value={cursoEspecifico} onChange={(e) => setCursoEspecifico(e.target.value)}>
-            <option value="">Selecciona curso</option>
-            {cursosPorNivel.map((curso) => (
-              <option key={curso.ID_curso} value={curso.ID_curso}>
-                {curso.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
+      {cursoEspecifico && (
+        <EditarTablaHorarioCurso
+          horario={horario}
+          diasSemana={diasSemana}
+          horas={horas}
+          materias={materias}
+          onMateriaChange={(dia, hora, materia) => {
+            setHorario((prev) => ({
+              ...prev,
+              [dia]: {
+                ...prev[dia],
+                [hora]: materia,
+              },
+            }));
+          }}
+        />
       )}
-      {cursoEspecifico && !loading && (
-        <div>
-          <EditarTablaHorarioCurso
-            horario={horario}
-            diasSemana={diasSemana}
-            horas={horas}
-            materias={materias}
-            onMateriaChange={(dia, hora, materia) => {
-              setHorario((prev) => ({
-                ...prev,
-                [dia]: {
-                  ...prev[dia],
-                  [hora]: materia,
-                },
-              }));
-            }}
-          />
-          <button onClick={handleGuardarHorario}>Guardar Horario</button>
-        </div>
-      )}
+      <button onClick={handleGuardarHorario} disabled={loading}>
+        Guardar
+      </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
     </div>
@@ -158,6 +165,3 @@ const AsignarHorarioCurso = () => {
 };
 
 export default AsignarHorarioCurso;
-
-
-
