@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getCursos,
   getMaterias,
-  getHorarioCurso,
+  getHorariosByCurso,
   saveHorarioCurso,
 } from "../../services/horario.service";
 import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
@@ -53,7 +53,7 @@ const AsignarHorarioCurso = () => {
 
     setLoading(true);
     try {
-      const existingHorario = await getHorarioCurso(curso);
+      const existingHorario = await getHorariosByCurso(curso);
       const formattedHorario = initializeHorario();
 
       existingHorario.forEach((item) => {

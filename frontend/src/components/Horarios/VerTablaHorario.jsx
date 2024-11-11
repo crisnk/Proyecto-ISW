@@ -1,12 +1,10 @@
-import "@styles/Horarios/tablaHorarios.css";
-
 const VerTablaHorario = ({ horario, diasSemana, horas }) => {
-  if (!horario || Object.keys(horario).length === 0) {
-    return <p>No hay horarios para mostrar.</p>;
+  if (!horario || !diasSemana || !horas) {
+    return <p>Error: Datos incompletos para renderizar la tabla.</p>;
   }
 
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
       <thead>
         <tr>
           <th>Horas</th>
@@ -22,12 +20,8 @@ const VerTablaHorario = ({ horario, diasSemana, horas }) => {
             {diasSemana.map((dia) => (
               <td key={`${dia}-${hora}`}>
                 {horario[dia]?.[hora]?.materia || "Sin asignar"}
-                {horario[dia]?.[hora]?.curso && (
-                  <div>Curso: {horario[dia][hora].curso}</div>
-                )}
-                {horario[dia]?.[hora]?.profesor && (
-                  <div>Profesor: {horario[dia][hora].profesor}</div>
-                )}
+                {horario[dia]?.[hora]?.curso && <div>Curso: {horario[dia][hora].curso}</div>}
+                {horario[dia]?.[hora]?.profesor && <div>Profesor: {horario[dia][hora].profesor}</div>}
               </td>
             ))}
           </tr>
@@ -36,6 +30,5 @@ const VerTablaHorario = ({ horario, diasSemana, horas }) => {
     </table>
   );
 };
-
 
 export default VerTablaHorario;

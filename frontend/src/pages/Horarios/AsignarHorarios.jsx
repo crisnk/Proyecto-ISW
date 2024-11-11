@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import "@styles/Horarios/asignarHorarios.css"; 
+import "@styles/Horarios/asignarHorarios.css";
 
 const AsignarHorarios = () => {
   return (
@@ -8,25 +8,19 @@ const AsignarHorarios = () => {
       <nav className="asignar-horarios-nav">
         <ul>
           <li>
-            <NavLink
-              to="profesor"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
+            <NavLink to="profesor" className={({ isActive }) => (isActive ? "active" : "")}>
               Asignar a Profesores
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="curso"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
+            <NavLink to="curso" className={({ isActive }) => (isActive ? "active" : "")}>
               Asignar a Cursos
             </NavLink>
           </li>
         </ul>
       </nav>
       <div className="outlet-container">
-        <Outlet /> 
+        <Outlet />
       </div>
     </div>
   );

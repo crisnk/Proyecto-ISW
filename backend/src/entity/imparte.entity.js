@@ -12,9 +12,11 @@ const ImparteSchema = new EntitySchema({
     },
     ID_materia: {
       type: "int",
+      nullable: false, 
     },
     ID_curso: {
       type: "int",
+      nullable: false, 
     },
     rut: {
       type: "varchar",
@@ -51,6 +53,7 @@ const ImparteSchema = new EntitySchema({
         name: "rut",
         referencedColumnName: "rut",
       },
+      nullable: true, 
     },
     curso: {
       target: "Curso",

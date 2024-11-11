@@ -45,9 +45,9 @@ const CursoSchema = new EntitySchema({
       type: "one-to-many",
       target: "Imparte",
       inverseSide: "curso",
-      onDelete: "CASCADE", 
+      onDelete: "CASCADE",
     },
-  },
+  },  
 });
 
 export default CursoSchema;

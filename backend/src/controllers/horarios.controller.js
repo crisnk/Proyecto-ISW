@@ -1,7 +1,7 @@
 "use strict";
 import {
-  asignaHorarioService,
-  asignarProfesorAHorarioService,
+  asignaHorarioCursoService,
+  asignaHorarioProfesorService,
   crearCursoService,
   crearMateriaService,
   eliminarCursoService,
@@ -9,29 +9,29 @@ import {
   eliminarMateriaService,
   getAllHorarios,
   getCursos,
+  getHorarioProfesor,
   getHorariosByCursoService,
-  getHorariosByProfesor,
   getMaterias,
   getProfesores,
-  modificaHorarioService
 } from "../services/horario.service.js";
 
-export const crearHorario = async (req, res) => {
+export const crearHorarioCurso = async (req, res) => {
   try {
-    const horarioAsignado = await asignaHorarioService(req.body);
-    res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
-  } catch (error) {  
-    console.error("Error al asignar horario:", error);
+    console.log("Datos recibidos para asignar horario al curso:", req.body);
+    const result = await asignaHorarioCursoService(req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error al asignar horario al curso:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
-
-export const modificarHorario = async (req, res) => {
+export const crearHorarioProfesor = async (req, res) => {
   try {
-    const horarioModificado = await modificaHorarioService(req.params.id, req.body);
-    res.status(200).json({ message: "Horario modificado correctamente", horario: horarioModificado });
+    const result = await asignaHorarioProfesorService(req.body);
+    res.status(200).json(result);
   } catch (error) {
+    console.error("Error al asignar horario al profesor:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -62,15 +62,6 @@ export const verCursos = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
-export const asignarProfesorAHorario = async (req, res) => {
-  try {
-    const result = await asignarProfesorAHorarioService(req.params.idHorario, req.body.rut);
-    res.status(200).json({ message: "Profesor asignado correctamente", horario: result });
-  } catch (error) {
-    console.error("Error al asignar profesor al horario:", error);
-    res.status(400).json({ message: error.message });
-  }
-};
 
 export const verProfesores = async (req, res) => {
   try {
@@ -80,9 +71,10 @@ export const verProfesores = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const verHorarioProfesor = async (req, res) => {
   try {
-    const horarios = await getHorariosByProfesor(req.query.rut, req.user.rut);
+    const horarios = await getHorarioProfesor(req.query.rut);
     res.status(200).json(horarios);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -94,12 +86,9 @@ export const verHorarioCurso = async (req, res) => {
     const result = await getHorariosByCursoService(req.params.ID_curso);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Error al obtener horario del curso:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 export const verTodosHorarios = async (req, res) => {
   try {
@@ -147,6 +136,3 @@ export const eliminarCurso = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-
-

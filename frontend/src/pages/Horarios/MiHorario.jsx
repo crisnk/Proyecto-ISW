@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getHorarioCurso } from "../../services/horario.service"; 
+import { getHorariosByCurso } from "../../services/horario.service"; 
 import PaginatedTable from "../../components/Horarios/PaginatedTable"; 
 
 const MiHorario = () => {
@@ -15,8 +15,8 @@ const MiHorario = () => {
           setError("No se encontró información de tu curso.");
           return;
         }
-        const data = await getHorarioCurso(user.ID_curso);
-        setHorario(data); 
+        const data = await getHorariosByCurso(user.ID_curso);
+        setHorario(data);
       } catch (err) {
         setError("Error al cargar tu horario.");
         console.error(err);
