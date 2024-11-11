@@ -40,8 +40,10 @@ export async function register(req, res) {
 
     const { error } = registerValidation.validate(body);
 
-    if (error)
+    if (error) {
+      
       return handleErrorClient(res, 400, "Error de validación", error.message);
+    }
 
     const [newUser, errorNewUser] = await registerService(body);
 
@@ -52,6 +54,8 @@ export async function register(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
+
 
 export async function logout(req, res) {
   try {

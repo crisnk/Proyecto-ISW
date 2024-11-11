@@ -5,29 +5,33 @@ const ImparteSchema = new EntitySchema({
   name: "Imparte",
   tableName: "imparten",
   columns: {
-    ID_materia: {
+    id: {
       type: "int",
       primary: true,
+      generated: true,
+    },
+    ID_materia: {
+      type: "int",
+      
     },
     ID_curso: {
       type: "int",
-      primary: true,
+      
     },
     rut: {
-      type: "int",
-      primary: true,
+      type: "varchar",
+      length: 12,
+      nullable: false,
+      
     },
     dia: {
       type: "varchar",
       length: 50,
       nullable: false,
     },
-    hora_Inicio: {
-      type: "time",
-      nullable: false,
-    },
-    hora_Fin: {
-      type: "time",
+    bloque: {
+      type: "varchar", 
+      length: 15, 
       nullable: false,
     },
     createdAt: {
@@ -59,6 +63,7 @@ const ImparteSchema = new EntitySchema({
         name: "ID_curso", 
         referencedColumnName: "ID_curso", 
       },
+      onDelete: "CASCADE",
       
     },
 
@@ -69,6 +74,7 @@ const ImparteSchema = new EntitySchema({
         name: "ID_materia", 
         referencedColumnName: "ID_materia", 
       },
+      onDelete: "CASCADE", 
 
     }
   },
