@@ -27,36 +27,43 @@ export const asignaHorarioCursoService = async (horarioData) => {
   }
 
   const materiaRepository = AppDataSource.getRepository(Materia);
+  const repository = AppDataSource.getRepository(Imparte);
 
   for (const bloque of horario) {
     const materia = await materiaRepository.findOneBy({ ID_materia: bloque.ID_materia });
     if (!materia) {
       throw new Error(`La materia con ID ${bloque.ID_materia} no existe.`);
     }
-  
+
     const { error } = horarioValidationCurso.validate(bloque, { abortEarly: false });
     if (error) {
       throw new Error(error.details.map((e) => e.message).join(", "));
     }
 
     validarHorario(bloque.dia, bloque.bloque);
+   
+    let horarioExistente = await repository.findOne({
+      where: { ID_curso: ID_curso, dia: bloque.dia, bloque: bloque.bloque },
+    });
 
-    await verificarConflictos(bloque, ID_curso, bloque.rut !== "SIN_PROFESOR" ? bloque.rut : null);
-  
-    const nuevoHorario = {
-      ID_materia: bloque.ID_materia,
-      ID_curso,
-      rut: bloque.rut !== "SIN_PROFESOR" ? bloque.rut : null,
-      dia: bloque.dia,
-      bloque: bloque.bloque,
-    };
-
-    const repository = AppDataSource.getRepository(Imparte);
-    await repository.save(repository.create(nuevoHorario));
+    if (horarioExistente) {
+      horarioExistente.ID_materia = bloque.ID_materia;
+      await repository.save(horarioExistente);
+    } else {
+      const nuevoHorario = {
+        ID_materia: bloque.ID_materia,
+        ID_curso,
+        rut: "SIN_PROFESOR",
+        dia: bloque.dia,
+        bloque: bloque.bloque,
+      };
+      await repository.save(repository.create(nuevoHorario));
+    }
   }
 
   return { message: "Horario asignado correctamente para el curso." };
 };
+
 
 export const asignaHorarioProfesorService = async (horarioData) => {
   const { rut, horario } = horarioData;
@@ -133,10 +140,16 @@ export const getHorariosByCursoService = async (ID_curso) => {
   });
 
   if (!horarios.length) {
-    throw new Error("No se encontraron horarios para este curso.");
+    return []; 
   }
-
-  return horarios;
+ 
+  return horarios.map((horario) => ({
+    ID_materia: horario.materia?.ID_materia || "Sin asignar",
+    ID_curso: horario.curso?.ID_curso || null,
+    dia: horario.dia,
+    bloque: horario.bloque,
+    rut: horario.profesor?.rut || "SIN_PROFESOR",
+  }));
 };
 
 export const getAllHorarios = async (query) => {

@@ -26,9 +26,8 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
                     <label>Materia:</label>
                     <select
                       value={horario[dia]?.[hora]?.materia || "Sin asignar"}
-                      onChange={(e) =>
-                        onMateriaChange(dia, hora, e.target.value)
-                      }
+                      onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
+                      disabled={horario[dia]?.[hora]?.materia === "Recreo"}
                     >
                       <option value="Sin asignar">Sin asignar</option>
                       {materias.map((materia) => (
@@ -49,6 +48,3 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
 };
 
 export default EditarTablaHorarioCurso;
-
-
-

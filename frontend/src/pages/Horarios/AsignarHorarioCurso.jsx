@@ -28,9 +28,9 @@ const AsignarHorarioCurso = () => {
   const [materias, setMaterias] = useState([]);
   const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const initializeHorario = useCallback(() => {
     const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
@@ -59,7 +59,7 @@ const AsignarHorarioCurso = () => {
       existingHorario.forEach((item) => {
         if (formattedHorario[item.dia]?.[item.bloque]) {
           formattedHorario[item.dia][item.bloque] = {
-            materia: item.materia?.ID_materia.toString() || "Sin asignar",
+            materia: item.ID_materia ? item.ID_materia.toString() : "Sin asignar",
           };
         }
       });
@@ -105,6 +105,11 @@ const AsignarHorarioCurso = () => {
   }, []);
 
   const handleGuardarHorario = async () => {
+    if (!curso) {
+      setError("Debes seleccionar un curso antes de guardar.");
+      return;
+    }
+
     setSaving(true);
     try {
       const payload = {
@@ -186,6 +191,3 @@ const AsignarHorarioCurso = () => {
 };
 
 export default AsignarHorarioCurso;
-
-
-
