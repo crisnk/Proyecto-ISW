@@ -41,23 +41,24 @@ export const asignaHorarioCursoService = async (horarioData) => {
     }
 
     validarHorario(bloque.dia, bloque.bloque);
-   
+
     let horarioExistente = await repository.findOne({
       where: { ID_curso: ID_curso, dia: bloque.dia, bloque: bloque.bloque },
     });
 
     if (horarioExistente) {
       horarioExistente.ID_materia = bloque.ID_materia;
-      await repository.save(horarioExistente);
+      await repository.save(horarioExistente); 
     } else {
-      const nuevoHorario = {
+      const nuevoHorario = repository.create({
         ID_materia: bloque.ID_materia,
-        ID_curso,
-        rut: "SIN_PROFESOR",
+        ID_curso: ID_curso,
+        rut: null, 
         dia: bloque.dia,
         bloque: bloque.bloque,
-      };
-      await repository.save(repository.create(nuevoHorario));
+      });
+
+      await repository.save(nuevoHorario); 
     }
   }
 
@@ -78,46 +79,46 @@ export const asignaHorarioProfesorService = async (horarioData) => {
   if (!profesor) {
     throw new Error("El profesor con el RUT proporcionado no existe o no tiene el rol adecuado.");
   }
-
   const repository = AppDataSource.getRepository(Imparte);
 
   for (const bloque of horario) {
     validarHorario(bloque.dia, bloque.bloque);
 
     let horarioExistente = await repository.findOne({
-      where: { ID_curso: bloque.ID_curso, dia: bloque.dia, bloque: bloque.bloque },
+      where: { rut, dia: bloque.dia, bloque: bloque.bloque },
     });
 
     if (horarioExistente) {
-      horarioExistente.rut = rut;
+ 
+      horarioExistente.ID_materia = bloque.ID_materia;
+      horarioExistente.ID_curso = bloque.ID_curso;
       await repository.save(horarioExistente);
     } else {
-      const nuevoHorario = {
+
+      const conflictoHorario = await repository.findOne({
+        where: { dia: bloque.dia, bloque: bloque.bloque, rut },
+      });
+
+      if (conflictoHorario) {
+        throw new Error(
+          `Conflicto de horario: El profesor con RUT
+           ${rut} ya tiene asignado el bloque ${bloque.bloque} el día ${bloque.dia}.`
+        );
+      }
+
+      const nuevoHorario = repository.create({
         ID_materia: bloque.ID_materia,
         ID_curso: bloque.ID_curso,
         rut: rut,
         dia: bloque.dia,
         bloque: bloque.bloque,
-      };
-      await repository.save(repository.create(nuevoHorario));
+      });
+
+      await repository.save(nuevoHorario);
     }
   }
 
   return { message: "Horario asignado correctamente para el profesor." };
-};
-const verificarConflictos = async (bloque, ID_curso, rut) => {
-  const repository = AppDataSource.getRepository(Imparte);
-  const conflicto = await repository.findOne({
-    where: [
-      { dia: bloque.dia, bloque: bloque.bloque, ID_curso },
-      { dia: bloque.dia, bloque: bloque.bloque, rut },
-    ].filter((cond) => cond.ID_curso || cond.rut),
-  });
-
-  if (conflicto) {
-    throw new Error(`Conflicto detectado:
-       el horario para el día ${bloque.dia}, bloque ${bloque.bloque} ya está asignado.`);
-  }
 };
 
 export const eliminarHorarioService = async (id) => {
@@ -133,22 +134,28 @@ export const eliminarHorarioService = async (id) => {
 };
 
 export const getHorariosByCursoService = async (ID_curso) => {
+  if (!ID_curso || isNaN(ID_curso)) {
+    throw new Error("ID_curso debe ser un número válido.");
+  }
+
   const repository = AppDataSource.getRepository(Imparte);
+
   const horarios = await repository.find({
-    where: { ID_curso },
-    relations: ["materia", "curso", "profesor"],
+    where: { ID_curso: Number(ID_curso) },
+    relations: ["materia", "profesor"], 
   });
 
-  if (!horarios.length) {
-    return []; 
+  if (horarios.length === 0) {
+    throw new Error("No se encontraron horarios para el curso proporcionado.");
   }
- 
+
   return horarios.map((horario) => ({
-    ID_materia: horario.materia?.ID_materia || "Sin asignar",
-    ID_curso: horario.curso?.ID_curso || null,
     dia: horario.dia,
     bloque: horario.bloque,
-    rut: horario.profesor?.rut || "SIN_PROFESOR",
+    ID_materia: horario.ID_materia,
+    nombre_materia: horario.materia?.nombre || "Materia no disponible",
+    rut_profesor: horario.profesor?.rut || null,
+    nombre_profesor: horario.profesor?.nombre || "Sin profesor",
   }));
 };
 

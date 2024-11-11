@@ -56,10 +56,16 @@ const AsignarHorarioCurso = () => {
       const existingHorario = await getHorariosByCurso(curso);
       const formattedHorario = initializeHorario();
 
+      if (existingHorario.length === 0) {
+        setHorario(formattedHorario); 
+        return;
+      }
+
       existingHorario.forEach((item) => {
         if (formattedHorario[item.dia]?.[item.bloque]) {
           formattedHorario[item.dia][item.bloque] = {
-            materia: item.ID_materia ? item.ID_materia.toString() : "Sin asignar",
+            materia: item.ID_materia.toString(),
+            nombre_materia: item.nombre_materia,
           };
         }
       });
@@ -67,8 +73,8 @@ const AsignarHorarioCurso = () => {
       setHorario(formattedHorario);
       setError("");
     } catch (err) {
-      console.error("Error al cargar el horario:", err);
-      setError("Error al cargar el horario.");
+      setError("Error al cargar el horario del curso.", err);
+      setHorario(initializeHorario()); 
     } finally {
       setLoading(false);
     }
@@ -81,11 +87,10 @@ const AsignarHorarioCurso = () => {
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
-        setMaterias(await getMaterias());
-        setError("");
+        const materiasData = await getMaterias();
+        setMaterias(materiasData);
       } catch (err) {
-        console.error("Error al cargar materias:", err);
-        setError("Error al cargar materias.");
+        setError("Error al cargar materias.", err);
       }
     };
     fetchMaterias();
@@ -94,11 +99,10 @@ const AsignarHorarioCurso = () => {
   useEffect(() => {
     const fetchCursos = async () => {
       try {
-        setCursos(await getCursos());
-        setError("");
+        const cursosData = await getCursos();
+        setCursos(cursosData);
       } catch (err) {
-        console.error("Error al cargar cursos:", err);
-        setError("Error al cargar cursos.");
+        setError("Error al cargar cursos.", err);
       }
     };
     fetchCursos();
@@ -115,17 +119,19 @@ const AsignarHorarioCurso = () => {
       const payload = {
         ID_curso: parseInt(curso, 10),
         horario: diasSemana.flatMap((dia) =>
-          horas.map((hora) => {
-            const materia = horario[dia]?.[hora]?.materia;
-            if (materia && materia !== "Sin asignar" && materia !== "Recreo") {
-              return {
-                ID_materia: parseInt(materia, 10),
-                dia,
-                bloque: hora,
-              };
-            }
-            return null;
-          }).filter(Boolean)
+          horas
+            .map((hora) => {
+              const materia = horario[dia]?.[hora]?.materia;
+              if (materia && materia !== "Sin asignar" && materia !== "Recreo") {
+                return {
+                  ID_materia: parseInt(materia, 10),
+                  dia,
+                  bloque: hora,
+                };
+              }
+              return null;
+            })
+            .filter(Boolean)
         ),
       };
 
@@ -138,14 +144,15 @@ const AsignarHorarioCurso = () => {
       setSuccess("Horario guardado correctamente.");
       setError("");
     } catch (error) {
-      console.error("Error al guardar el horario:", error);
-      setError("Error al guardar el horario.");
+      setError("Error al guardar el horario.", error);
     } finally {
       setSaving(false);
     }
   };
 
   const handleMateriaChange = (dia, bloque, value) => {
+    const selectedMateria = materias.find((m) => m.ID_materia.toString() === value);
+
     setHorario((prev) => ({
       ...prev,
       [dia]: {
@@ -153,6 +160,7 @@ const AsignarHorarioCurso = () => {
         [bloque]: {
           ...prev[dia]?.[bloque],
           materia: value,
+          nombre_materia: selectedMateria ? selectedMateria.nombre : "Sin asignar",
         },
       },
     }));
@@ -191,3 +199,4 @@ const AsignarHorarioCurso = () => {
 };
 
 export default AsignarHorarioCurso;
+

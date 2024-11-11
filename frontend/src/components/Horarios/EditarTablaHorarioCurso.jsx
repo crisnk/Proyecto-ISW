@@ -1,10 +1,12 @@
 const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMateriaChange }) => {
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
+
   if (!horario || !diasSemana || !horas || !materias) {
     return <p>Error: Datos incompletos para renderizar la tabla.</p>;
   }
 
   return (
-    <table>
+    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
       <thead>
         <tr>
           <th>Horas</th>
@@ -19,24 +21,20 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
             <td>{hora}</td>
             {diasSemana.map((dia) => (
               <td key={`${dia}-${hora}`}>
-                {horario[dia]?.[hora]?.materia === "Recreo" ? (
+                {recreoHoras.includes(hora) ? (
                   <span>Recreo</span>
                 ) : (
-                  <div>
-                    <label>Materia:</label>
-                    <select
-                      value={horario[dia]?.[hora]?.materia || "Sin asignar"}
-                      onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
-                      disabled={horario[dia]?.[hora]?.materia === "Recreo"}
-                    >
-                      <option value="Sin asignar">Sin asignar</option>
-                      {materias.map((materia) => (
-                        <option key={materia.ID_materia} value={materia.ID_materia}>
-                          {materia.nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <select
+                    value={horario[dia]?.[hora]?.materia || "Sin asignar"}
+                    onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
+                  >
+                    <option value="Sin asignar">Sin asignar</option>
+                    {materias.map((materia) => (
+                      <option key={materia.ID_materia} value={materia.ID_materia}>
+                        {materia.nombre}
+                      </option>
+                    ))}
+                  </select>
                 )}
               </td>
             ))}

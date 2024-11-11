@@ -49,9 +49,12 @@ export const eliminarHorario = async (id) => {
 export const getHorariosByCurso = async (ID_curso) => {
   try {
     const response = await axios.get(`/horarios/ver/curso/${ID_curso}`);
-    return response.data.data || []; 
+    return response.data;
   } catch (error) {
-    console.error("Error al obtener horario de curso:", error);
+    if (error.response && error.response.status === 400) {
+      console.warn("No se encontraron horarios para este curso.");
+      return [];
+    }
     throw error; 
   }
 };

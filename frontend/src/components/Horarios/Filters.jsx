@@ -29,14 +29,14 @@ const Filters = ({ onChange }) => {
 
     if (filterType) {
       fetchOptions();
-      setSelectedValue(""); // Resetear el valor seleccionado cuando cambie el filtro
+      setSelectedValue(""); 
     }
   }, [filterType]);
 
   const handleFilterChange = (e) => {
     const newValue = e.target.value;
-    setSelectedValue(newValue); // Actualiza el valor seleccionado
-    onChange({ [filterType]: newValue }); // Propaga el filtro al padre
+    setSelectedValue(newValue); 
+    onChange({ [filterType]: newValue }); 
   };
 
   return (
