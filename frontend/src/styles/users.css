@@ -89,3 +89,12 @@
         margin-right: 35px;
     }
 }
+
+.justificar-button {
+    margin-left: 10px; /* Espacio entre el campo de búsqueda y el botón */
+    padding: 8px 12px; /* Tamaño del botón */
+    background-color: #4CAF50  !important; 
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+}

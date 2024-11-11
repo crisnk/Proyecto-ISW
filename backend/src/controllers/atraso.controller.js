@@ -4,7 +4,8 @@ import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 import { createAtrasoService,
          findAtraso,
          createJustificativo,
-         obtenerAtrasos
+         obtenerAtrasos,
+         obtenerAtrasosAlumnos
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -113,10 +114,37 @@ export async function verAtrasos(req,res) {
     ? handleSuccess(res, 204)
     : handleSuccess(res, 200, "Atrasos encontrados", atrasos);
   } catch (error) {
-    handleErrorServer(
-      res,
-      500,
-      error.message,
-    );
+    handleErrorServer(res,500,error.message);
   }
 };
+
+export async function tablaAtrasosAlumnos(req,res){
+  try {
+    const token = req.cookies.jwt;
+
+    if (!token) {
+      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
+    }
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const { rut } = decoded;
+
+    if (!rut) {
+      return handleErrorClient(res, 401, "Token inválido o RUN no presente en el token");
+    }   
+
+    const [atrasos, errorAtrasos] = await obtenerAtrasosAlumnos(rut);
+
+    if (errorAtrasos) {
+      return handleErrorClient(res, 404, errorAtrasos);
+    }
+    
+    if (atrasos.length === 0) {
+      return handleSuccess(res, 204); 
+    } else {
+      return handleSuccess(res, 200, "Atrasos encontrados", atrasos);
+    }
+  } catch (error) {
+    handleErrorServer(res,500,error.message);
+  }
+}

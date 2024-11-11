@@ -3,7 +3,8 @@ import { Router } from "express";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { generarJustificativo,
          registrarAtraso,
-         verAtrasos
+         verAtrasos,
+         tablaAtrasosAlumnos
         } from "../controllers/atraso.controller.js";
 import { isAuthorized } from "../middlewares/authorization.middleware.js";
 
@@ -21,7 +22,8 @@ router
     .get("/atrasos", verAtrasos)
     .post("/aprobar/:ID_atraso", manejarAprobarJustificativo)
     .post("/rechazar/:ID_atraso", manejarRechazarJustificativo)
-    .post("/enviar", sendCustomEmail);
+    .post("/enviar", sendCustomEmail)
+    .get("/tablaAlumnos", tablaAtrasosAlumnos);
     
 
 export default router;

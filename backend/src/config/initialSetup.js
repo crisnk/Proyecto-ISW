@@ -131,4 +131,3 @@ export async function crearEspecialidades() {
     console.error("Error al crear especialidades:", error);
   }
 }
-export { createUsers };
