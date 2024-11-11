@@ -38,7 +38,7 @@ const EditarTablaHorario = ({ horario, diasSemana, horas, materias, cursos, onHo
                       >
                         <option value="Sin asignar">Sin asignar</option>
                         {materias.map((materia) => (
-                          <option key={materia.ID_materia} value={materia.nombre}>
+                          <option key={materia.ID_materia} value={materia.ID_materia}>
                             {materia.nombre}
                           </option>
                         ))}
@@ -57,7 +57,7 @@ const EditarTablaHorario = ({ horario, diasSemana, horas, materias, cursos, onHo
                       >
                         <option value="Sin asignar">Sin asignar</option>
                         {cursos.map((curso) => (
-                          <option key={curso.ID_curso} value={curso.nombre}>
+                          <option key={curso.ID_curso} value={curso.ID_curso}>
                             {curso.nombre}
                           </option>
                         ))}
@@ -75,14 +75,3 @@ const EditarTablaHorario = ({ horario, diasSemana, horas, materias, cursos, onHo
 };
 
 export default EditarTablaHorario;
-
-
-
-
-
-
-
-  
-  
-  
-  

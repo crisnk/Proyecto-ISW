@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  asignarProfesorAHorario,
   crearCurso,
   crearHorario,
   crearMateria,
@@ -23,6 +24,7 @@ router.get("/cursosregister", verCursos);
 
 router.use(authenticateJwt);
 
+router.patch("/asignar/profesor/:idHorario", isAuthorized(["jefeUTP", "administrador"]), asignarProfesorAHorario);
 router.post("/asignar", isAuthorized(["jefeUTP", "administrador"]), crearHorario);
 router.post("/asignar/curso", isAuthorized(["jefeUTP", "administrador"]), crearHorario);
 router.post("/asignar/profesor", isAuthorized(["jefeUTP", "administrador"]), crearHorario);

@@ -12,17 +12,14 @@ const ImparteSchema = new EntitySchema({
     },
     ID_materia: {
       type: "int",
-      
     },
     ID_curso: {
       type: "int",
-      
     },
     rut: {
       type: "varchar",
       length: 12,
-      nullable: false,
-      
+      nullable: true, 
     },
     dia: {
       type: "varchar",
@@ -30,8 +27,8 @@ const ImparteSchema = new EntitySchema({
       nullable: false,
     },
     bloque: {
-      type: "varchar", 
-      length: 15, 
+      type: "varchar",
+      length: 15,
       nullable: false,
     },
     createdAt: {
@@ -47,36 +44,32 @@ const ImparteSchema = new EntitySchema({
     },
   },
   relations: {
-    profesor:{
+    profesor: {
       target: "User",
       type: "many-to-one",
       joinColumn: {
         name: "rut",
         referencedColumnName: "rut",
       },
-      
     },
     curso: {
       target: "Curso",
-      type: "many-to-one", 
+      type: "many-to-one",
       joinColumn: {
-        name: "ID_curso", 
-        referencedColumnName: "ID_curso", 
+        name: "ID_curso",
+        referencedColumnName: "ID_curso",
       },
       onDelete: "CASCADE",
-      
     },
-
     materia: {
       target: "Materia",
-      type: "many-to-one", 
+      type: "many-to-one",
       joinColumn: {
-        name: "ID_materia", 
-        referencedColumnName: "ID_materia", 
+        name: "ID_materia",
+        referencedColumnName: "ID_materia",
       },
-      onDelete: "CASCADE", 
-
-    }
+      onDelete: "CASCADE",
+    },
   },
 });
 

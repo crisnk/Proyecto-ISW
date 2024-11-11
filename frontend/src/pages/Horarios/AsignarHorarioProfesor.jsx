@@ -33,26 +33,20 @@ const AsignarHorarioProfesor = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const initializeHorario = useCallback((existingHorario) => {
-    const formattedHorario = {};
+  const initializeHorario = useCallback(() => {
+    const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
+    const newHorario = {};
 
     diasSemana.forEach((dia) => {
-      formattedHorario[dia] = {};
+      newHorario[dia] = {};
       horas.forEach((hora) => {
-        formattedHorario[dia][hora] = { materia: "Sin asignar", curso: "Sin asignar" };
+        newHorario[dia][hora] = recreoHoras.includes(hora)
+          ? { materia: "Recreo", curso: "Recreo" }
+          : { materia: "Sin asignar", curso: "Sin asignar" };
       });
     });
 
-    if (existingHorario) {
-      existingHorario.forEach((item) => {
-        formattedHorario[item.dia][item.bloque] = {
-          materia: item.ID_materia.toString(),
-          curso: item.ID_curso.toString(),
-        };
-      });
-    }
-
-    return formattedHorario;
+    return newHorario;
   }, []);
 
   const fetchHorarioProfesor = useCallback(async () => {
@@ -61,7 +55,19 @@ const AsignarHorarioProfesor = () => {
     setLoading(true);
     try {
       const existingHorario = await getHorarioProfesor(profesor);
-      setHorario(initializeHorario(existingHorario));
+      const formattedHorario = initializeHorario();
+     
+      existingHorario.forEach((item) => {
+        if (formattedHorario[item.dia]?.[item.bloque]) {
+          formattedHorario[item.dia][item.bloque] = {
+            materia: item.materia?.ID_materia.toString() || "Sin asignar",
+            curso: item.curso?.ID_curso.toString() || "Sin asignar",
+          };
+        }
+      });
+
+      console.log("Horario cargado con materias ya asignadas:", formattedHorario);
+      setHorario(formattedHorario);
     } catch (error) {
       console.error("Error al cargar el horario:", error);
       setError("Error al cargar el horario.");
@@ -111,8 +117,17 @@ const AsignarHorarioProfesor = () => {
     try {
       const cambios = diasSemana.flatMap((dia) =>
         horas.map((hora) => {
-          const { materia, curso } = horario[dia]?.[hora] || {};
-          if (materia !== "Sin asignar" && curso !== "Sin asignar") {
+          const materia = horario[dia]?.[hora]?.materia;
+          const curso = horario[dia]?.[hora]?.curso;
+
+          if (
+            materia &&
+            curso &&
+            materia !== "Sin asignar" &&
+            curso !== "Sin asignar" &&
+            materia !== "Recreo" &&
+            curso !== "Recreo"
+          ) {
             return {
               ID_materia: parseInt(materia, 10),
               ID_curso: parseInt(curso, 10),
@@ -124,19 +139,21 @@ const AsignarHorarioProfesor = () => {
         }).filter(Boolean)
       );
 
-      const payload = {
-        rut: profesor,
-        horario: cambios,
-      };
-
-      if (payload.horario.length === 0) {
+      if (cambios.length === 0) {
         setError("No se han asignado bloques válidos para guardar.");
         return;
       }
 
+      const payload = {
+        rut: profesor, 
+        horario: cambios,
+      };
+
+      console.log("Payload preparado para guardar:", JSON.stringify(payload, null, 2));
+
       await saveHorarioProfesor(payload);
       setSuccess("Horario guardado correctamente.");
-      setError("");
+      setError(""); // Limpiar errores anteriores
     } catch (error) {
       console.error("Error al guardar el horario:", error.response?.data || error.message);
       setError("Error al guardar el horario.");
@@ -190,4 +207,3 @@ const AsignarHorarioProfesor = () => {
 };
 
 export default AsignarHorarioProfesor;
-

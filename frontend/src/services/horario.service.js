@@ -6,6 +6,9 @@ export const getHorarios = async (params) => {
       Object.entries(params).filter(([, value]) => value)
     );
     const response = await axios.get("/horarios/ver/todos", { params: filteredParams });
+    if (!response.data || !response.data.data) {
+      throw new Error("La API no devolvió datos esperados");
+    }
     return {
       data: response.data.data || [],
       totalPages: response.data.totalPages || 1,
@@ -15,6 +18,8 @@ export const getHorarios = async (params) => {
     throw error;
   }
 };
+
+
 
 export const getCursos = async () => {
   try {
@@ -62,16 +67,15 @@ export const getMaterias = async () => {
 export const getHorarioCurso = async (ID_curso) => {
   try {
     const response = await axios.get(`/horarios/ver/curso/${ID_curso}`);
-    return response.data.data || {}; 
+    
+    return response.data.data || []; 
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      return { data: [] }; 
+      return []; 
     }
-    throw error;
+    throw error; 
   }
 };
-
-
 
 export const getHorarioProfesor = async (rut) => {
   try {
@@ -85,51 +89,28 @@ export const getHorarioProfesor = async (rut) => {
   }
 };
 
-
-export const saveHorarioCurso = async (cursoId, horario) => {
+export const saveHorarioCurso = async (payload) => {
   try {
-    if (!cursoId || !horario || Object.keys(horario).length === 0) {
-      throw new Error("Datos de horario incompletos o mal estructurados.");
-    }
-
-    // Validar y construir el payload correctamente
-    const payload = {
-      cursoId,
-      horario: Object.entries(horario).flatMap(([dia, bloques]) => {
-        return Object.entries(bloques)
-          .filter(([, materia]) => materia && materia !== "Sin asignar"
-          .map(([bloque, materia]) => ({
-            ID_materia: parseInt(materia, 10),
-            dia,
-            bloque,
-          })));
-      }),
-    };
-
-    if (payload.horario.length === 0) {
-      throw new Error("No se han asignado bloques válidos para guardar.");
-    }
-
-    console.log("Payload enviado al backend:", JSON.stringify(payload, null, 2)); // Verificar estructura antes de enviar
-
     const response = await axios.post("/horarios/asignar/curso", payload);
     return response.data;
   } catch (error) {
-    console.error("Error al guardar horario del curso:", error.response?.data || error.message);
+    console.error("Error en saveHorarioCurso:", error);
     throw error;
   }
 };
 
+
+
 export const saveHorarioProfesor = async (payload) => {
   try {
-    console.log("Payload enviado al backend:", JSON.stringify(payload, null, 2));
     const response = await axios.post("/horarios/asignar/profesor", payload);
     return response.data;
   } catch (error) {
-    console.error("Error al guardar el horario del profesor:", error.response?.data || error.message);
+    console.error("Error al guardar horario del profesor:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 
 export const eliminarHorario = async (id) => {

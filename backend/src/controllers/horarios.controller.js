@@ -1,6 +1,7 @@
 "use strict";
 import {
   asignaHorarioService,
+  asignarProfesorAHorarioService,
   crearCursoService,
   crearMateriaService,
   eliminarCursoService,
@@ -8,7 +9,7 @@ import {
   eliminarMateriaService,
   getAllHorarios,
   getCursos,
-  getHorariosByCurso,
+  getHorariosByCursoService,
   getHorariosByProfesor,
   getMaterias,
   getProfesores,
@@ -19,7 +20,7 @@ export const crearHorario = async (req, res) => {
   try {
     const horarioAsignado = await asignaHorarioService(req.body);
     res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
-  } catch (error) {
+  } catch (error) {  
     console.error("Error al asignar horario:", error);
     res.status(400).json({ message: error.message });
   }
@@ -61,6 +62,15 @@ export const verCursos = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+export const asignarProfesorAHorario = async (req, res) => {
+  try {
+    const result = await asignarProfesorAHorarioService(req.params.idHorario, req.body.rut);
+    res.status(200).json({ message: "Profesor asignado correctamente", horario: result });
+  } catch (error) {
+    console.error("Error al asignar profesor al horario:", error);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 export const verProfesores = async (req, res) => {
   try {
@@ -81,16 +91,14 @@ export const verHorarioProfesor = async (req, res) => {
 
 export const verHorarioCurso = async (req, res) => {
   try {
-    const result = await getHorariosByCurso(req.params.ID_curso);
+    const result = await getHorariosByCursoService(req.params.ID_curso);
     res.status(200).json(result);
   } catch (error) {
-    if (error.message === "El curso no existe en la base de datos.") {
-      res.status(404).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    console.error("Error al obtener horario del curso:", error);
+    res.status(500).json({ message: error.message });
   }
 };
+
 
 
 export const verTodosHorarios = async (req, res) => {

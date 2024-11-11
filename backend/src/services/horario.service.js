@@ -5,63 +5,52 @@ import Imparte from "../entity/imparte.entity.js";
 import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
 import { Not } from "typeorm";
-import { cursoValidation, horarioValidation, materiaValidation, 
-  paginationAndFilterValidation, validarHorario  } from "../validations/horario.validation.js";
+import { cursoValidation,  horarioValidationCurso, 
+   materiaValidation, 
+  paginationAndFilterValidation, validarHorario } from "../validations/horario.validation.js";
 
-
-export const asignaHorarioService = async (horarioData) => {
-  const { rut, horario } = horarioData; 
-
-  if (!rut || !Array.isArray(horario) || horario.length === 0) {
-    throw new Error("Datos incompletos para asignar el horario.");
-  }
-
-  const repository = AppDataSource.getRepository(Imparte);
-
-  for (const bloque of horario) {
-    const { ID_materia, ID_curso, dia, bloque: hora } = bloque;
+  export const asignaHorarioService = async (horarioData) => {
+    if (!Array.isArray(horarioData.horario) || horarioData.horario.length === 0) {
+      throw new Error("El horario debe ser un arreglo con al menos un bloque.");
+    }
   
-    if (!ID_materia || !ID_curso || !dia || !hora) {
-      throw new Error("Datos incompletos en el bloque de horario.");
-    }
-    
-    validarHorario(dia, hora);
-
-    const { error } = horarioValidation.validate(
-      { ID_materia, ID_curso, rut, dia, bloque: hora },
-      { abortEarly: false }
-    );
-
-    if (error) {
-      throw new Error(`Errores de validación: ${error.details.map((err) => err.message).join(", ")}`);
-    }
-    
-    const conflicto = await repository.findOne({
-      where: [
-        { rut, dia, bloque: hora }, 
-        { ID_curso, dia, bloque: hora }, 
-      ],
-    });
-
-    if (conflicto) {
-      console.log(`Conflicto encontrado en ${dia} ${hora}, eliminando conflicto.`);
-      await repository.remove(conflicto);
-    }
-
-    const nuevoHorario = repository.create({
-      ID_materia,
-      ID_curso,
-      rut,
-      dia,
-      bloque: hora,
-    });
+    const repository = AppDataSource.getRepository(Imparte);
   
-    await repository.save(nuevoHorario);
-  }
-
-  return { message: "Horario asignado correctamente." };
-};
-
+    for (const bloque of horarioData.horario) {
+      const { ID_materia, dia, bloque: hora } = bloque;
+      const ID_curso = horarioData.ID_curso; // Propaga el ID_curso aquí
+  
+      if (!ID_curso) {
+        throw new Error("Debe proporcionar ID_curso.");
+      }
+  
+      const { error } = horarioValidationCurso.validate({ ...bloque, ID_curso });
+      if (error) {
+        throw new Error(error.details.map((e) => e.message).join(", "));
+      }
+  
+      validarHorario(dia, hora);
+  
+      const conflicto = await repository.findOne({
+        where: { dia, bloque: hora, ID_curso },
+      });
+      if (conflicto) {
+        throw new Error(`Conflicto detectado: ${dia}, ${hora}`);
+      }
+  
+      const nuevoHorario = repository.create({
+        ID_materia,
+        ID_curso,
+        dia,
+        bloque: hora,
+      });
+  
+      await repository.save(nuevoHorario);
+    }
+  
+    return { message: "Horario asignado correctamente." };
+  };
+  
   
   export const modificaHorarioService = async (id, horarioData) => {
     const { error } = horarioValidation.validate(horarioData, { abortEarly: false });
@@ -99,7 +88,7 @@ export const asignaHorarioService = async (horarioData) => {
     await repository.save(horarioExistente);
   
     return horarioExistente;
-  };
+};
   
 export const eliminarHorarioService = async (id) => {
   const repository = AppDataSource.getRepository(Imparte);
@@ -130,36 +119,40 @@ export const getHorariosByProfesor = async (rut, userRut) => {
   return horarios;
 };
 
+export const asignarProfesorAHorarioService = async (idHorario, rutProfesor) => {
+  const repository = AppDataSource.getRepository(Imparte);
 
-export const getHorariosByCurso = async (ID_curso) => {
-  try {
-    const cursoExistente = await AppDataSource.getRepository(Curso).findOneBy({ ID_curso });
-    if (!cursoExistente) {
-      throw new Error(`El curso con ID ${ID_curso} no existe en la base de datos.`);
-    }
+  const horario = await repository.findOne({
+    where: { id: idHorario },
+    relations: ["curso", "materia", "profesor"],
+  });
 
-    const repository = AppDataSource.getRepository(Imparte);
-    const horarios = await repository.find({
-      where: { ID_curso },
-      relations: ["materia", "curso", "profesor"],
-    });
-
-    const formattedHorario = initializeHorario();
-
-    if (horarios.length > 0) {
-      horarios.forEach((item) => {
-        formattedHorario[item.dia][item.bloque] = item.materia.nombre;
-      });
-    }
-
-    return {
-      message: "Horarios obtenidos con éxito.",
-      data: formattedHorario,
-    };
-  } catch (error) {
-    console.error("Error en getHorariosByCurso:", error);
-    throw error;
+  if (!horario) {
+    throw new Error("Horario no encontrado.");
   }
+
+  if (horario.rut) {
+    throw new Error(`Este horario ya tiene un profesor asignado: ${horario.profesor.nombreCompleto}`);
+  }
+
+  const profesorRepository = AppDataSource.getRepository(User);
+  const profesor = await profesorRepository.findOneBy({ rut: rutProfesor });
+
+  if (!profesor) {
+    throw new Error("El profesor con el RUT proporcionado no existe.");
+  }
+
+  horario.rut = rutProfesor;
+  await repository.save(horario);
+
+  return {
+    id: horario.id,
+    curso: horario.curso.nombre,
+    materia: horario.materia.nombre,
+    dia: horario.dia,
+    bloque: horario.bloque,
+    profesor: profesor.nombreCompleto,
+  };
 };
 
 const initializeHorario = () => {
@@ -179,14 +172,42 @@ const initializeHorario = () => {
     "17:00 - 17:45",
   ];
 
-  const newHorario = {};
+  const horario = {};
   diasSemana.forEach((dia) => {
-    newHorario[dia] = {};
+    horario[dia] = {};
     horas.forEach((hora) => {
-      newHorario[dia][hora] = recreoHoras.includes(hora) ? "Recreo" : "Sin asignar";
+      horario[dia][hora] = recreoHoras.includes(hora) ? "Recreo" : "Sin asignar";
     });
   });
-  return newHorario;
+
+  return horario;
+};
+
+
+export const getHorariosByCursoService = async (ID_curso) => {
+  try {
+    const cursoExistente = await AppDataSource.getRepository(Curso).findOneBy({ ID_curso });
+    if (!cursoExistente) throw new Error(`El curso con ID ${ID_curso} no existe.`);
+
+    const repository = AppDataSource.getRepository(Imparte);
+    const horarios = await repository.find({
+      where: { ID_curso },
+      relations: ["materia", "curso", "profesor"],
+    });
+
+    const formattedHorario = initializeHorario();
+    const bloquesOcupados = [];
+
+    horarios.forEach((item) => {
+      formattedHorario[item.dia][item.bloque] = item.materia.nombre;
+      bloquesOcupados.push(`${item.dia} ${item.bloque}`);
+    });
+
+    return { data: formattedHorario, bloquesOcupados };
+  } catch (error) {
+    console.error("Error en getHorariosByCursoService:", error);
+    throw error;
+  }
 };
 
 

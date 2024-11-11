@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getHorarioCurso } from "../../services/horario.service"; // Asegúrate de que este servicio esté bien configurado
-import PaginatedTable from "../../components/Horarios/PaginatedTable"; // O cualquier otro componente que uses para mostrar horarios
+import { getHorarioCurso } from "../../services/horario.service"; 
+import PaginatedTable from "../../components/Horarios/PaginatedTable"; 
 
 const MiHorario = () => {
   const [horario, setHorario] = useState([]);
@@ -16,7 +16,7 @@ const MiHorario = () => {
           return;
         }
         const data = await getHorarioCurso(user.ID_curso);
-        setHorario(data); // Se asume que el backend retorna el horario del curso
+        setHorario(data); 
       } catch (err) {
         setError("Error al cargar tu horario.");
         console.error(err);

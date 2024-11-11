@@ -1,10 +1,8 @@
-const EditarTablaHorarioCurso = ({
-  horario,
-  diasSemana,
-  horas,
-  materias,
-  onMateriaChange,
-}) => {
+const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMateriaChange }) => {
+  if (!horario || !diasSemana || !horas || !materias) {
+    return <p>Error: Datos incompletos para renderizar la tabla.</p>;
+  }
+
   return (
     <table>
       <thead>
@@ -21,17 +19,26 @@ const EditarTablaHorarioCurso = ({
             <td>{hora}</td>
             {diasSemana.map((dia) => (
               <td key={`${dia}-${hora}`}>
-                <select
-                  value={horario[dia]?.[hora] || ""}
-                  onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
-                >
-                  <option value="">Sin asignar</option>
-                  {materias.map((materia) => (
-                    <option key={materia.ID_materia} value={materia.ID_materia}>
-                      {materia.nombre}
-                    </option>
-                  ))}
-                </select>
+                {horario[dia]?.[hora]?.materia === "Recreo" ? (
+                  <span>Recreo</span>
+                ) : (
+                  <div>
+                    <label>Materia:</label>
+                    <select
+                      value={horario[dia]?.[hora]?.materia || "Sin asignar"}
+                      onChange={(e) =>
+                        onMateriaChange(dia, hora, e.target.value)
+                      }
+                    >
+                      <option value="Sin asignar">Sin asignar</option>
+                      {materias.map((materia) => (
+                        <option key={materia.ID_materia} value={materia.ID_materia}>
+                          {materia.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </td>
             ))}
           </tr>
@@ -42,4 +49,6 @@ const EditarTablaHorarioCurso = ({
 };
 
 export default EditarTablaHorarioCurso;
+
+
 
