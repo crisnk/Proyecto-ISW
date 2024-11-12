@@ -4,6 +4,7 @@ import Curso from "../entity/curso.entity.js";
 import Imparte from "../entity/imparte.entity.js";
 import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
+import Pertenece from "../entity/pertenece.entity.js";
 import {
   cursoValidation,
   horarioValidationCurso,
@@ -176,7 +177,7 @@ export const getAllHorarios = async (query) => {
     .leftJoinAndSelect("horario.curso", "curso")
     .leftJoinAndSelect("horario.profesor", "profesor")
     .orderBy("horario.dia", "ASC")
-    .addOrderBy("horario.bloque", "ASC"); // Ordenamos por día y bloque
+    .addOrderBy("horario.bloque", "ASC"); 
 
   if (profesor) {
     queryBuilder.andWhere(
@@ -203,7 +204,7 @@ export const getAllHorarios = async (query) => {
       data: formattedData,
       total: formattedData.length,
       page: 1,
-      totalPages: 1, // Todo en una sola página
+      totalPages: 1,
     };
   }
 
@@ -327,4 +328,40 @@ export const eliminarCursoService = async (ID_curso) => {
   }
   await cursoRepository.remove(curso);
   return curso;
+};
+
+export const getHorariosByAlumnoService = async (rut) => {
+  if (!rut) {
+    throw new Error("El RUT del alumno es requerido.");
+  }
+
+  const perteneceRepository = AppDataSource.getRepository(Pertenece);
+  const imparteRepository = AppDataSource.getRepository(Imparte);
+
+  const pertenece = await perteneceRepository.findOne({
+    where: { rut },
+    relations: ["curso"],
+  });
+
+  if (!pertenece) {
+    throw new Error("El alumno no pertenece a ningún curso.");
+  }
+
+  const cursoID = pertenece.curso.ID_curso;
+
+  const horarios = await imparteRepository.find({
+    where: { ID_curso: cursoID },
+    relations: ["materia", "profesor"],
+  });
+
+  if (horarios.length === 0) {
+    throw new Error("No se encontraron horarios para este curso.");
+  }
+
+  return horarios.map((horario) => ({
+    dia: horario.dia,
+    bloque: horario.bloque,
+    nombre_materia: horario.materia?.nombre || "Sin asignar",
+    nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
+  }));
 };

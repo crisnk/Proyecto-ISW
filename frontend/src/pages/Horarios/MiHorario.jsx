@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import VerTablaHorario from "../../components/Horarios/VerTablaHorario";
-import { getHorariosByCurso } from "../../services/horario.service";
+import { getHorariosByAlumno } from "../../services/horario.service";
 import "@styles/Horarios/miHorario.css";
 
 const MiHorario = () => {
@@ -11,12 +11,8 @@ const MiHorario = () => {
   useEffect(() => {
     const fetchHorario = async () => {
       try {
-        const user = JSON.parse(sessionStorage.getItem("usuario"));
-        if (!user || !user.ID_curso) {
-          throw new Error("No se encontró información del curso.");
-        }
-
-        const data = await getHorariosByCurso(user.ID_curso);
+        const data = await getHorariosByAlumno();
+        
         const formattedHorario = {};
         data.forEach((bloque) => {
           if (!formattedHorario[bloque.dia]) {
@@ -27,9 +23,10 @@ const MiHorario = () => {
             profesor: bloque.nombre_profesor || "Sin profesor",
           };
         });
+        
         setHorario(formattedHorario);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Error al cargar el horario.");
       } finally {
         setLoading(false);
       }

@@ -8,6 +8,7 @@ import {
   eliminarHorario,
   eliminarMateria,
   verCursos,
+  verHorarioByAlumno,
   verHorarioCurso,
   verHorarioProfesor,
   verMaterias,
@@ -24,6 +25,7 @@ router.get("/cursosregister", verCursos);
 
 
 router.use(authenticateJwt);
+router.get("/alumno", isAuthorized(["alumno"]), verHorarioByAlumno);
 router.post("/asignar/curso", isAuthorized(["jefeUTP", "administrador"]), crearHorarioCurso);
 router.post("/asignar/profesor", isAuthorized(["jefeUTP", "administrador"]), crearHorarioProfesor);
 router.delete("/eliminar/:id", isAuthorized(["jefeUTP", "administrador"]), eliminarHorario);

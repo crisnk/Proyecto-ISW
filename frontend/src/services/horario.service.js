@@ -66,3 +66,13 @@ export const getHorariosByCurso = async (ID_curso) => {
     throw error; 
   }
 };
+
+export const getHorariosByAlumno = async () => {
+  try {
+    const response = await axios.get("/horarios/alumno");
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener horarios del alumno:", error.response?.data || error.message);
+    throw error;
+  }
+};

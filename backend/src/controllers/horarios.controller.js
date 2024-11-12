@@ -10,14 +10,14 @@ import {
   getAllHorarios,
   getCursos,
   getHorarioProfesor,
+  getHorariosByAlumnoService,
   getHorariosByCursoService,
   getMaterias,
-  getProfesores,
+  getProfesores
 } from "../services/horario.service.js";
 
 export const crearHorarioCurso = async (req, res) => {
   try {
-    console.log("Datos recibidos para asignar horario al curso:", req.body);
     const result = await asignaHorarioCursoService(req.body);
     res.status(200).json(result);
   } catch (error) {
@@ -137,3 +137,13 @@ export const eliminarCurso = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+export const verHorarioByAlumno = async (req, res) => {
+  try {
+    const result = await getHorariosByAlumnoService(req.user.rut); 
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error al obtener horarios del alumno:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
+
