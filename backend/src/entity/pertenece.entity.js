@@ -21,7 +21,7 @@ const PerteneceSchema = new EntitySchema({
     },
   },
   relations: {
-    rut: {
+    user: { 
       type: "many-to-one",
       target: "User",
       joinColumn: {
@@ -30,7 +30,7 @@ const PerteneceSchema = new EntitySchema({
       },
       nullable: false,
     },
-    ID_Curso: {
+    curso: {
       type: "many-to-one",
       target: "Curso",
       joinColumn: {

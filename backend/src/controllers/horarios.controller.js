@@ -1,6 +1,7 @@
 "use strict";
 import {
-  asignaHorarioService,
+  asignaHorarioCursoService,
+  asignaHorarioProfesorService,
   crearCursoService,
   crearMateriaService,
   eliminarCursoService,
@@ -8,29 +9,29 @@ import {
   eliminarMateriaService,
   getAllHorarios,
   getCursos,
-  getHorariosByCurso,
-  getHorariosByProfesor,
+  getHorarioProfesor,
+  getHorariosByAlumnoService,
+  getHorariosByCursoService,
   getMaterias,
-  getProfesores,
-  modificaHorarioService
+  getProfesores
 } from "../services/horario.service.js";
 
-export const crearHorario = async (req, res) => {
+export const crearHorarioCurso = async (req, res) => {
   try {
-    const horarioAsignado = await asignaHorarioService(req.body);
-    res.status(201).json({ message: "Horario creado correctamente", horario: horarioAsignado });
+    const result = await asignaHorarioCursoService(req.body);
+    res.status(200).json(result);
   } catch (error) {
-    console.error("Error al asignar horario:", error);
+    console.error("Error al asignar horario al curso:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
-
-export const modificarHorario = async (req, res) => {
+export const crearHorarioProfesor = async (req, res) => {
   try {
-    const horarioModificado = await modificaHorarioService(req.params.id, req.body);
-    res.status(200).json({ message: "Horario modificado correctamente", horario: horarioModificado });
+    const result = await asignaHorarioProfesorService(req.body);
+    res.status(200).json(result);
   } catch (error) {
+    console.error("Error al asignar horario al profesor:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -70,9 +71,10 @@ export const verProfesores = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const verHorarioProfesor = async (req, res) => {
   try {
-    const horarios = await getHorariosByProfesor(req.query.rut, req.user.rut);
+    const horarios = await getHorarioProfesor(req.query.rut);
     res.status(200).json(horarios);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -81,19 +83,15 @@ export const verHorarioProfesor = async (req, res) => {
 
 export const verHorarioCurso = async (req, res) => {
   try {
-    const result = await getHorariosByCurso(req.params.ID_curso);
+    const result = await getHorariosByCursoService(req.params.ID_curso);
     res.status(200).json(result);
   } catch (error) {
-    if (error.message === "El curso no existe en la base de datos.") {
-      res.status(404).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res.status(400).json({ message: error.message });
   }
 };
 
-
 export const verTodosHorarios = async (req, res) => {
+  
   try {
     const horarios = await getAllHorarios(req.query);
     res.status(200).json(horarios);
@@ -139,6 +137,13 @@ export const eliminarCurso = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-
+export const verHorarioByAlumno = async (req, res) => {
+  try {
+    const result = await getHorariosByAlumnoService(req.user.rut); 
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error al obtener horarios del alumno:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
 

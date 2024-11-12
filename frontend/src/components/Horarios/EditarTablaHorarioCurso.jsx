@@ -1,12 +1,12 @@
-const EditarTablaHorarioCurso = ({
-  horario,
-  diasSemana,
-  horas,
-  materias,
-  onMateriaChange,
-}) => {
+const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMateriaChange }) => {
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
+
+  if (!horario || !diasSemana || !horas || !materias) {
+    return <p>Error: Datos incompletos para renderizar la tabla.</p>;
+  }
+
   return (
-    <table>
+    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
       <thead>
         <tr>
           <th>Horas</th>
@@ -21,17 +21,21 @@ const EditarTablaHorarioCurso = ({
             <td>{hora}</td>
             {diasSemana.map((dia) => (
               <td key={`${dia}-${hora}`}>
-                <select
-                  value={horario[dia]?.[hora] || ""}
-                  onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
-                >
-                  <option value="">Sin asignar</option>
-                  {materias.map((materia) => (
-                    <option key={materia.ID_materia} value={materia.ID_materia}>
-                      {materia.nombre}
-                    </option>
-                  ))}
-                </select>
+                {recreoHoras.includes(hora) ? (
+                  <span>Recreo</span>
+                ) : (
+                  <select
+                    value={horario[dia]?.[hora]?.materia || "Sin asignar"}
+                    onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
+                  >
+                    <option value="Sin asignar">Sin asignar</option>
+                    {materias.map((materia) => (
+                      <option key={materia.ID_materia} value={materia.ID_materia}>
+                        {materia.nombre}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </td>
             ))}
           </tr>
@@ -42,4 +46,3 @@ const EditarTablaHorarioCurso = ({
 };
 
 export default EditarTablaHorarioCurso;
-
