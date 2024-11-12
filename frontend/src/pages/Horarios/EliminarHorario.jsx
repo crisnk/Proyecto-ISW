@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getHorarios, eliminarHorario } from "../../services/horario.service";
 import PaginatedTable from "../../components/Horarios/PaginatedTable";
 import Filters from "../../components/Horarios/Filters";
+import "@styles/Horarios/verHorarios.css";
 
 const EliminarHorario = () => {
   const [horarios, setHorarios] = useState([]);

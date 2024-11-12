@@ -30,8 +30,8 @@ router.delete("/eliminar/:id", isAuthorized(["jefeUTP", "administrador"]), elimi
 router.get("/ver/profesor", isAuthorized(["profesor", "jefeUTP", "administrador"]), verHorarioProfesor);
 router.get("/ver/curso/:ID_curso", isAuthorized(["alumno", "profesor", "jefeUTP", "administrador"]), verHorarioCurso);
 router.get("/ver/todos", isAuthorized(["jefeUTP", "profesor", "administrador"]), verTodosHorarios);
-router.get("/cursos", isAuthorized(["jefeUTP", "administrador"]), verCursos);
-router.get("/profesores", isAuthorized(["jefeUTP", "administrador"]), verProfesores);
+router.get("/cursos", isAuthorized(["jefeUTP", "administrador", "profesor"]), verCursos);
+router.get("/profesores", isAuthorized(["jefeUTP", "administrador", "profesor"]), verProfesores);
 router.post("/materias/crear", isAuthorized(["jefeUTP", "administrador"]), crearMateria);
 router.post("/cursos/crear", isAuthorized(["jefeUTP", "administrador"]), crearCurso);
 router.delete("/materias/eliminar/:ID_materia", isAuthorized(["jefeUTP", "administrador"]), eliminarMateria);

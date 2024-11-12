@@ -7,7 +7,7 @@ import Register from '@pages/Register';
 import Root from '@pages/Root';
 import Users from '@pages/Users';
 import ProtectedRoute from '@components/ProtectedRoute';
-import AsignarHorarios from '@pages/Horarios/AsignarHorarios';
+import AsignarHorariosLayout from '@pages/Horarios/AsignarHorariosLayout';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
 import AsignarHorarioCurso from '@pages/Horarios/AsignarHorarioCurso';
 import VerHorarios from '@pages/Horarios/VerHorarios';
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         path: '/horarios/asignar',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
-            <AsignarHorarios />
+            <AsignarHorariosLayout />
           </ProtectedRoute>
         ),
         children: [

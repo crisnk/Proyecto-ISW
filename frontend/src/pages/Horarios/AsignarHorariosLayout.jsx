@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import "@styles/Horarios/asignarHorarios.css";
 
-const AsignarHorarios = () => {
+const AsignarHorariosLayout = () => {
   return (
     <div className="asignar-horarios">
       <h1>Asignar Horarios</h1>
@@ -26,4 +26,4 @@ const AsignarHorarios = () => {
   );
 };
 
-export default AsignarHorarios;
+export default AsignarHorariosLayout;

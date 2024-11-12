@@ -17,7 +17,7 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
               <th key={col.field}>{col.title}</th>
             ))}
           </tr>
-        </thead>
+        </thead> 
         <tbody>
           {data.length > 0 ? (
             data.map((row, rowIndex) => (
