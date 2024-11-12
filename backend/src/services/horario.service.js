@@ -160,6 +160,7 @@ export const getHorariosByCursoService = async (ID_curso) => {
 };
 
 export const getAllHorarios = async (query) => {
+  console.log("Query recibida:", query);
   const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
   if (error) {
     throw new Error(error.details.map((err) => err.message).join(", "));
@@ -170,19 +171,21 @@ export const getAllHorarios = async (query) => {
 
   const queryBuilder = repository
     .createQueryBuilder("horario")
-    .leftJoinAndSelect("horario.materia", "materia")
+    .leftJoinAndSelect("horario.materia", "materia") 
     .leftJoinAndSelect("horario.curso", "curso")
-    .leftJoinAndSelect("horario.profesor", "profesor");
+    .leftJoinAndSelect("horario.profesor", "profesor") 
+    .orderBy("horario.dia", "ASC")
+    .addOrderBy("horario.bloque", "ASC"); 
 
   if (profesor) {
     queryBuilder.andWhere(
-      "(profesor.rut = :profesor OR LOWER(profesor.nombreCompleto) = LOWER(:profesor))",
+      "(profesor.rut = :profesor OR LOWER(profesor.nombreCompleto) LIKE LOWER(:profesor))",
       { profesor }
     );
   }
 
   if (curso) {
-    queryBuilder.andWhere("curso.nombre = :curso", { curso });
+    queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
   }
 
   const total = await queryBuilder.getCount();
@@ -190,9 +193,17 @@ export const getAllHorarios = async (query) => {
     .skip((page - 1) * limit)
     .take(limit)
     .getMany();
+  
+  const formattedData = data.map((item) => ({
+    dia: item.dia,
+    bloque: item.bloque,
+    nombre_materia: item.materia?.nombre || "Sin asignar",
+    nombre_profesor: item.profesor?.nombreCompleto || "Sin profesor",
+    curso: item.curso?.nombre || "Sin curso",
+  }));
 
   return {
-    data,
+    data: formattedData,
     total,
     page: Number(page),
     totalPages: Math.ceil(total / limit),

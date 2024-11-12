@@ -29,14 +29,14 @@ const Filters = ({ onChange }) => {
 
     if (filterType) {
       fetchOptions();
-      setSelectedValue(""); 
+      setSelectedValue("");
     }
   }, [filterType]);
 
   const handleFilterChange = (e) => {
     const newValue = e.target.value;
-    setSelectedValue(newValue); 
-    onChange({ [filterType]: newValue }); 
+    setSelectedValue(newValue);
+    onChange({ [filterType]: newValue });
   };
 
   return (

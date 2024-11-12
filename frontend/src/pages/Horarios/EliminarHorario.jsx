@@ -19,8 +19,7 @@ const EliminarHorario = () => {
       setPagination({ page, totalPages });
       setError("");
     } catch (err) {
-      console.error("Error al obtener horarios:", err);
-      setError("No se pudieron cargar los horarios.");
+      setError("No se pudieron cargar los horarios.", err);
     } finally {
       setLoading(false);
     }
@@ -43,19 +42,17 @@ const EliminarHorario = () => {
       await eliminarHorario(id);
       setSuccess("Horario eliminado correctamente.");
       setError("");
-      fetchHorarios(filters, pagination.page); 
+      fetchHorarios(filters, pagination.page);
     } catch (err) {
-      console.error("Error al eliminar horario:", err);
-      setError("No se pudo eliminar el horario.");
+      setError("No se pudo eliminar el horario.", err);
     }
   };
 
   const columns = [
     { field: "dia", title: "Día" },
     { field: "bloque", title: "Bloque Horario" },
-    { field: "materia.nombre", title: "Materia" },
-    { field: "curso.nombre", title: "Curso" },
-    { field: "profesor.nombreCompleto", title: "Profesor" },
+    { field: "nombre_materia", title: "Materia" },
+    { field: "nombre_profesor", title: "Profesor" },
     {
       field: "acciones",
       title: "Acciones",
@@ -73,7 +70,7 @@ const EliminarHorario = () => {
       <Filters onChange={handleFilterChange} />
       {loading ? (
         <p>Cargando horarios...</p>
-      ) : horarios.length > 0 ? (
+      ) : (
         <PaginatedTable
           columns={columns}
           data={horarios}
@@ -81,8 +78,6 @@ const EliminarHorario = () => {
           pagination={pagination}
           onPageChange={handlePageChange}
         />
-      ) : (
-        <p>No hay horarios disponibles para mostrar.</p>
       )}
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}

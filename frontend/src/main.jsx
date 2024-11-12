@@ -36,7 +36,7 @@ const router = createBrowserRouter([
       {
         path: '/horarios',
         element: (
-          <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor', 'alumno']}>
+          <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor']}>
             <VerHorarios />
           </ProtectedRoute>
         ),

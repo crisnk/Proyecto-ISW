@@ -4,12 +4,20 @@ export const getHorarios = async (params) => {
   const filteredParams = Object.fromEntries(
     Object.entries(params).filter(([, value]) => value)
   );
-  const response = await axios.get("/horarios/ver/todos", { params: filteredParams });
-  return {
-    data: response.data.data || [],
-    totalPages: response.data.totalPages || 1,
-  };
+
+  try {
+    const response = await axios.get("/horarios/ver/todos", { params: filteredParams });
+    console.log("Respuesta de la API (Horarios):", response.data); 
+    return {
+      data: response.data.data || [],
+      totalPages: response.data.totalPages || 1,
+    };
+  } catch (error) {
+    console.error("Error al obtener horarios:", error.response?.data || error.message);
+    throw error;
+  }
 };
+
 
 export const getCursos = async () => {
   const response = await axios.get("/horarios/cursos");

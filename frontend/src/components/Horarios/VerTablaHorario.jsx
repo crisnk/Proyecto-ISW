@@ -1,29 +1,21 @@
-const VerTablaHorario = ({ horario, diasSemana, horas }) => {
-  if (!horario || !diasSemana || !horas) {
-    return <p>Error: Datos incompletos para renderizar la tabla.</p>;
-  }
-
+const VerTablaHorario = ({ horarios, isFilteredByProfesor }) => {
   return (
     <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
       <thead>
         <tr>
-          <th>Horas</th>
-          {diasSemana.map((dia) => (
-            <th key={dia}>{dia.charAt(0).toUpperCase() + dia.slice(1)}</th>
-          ))}
+          <th>Día</th>
+          <th>Bloque</th>
+          <th>Materia</th>
+          {!isFilteredByProfesor && <th>Profesor</th>}
         </tr>
       </thead>
       <tbody>
-        {horas.map((hora) => (
-          <tr key={hora}>
-            <td>{hora}</td>
-            {diasSemana.map((dia) => (
-              <td key={`${dia}-${hora}`}>
-                {horario[dia]?.[hora]?.materia || "Sin asignar"}
-                {horario[dia]?.[hora]?.curso && <div>Curso: {horario[dia][hora].curso}</div>}
-                {horario[dia]?.[hora]?.profesor && <div>Profesor: {horario[dia][hora].profesor}</div>}
-              </td>
-            ))}
+        {horarios.map((bloque, index) => (
+          <tr key={index}>
+            <td>{bloque.dia}</td>
+            <td>{bloque.bloque}</td>
+            <td>{bloque.nombre_materia || "Sin asignar"}</td>
+            {!isFilteredByProfesor && <td>{bloque.nombre_profesor || "Sin profesor"}</td>}
           </tr>
         ))}
       </tbody>

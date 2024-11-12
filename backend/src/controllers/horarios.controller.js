@@ -91,6 +91,7 @@ export const verHorarioCurso = async (req, res) => {
 };
 
 export const verTodosHorarios = async (req, res) => {
+  
   try {
     const horarios = await getAllHorarios(req.query);
     res.status(200).json(horarios);
