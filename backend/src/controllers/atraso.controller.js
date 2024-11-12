@@ -5,7 +5,7 @@ import { createAtrasoService,
          findAtraso,
          createJustificativo,
          obtenerAtrasos,
-         obtenerAtrasosAlumnos
+         obtenerAtrasosAlumnos,
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,

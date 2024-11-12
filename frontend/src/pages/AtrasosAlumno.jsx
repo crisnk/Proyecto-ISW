@@ -2,7 +2,7 @@ import Table from '@components/Table';
 import Search from '../components/Search';
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import '@styles/users.css';
+import '@styles/atrasos.css';
 import { getAtrasos } from '@services/atrasos.service.js';
 
 const Atrasos = () => {
@@ -45,12 +45,11 @@ const Atrasos = () => {
 
     return (
         <div className='main-container'>
-            <Navbar />
             <div className='table-container'>
                 <div className='top-table'>
                     <h1 className='title-table'>Atrasos</h1>
                     <div className='filter-actions'>
-                        <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar por fecha, hora o estado'} />
+                        <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado'} />
                         <button className='justificar-button' onClick={handleJustificar}>
                             Justificar
                         </button>

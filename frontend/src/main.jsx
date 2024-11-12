@@ -35,6 +35,10 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path:'/atrasos',
+        element: <AtrasosAlumno/>
+      },
+      {
         path: '/horarios',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor', 'alumno']}>
@@ -87,10 +91,6 @@ const router = createBrowserRouter([
     path: '/register',
     element: <Register/>
   },
-  {
-    path:'/atrasos',
-    element: <AtrasosAlumno/>
-  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

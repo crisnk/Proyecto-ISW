@@ -95,20 +95,17 @@ export async function obtenerAtrasos(rut) {
 
 export async function obtenerAtrasosAlumnos(rut) {
   try {
-    // Declarar repositorios al inicio
     const userRepository = AppDataSource.getRepository(User);
     const perteneceRepository = AppDataSource.getRepository(Pertenece);
     const cursoRepository = AppDataSource.getRepository(Curso);
     const atrasoRepository = AppDataSource.getRepository(Atraso);
     const justificativoRepository = AppDataSource.getRepository(Justificativo);
 
-    // Buscar usuario
     const user = await userRepository.findOne({ where: { rut } });
     if (!user) {
       return [null, "Usuario no encontrado"];
     }
 
-    // Buscar pertenencia
     const pertenece = await perteneceRepository.findOne({ where: { rut } });
     let cursoNombre = "Sin curso asignado";
 
@@ -119,13 +116,11 @@ export async function obtenerAtrasosAlumnos(rut) {
       }
     }
 
-    // Buscar atrasos
     const atrasos = await atrasoRepository.find({ where: { rut } });
     if (!atrasos || atrasos.length === 0) {
       return [null, "No hay atrasos para el alumno"];
     }
 
-    // Obtener resultados
     const resultados = await Promise.all(atrasos.map(async (atraso) => {  
       const justificativo = await justificativoRepository.findOne({ where: { ID_atraso: atraso.ID_atraso } });
       return {
