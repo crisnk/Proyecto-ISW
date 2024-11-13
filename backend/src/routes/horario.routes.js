@@ -7,6 +7,8 @@ import {
   eliminarCurso,
   eliminarHorario,
   eliminarMateria, 
+  getEmailByProfesor, 
+  getEmailsByCurso ,
   sendNotificationToCourse,
   sendNotificationToProfessor,
   verCursos,
@@ -27,6 +29,8 @@ router.get("/cursosregister", verCursos);
 
 
 router.use(authenticateJwt);
+router.get("/profesor/email/:rut", isAuthorized(["jefeUTP", "administrador"]), getEmailByProfesor);
+router.get("/curso/emails/:ID_curso", isAuthorized(["jefeUTP", "administrador"]), getEmailsByCurso);
 router.post("/notificacion/profesor",isAuthorized(["jefeUTP", "administrador"]),sendNotificationToProfessor);
 router.post("/notificacion/curso",isAuthorized(["jefeUTP", "administrador"]),sendNotificationToCourse);
 router.get("/alumno", isAuthorized(["alumno"]), verHorarioByAlumno);

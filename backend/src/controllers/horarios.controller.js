@@ -9,6 +9,8 @@ import {
   eliminarMateriaService,
   getAllHorarios,
   getCursos,
+  getEmailByProfesorService,
+  getEmailsByCursoService,
   getHorarioProfesor,
   getHorariosByAlumnoService,
   getHorariosByCursoService,
@@ -169,5 +171,24 @@ export const sendNotificationToCourse = async (req, res) => {
         handleErrorServer(res, 500, "Error al enviar notificaciones al curso.", error.message);
     }
 };
+export const getEmailByProfesor = async (req, res) => {
+  try {
+    const result = await getEmailByProfesorService(req.params.rut);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error al obtener el correo del profesor:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
+export const getEmailsByCurso = async (req, res) => {
+  try {
+    const result = await getEmailsByCursoService(req.params.ID_curso);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error al obtener los correos del curso:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
+
 
 

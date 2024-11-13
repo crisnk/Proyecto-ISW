@@ -18,7 +18,6 @@ export const getHorarios = async (params) => {
   }
 };
 
-
 export const getCursos = async () => {
   const response = await axios.get("/horarios/cursos");
   return response.data;
@@ -73,6 +72,51 @@ export const getHorariosByAlumno = async () => {
     return response.data;
   } catch (error) {
     console.error("Error al obtener horarios del alumno:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getEmailsByCourse = async (ID_curso) => {
+  try {
+    const response = await axios.get(`/horarios/curso/emails/${ID_curso}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener correos del curso:", error.response?.data || error.message);
+    throw error;
+  }
+};
+export const getEmailByProfesor = async (rut) => {
+  try {
+    const response = await axios.get(`/horarios/profesor/email/${rut}`);
+    return response.data; 
+  } catch (error) {
+    console.error("Error al obtener el email del profesor:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const notifyProfessor = async (rut, horarioDetails) => {
+  try {
+    const response = await axios.post("/horarios/notificacion/profesor", {
+      email: rut,
+      horarioDetails,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al enviar notificación al profesor:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const notifyCourse = async (emails, horarioDetails) => {
+  try {
+    const response = await axios.post("/horarios/notificacion/curso", {
+      emails,
+      horarioDetails,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al enviar notificación al curso:", error.response?.data || error.message);
     throw error;
   }
 };

@@ -4,7 +4,9 @@ import {
   getMaterias,
   getHorariosByCurso,
   saveHorarioCurso,
-} from "../../services/horario.service";
+  notifyCourse,
+  getEmailsByCourse, // Importación del nuevo servicio
+} from "../../services/horario.service"; 
 import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
 
 const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
@@ -31,6 +33,8 @@ const AsignarHorarioCurso = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
+  const [notificationSuccess, setNotificationSuccess] = useState("");
+  const [notificationError, setNotificationError] = useState("");
 
   const initializeHorario = useCallback(() => {
     const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
@@ -89,8 +93,8 @@ const AsignarHorarioCurso = () => {
       try {
         const materiasData = await getMaterias();
         setMaterias(materiasData);
-      } catch (err) {
-        setError("Error al cargar materias.", err);
+      } catch {
+        setError("Error al cargar materias.");
       }
     };
     fetchMaterias();
@@ -101,8 +105,8 @@ const AsignarHorarioCurso = () => {
       try {
         const cursosData = await getCursos();
         setCursos(cursosData);
-      } catch (err) {
-        setError("Error al cargar cursos.", err);
+      } catch {
+        setError("Error al cargar cursos.");
       }
     };
     fetchCursos();
@@ -143,8 +147,8 @@ const AsignarHorarioCurso = () => {
       await saveHorarioCurso(payload);
       setSuccess("Horario guardado correctamente.");
       setError("");
-    } catch (error) {
-      setError("Error al guardar el horario.", error);
+    } catch {
+      setError("Error al guardar el horario.");
     } finally {
       setSaving(false);
     }
@@ -164,6 +168,25 @@ const AsignarHorarioCurso = () => {
         },
       },
     }));
+  };
+
+  const handleSendNotification = async () => {
+    try {
+      const { emails } = await getEmailsByCourse(curso);
+
+      if (!emails || emails.length === 0) {
+        setNotificationError("No hay correos electrónicos asociados a este curso.");
+        return;
+      }
+
+      const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
+      await notifyCourse(emails, horarioDetails); 
+      setNotificationSuccess("Notificación enviada correctamente.");
+      setNotificationError("");
+    } catch {
+      setNotificationError("Error al enviar la notificación.");
+      setNotificationSuccess("");
+    }
   };
 
   return (
@@ -192,11 +215,15 @@ const AsignarHorarioCurso = () => {
       <button onClick={handleGuardarHorario} disabled={loading || saving}>
         {saving ? "Guardando..." : "Guardar"}
       </button>
+      <button onClick={handleSendNotification} disabled={!curso}>
+        Enviar Notificación
+      </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
+      {notificationError && <p style={{ color: "red" }}>{notificationError}</p>}
+      {notificationSuccess && <p style={{ color: "green" }}>{notificationSuccess}</p>}
     </div>
   );
 };
 
 export default AsignarHorarioCurso;
-

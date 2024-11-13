@@ -67,7 +67,6 @@ export const asignaHorarioCursoService = async (horarioData) => {
   return { message: "Horario asignado correctamente para el curso." };
 };
 
-
 export const asignaHorarioProfesorService = async (horarioData) => {
   const { rut, horario } = horarioData;
 
@@ -392,4 +391,36 @@ export const notifyCourse = async (courseEmails, horarioDetails) => {
         );
     }
     return true;
+};
+
+export const getEmailsByCursoService = async (ID_curso) => {
+  const perteneceRepository = AppDataSource.getRepository(Pertenece);
+  
+  const estudiantes = await perteneceRepository.find({
+    where: { ID_curso },
+    relations: ["user"],
+    select: ["user.email"],
+  });
+
+  if (!estudiantes.length) {
+    throw new Error("No se encontraron alumnos para el curso proporcionado.");
+  }
+
+  const emails = estudiantes.map((estudiante) => estudiante.user.email);
+  return { emails };
+}; 
+
+export const getEmailByProfesorService = async (rut) => {
+  const profesorRepository = AppDataSource.getRepository(User);
+
+  const profesor = await profesorRepository.findOne({
+    where: { rut, rol: "profesor" },
+    select: ["email"],
+  });
+
+  if (!profesor) {
+    throw new Error("No se encontró un profesor con el RUT proporcionado.");
+  }
+
+  return { email: profesor.email };
 };

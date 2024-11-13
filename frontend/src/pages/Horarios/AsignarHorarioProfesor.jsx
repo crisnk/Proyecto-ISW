@@ -5,6 +5,8 @@ import {
   getCursos,
   getHorarioProfesor,
   saveHorarioProfesor,
+  notifyProfessor,
+  getEmailByProfesor, 
 } from "../../services/horario.service";
 import EditarTablaHorarioProfesor from "../../components/Horarios/EditarTablaHorarioProfesor";
 
@@ -25,7 +27,9 @@ const AsignarHorarioProfesor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [saving, setSaving] = useState(false); 
+  const [notificationSuccess, setNotificationSuccess] = useState("");
+  const [notificationError, setNotificationError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const initializeHorario = useCallback(() => {
     const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
@@ -56,9 +60,9 @@ const AsignarHorarioProfesor = () => {
         }
       });
       setHorario(formattedHorario);
+      setError("");
     } catch (error) {
-      setError("Error al cargar el horario.");
-      console.error("Error al cargar el horario:", error);
+      setError("Error al cargar el horario.", error);
     } finally {
       setLoading(false);
     }
@@ -106,7 +110,7 @@ const AsignarHorarioProfesor = () => {
       setError("Debes seleccionar un profesor antes de guardar.");
       return;
     }
-    setSaving(true);  
+    setSaving(true);
     try {
       const cambios = diasSemana.flatMap((dia) =>
         horas.map((hora) => {
@@ -121,23 +125,62 @@ const AsignarHorarioProfesor = () => {
               bloque: hora,
             };
           }
-          return null; 
+          return null;
         }).filter(Boolean)
       );
-  
+
       if (cambios.length === 0) {
         setError("No se han asignado bloques válidos.");
         return;
       }
-  
+
       await saveHorarioProfesor({ rut: profesor || "SIN_PROFESOR", horario: cambios });
       setSuccess("Horario guardado correctamente.");
-      setError("");
-    } catch (error) {
-      console.error("Error al guardar el horario:", error);
+    } catch {
       setError("Error al guardar el horario.");
     } finally {
-      setSaving(false);  
+      setSaving(false);
+    }
+  };
+
+  const handleEnviarNotificacion = async () => {
+    try {
+      if (!profesor) {
+        setNotificationError("Debe seleccionar un profesor antes de enviar la notificación.");
+        return;
+      }
+   
+      const { email } = await getEmailByProfesor(profesor);
+  
+      if (!email) {
+        setNotificationError("No se encontró el email del profesor.");
+        return;
+      }
+      
+      const bloquesAsignados = Object.entries(horario).flatMap(([dia, bloques]) =>
+        Object.entries(bloques).filter(([, detalle]) => detalle.materia !== "Sin asignar").map(([bloque, detalle]) => ({
+          dia,
+          bloque,
+          materia: detalle.materia,
+        }))
+      );
+  
+      if (bloquesAsignados.length === 0) {
+        setNotificationError("No hay bloques asignados para notificar.");
+        return;
+      }
+  
+      const horarioDetails = bloquesAsignados
+        .map((detalle) => `${detalle.dia} ${detalle.bloque}: ${detalle.materia}`)
+        .join("\n");
+  
+      // Enviar notificación al profesor
+      await notifyProfessor(email, horarioDetails);
+      setNotificationSuccess("Notificación enviada correctamente.");
+      setNotificationError("");
+    } catch (error) {
+      console.error("Error al enviar la notificación:", error);
+      setNotificationError("Error al enviar la notificación.");
     }
   };
   
@@ -182,8 +225,13 @@ const AsignarHorarioProfesor = () => {
       <button onClick={handleGuardarHorario} disabled={loading || saving}>
         {saving ? "Guardando..." : "Guardar"}
       </button>
+      <button onClick={handleEnviarNotificacion} disabled={!profesor}>
+        Enviar Notificación
+      </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
+      {notificationError && <p style={{ color: "red" }}>{notificationError}</p>}
+      {notificationSuccess && <p style={{ color: "green" }}>{notificationSuccess}</p>}
     </div>
   );
 };
