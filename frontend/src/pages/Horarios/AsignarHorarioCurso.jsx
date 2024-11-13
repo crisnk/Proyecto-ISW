@@ -5,7 +5,7 @@ import {
   getHorariosByCurso,
   saveHorarioCurso,
   notifyCourse,
-  getEmailsByCourse, // Importación del nuevo servicio
+  getEmailsByCourse,
 } from "../../services/horario.service"; 
 import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
 

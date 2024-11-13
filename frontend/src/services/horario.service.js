@@ -22,6 +22,10 @@ export const getCursos = async () => {
   const response = await axios.get("/horarios/cursos");
   return response.data;
 };
+export const getCursosRegister = async () => {
+  const response = await axios.get("/horarios/cursosregister");
+  return response.data;
+};
 
 export const getProfesores = async () => {
   const response = await axios.get("/horarios/profesores");
