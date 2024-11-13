@@ -13,8 +13,11 @@ import {
   getHorariosByAlumnoService,
   getHorariosByCursoService,
   getMaterias,
-  getProfesores
+  getProfesores,
+  notifyCourse,
+  notifyProfessor
 } from "../services/horario.service.js";
+import { handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
 export const crearHorarioCurso = async (req, res) => {
   try {
@@ -146,4 +149,25 @@ export const verHorarioByAlumno = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const sendNotificationToProfessor = async (req, res) => {
+    try {
+        const { email, horarioDetails } = req.body;
+        await notifyProfessor(email, horarioDetails);
+        handleSuccess(res, 200, "Notificación enviada al profesor con éxito.");
+    } catch (error) {
+        handleErrorServer(res, 500, "Error al enviar la notificación al profesor.", error.message);
+    }
+};
+
+export const sendNotificationToCourse = async (req, res) => {
+    try {
+        const { emails, horarioDetails } = req.body;
+        await notifyCourse(emails, horarioDetails);
+        handleSuccess(res, 200, "Notificaciones enviadas al curso con éxito.");
+    } catch (error) {
+        handleErrorServer(res, 500, "Error al enviar notificaciones al curso.", error.message);
+    }
+};
+
 

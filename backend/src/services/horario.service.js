@@ -5,6 +5,7 @@ import Imparte from "../entity/imparte.entity.js";
 import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
 import Pertenece from "../entity/pertenece.entity.js";
+import { sendEmail } from "./email.service.js";
 import {
   cursoValidation,
   horarioValidationCurso,
@@ -364,4 +365,31 @@ export const getHorariosByAlumnoService = async (rut) => {
     nombre_materia: horario.materia?.nombre || "Sin asignar",
     nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
   }));
+};
+
+export const notifyProfessor = async (profesorEmail, horarioDetails) => {
+    const subject = "Nuevo Horario Asignado";
+    const message = `Se ha asignado un nuevo horario a usted. Los detalles son los siguientes:\n\n${horarioDetails}`;
+
+    return await sendEmail(
+        profesorEmail,
+        subject,
+        message,
+        `<p>${message.replace(/\n/g, "<br>")}</p>`
+    );
+};
+
+export const notifyCourse = async (courseEmails, horarioDetails) => {
+    const subject = "Nuevo Horario de Curso";
+    const message = `Se ha asignado un nuevo horario al curso. Los detalles son:\n\n${horarioDetails}`;
+
+    for (const email of courseEmails) {
+        await sendEmail(
+            email,
+            subject,
+            message,
+            `<p>${message.replace(/\n/g, "<br>")}</p>`
+        );
+    }
+    return true;
 };

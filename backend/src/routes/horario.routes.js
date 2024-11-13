@@ -6,7 +6,9 @@ import {
   crearMateria,
   eliminarCurso,
   eliminarHorario,
-  eliminarMateria,
+  eliminarMateria, 
+  sendNotificationToCourse,
+  sendNotificationToProfessor,
   verCursos,
   verHorarioByAlumno,
   verHorarioCurso,
@@ -25,6 +27,8 @@ router.get("/cursosregister", verCursos);
 
 
 router.use(authenticateJwt);
+router.post("/notificacion/profesor",isAuthorized(["jefeUTP", "administrador"]),sendNotificationToProfessor);
+router.post("/notificacion/curso",isAuthorized(["jefeUTP", "administrador"]),sendNotificationToCourse);
 router.get("/alumno", isAuthorized(["alumno"]), verHorarioByAlumno);
 router.post("/asignar/curso", isAuthorized(["jefeUTP", "administrador"]), crearHorarioCurso);
 router.post("/asignar/profesor", isAuthorized(["jefeUTP", "administrador"]), crearHorarioProfesor);
