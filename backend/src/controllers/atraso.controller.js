@@ -2,9 +2,8 @@
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 import { createAtrasoService,
-         findAtraso,
-         createJustificativo,
-         obtenerAtrasos
+         obtenerAtrasos,
+         obtenerInfoAtraso
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -46,51 +45,6 @@ export async function registrarAtraso(req, res) {
   }
 }
 
-export async function generarJustificativo(req, res){
-  try{
-    const { motivo, fecha, hora } = req.body;
-    const estado = 'pendiente';
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
-    }
-
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-    const { rut } = decoded; 
-    if (!rut) {
-      return handleErrorClient(res, 401, "Token inválido o RUN no presente en el token");
-    }   
-
-    if (!motivo || !fecha || !hora ) {
-      return handleErrorClient(res, 400, "Faltan datos necesarios");
-    }
-    
-    const atraso = await findAtraso(rut, fecha, hora);
-    
-    if (!atraso) {
-      return handleErrorClient(res, 404, 'Atraso no encontrado');
-    }
-       
-      const ID_atraso = atraso.ID_atraso;
-      // Crear el justificativo
-      const nuevoJustificativo = await createJustificativo({
-          rut,
-          motivo,
-          estado,
-          //documento,
-          ID_atraso
-      });
-      res.status(201).json({
-        justificativo: nuevoJustificativo
-      });
-  }catch (error){
-    console.error("Error:", error);
-    res.status(500).json({ message: "Error al procesar justificativo" });
-  }
-}
-
-
 export async function verAtrasos(req,res) {
   try {
     const [atrasos, errorAtrasos] = await obtenerAtrasos();
@@ -108,3 +62,32 @@ export async function verAtrasos(req,res) {
     );
   }
 };
+
+export async function infoAtraso(req, res) {
+  try {
+    const token = req.cookies.jwt;
+
+    if (!token) {
+      return res.status(401).json({ error: "No se ha proporcionado un token de autenticación" });
+    }
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const { rut } = decoded;
+
+    if (!rut) {
+      return res.status(401).json({ error: "Token inválido o RUT no presente en el token" });
+    }
+
+    const infoAtraso = await obtenerInfoAtraso(rut);
+
+    if (infoAtraso) {
+      return res.status(200).json(infoAtraso);
+    } else {
+      return res.status(404).json({ error: "No se encontró una coincidencia para el horario actual." });
+    }
+
+  } catch (error) {
+    console.error('Error al obtener la información de atraso:', error);
+    return res.status(500).json({ error: "No se pudo buscar el atraso" });
+  }
+}
