@@ -80,9 +80,9 @@ async function setupServer() {
 async function setupAPI() {
   try {
     await connectDB();
-    await createUsers();
-    await crearEspecialidades();
     await createDefaultEntities(); 
+    await createUsers(); 
+    await crearEspecialidades();
     await setupServer();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);

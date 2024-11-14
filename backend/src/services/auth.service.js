@@ -1,5 +1,7 @@
 "use strict";
 import User from "../entity/user.entity.js";
+import Pertenece from "../entity/pertenece.entity.js";
+import Curso from "../entity/curso.entity.js";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../config/configDb.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
@@ -47,46 +49,54 @@ export async function loginService(user) {
   }
 }
 
-
 export async function registerService(user) {
   try {
     const userRepository = AppDataSource.getRepository(User);
+    const perteneceRepository = AppDataSource.getRepository(Pertenece);
+    const cursoRepository = AppDataSource.getRepository(Curso);
 
-    const { nombreCompleto, rut, email } = user;
+    const { nombreCompleto, rut, email, password, rol, curso } = user;
 
     const createErrorMessage = (dataInfo, message) => ({
       dataInfo,
-      message
+      message,
     });
 
-    const existingEmailUser = await userRepository.findOne({
-      where: {
-        email,
-      },
-    });
-    
-    if (existingEmailUser) return [null, createErrorMessage("email", "Correo electrónico en uso")];
+    const existingEmailUser = await userRepository.findOne({ where: { email } });
+    if (existingEmailUser) {
+      return [null, createErrorMessage("email", "Correo electrónico en uso")];
+    }
 
-    const existingRutUser = await userRepository.findOne({
-      where: {
-        rut,
-      },
-    });
-
-    if (existingRutUser) return [null, createErrorMessage("rut", "Rut ya asociado a una cuenta")];
+    const existingRutUser = await userRepository.findOne({ where: { rut } });
+    if (existingRutUser) {
+      return [null, createErrorMessage("rut", "Rut ya asociado a una cuenta")];
+    }
 
     const newUser = userRepository.create({
       nombreCompleto,
       email,
       rut,
-      password: await encryptPassword(user.password),
-      rol: user.rol,
+      password: await encryptPassword(password),
+      rol,
     });
 
     await userRepository.save(newUser);
 
-    const { password, ...dataUser } = newUser;
+    if (rol === "alumno") {
+      if (!curso) return [null, { dataInfo: "curso", message: "Debe asignarse un curso al alumno." }];
+  
+      const existingCurso = await cursoRepository.findOne({ where: { ID_curso: curso } });
+      if (!existingCurso) {
+          console.log("Curso no existe:", curso); 
+          return [null, { dataInfo: "curso", message: "El curso especificado no existe." }];
+      }
+  
+      const newPertenece = perteneceRepository.create({ rut, ID_curso: curso });
+      await perteneceRepository.save(newPertenece);
+  }
+  
 
+    const { password: _, ...dataUser } = newUser; 
     return [dataUser, null];
   } catch (error) {
     console.error("Error al registrar un usuario", error);

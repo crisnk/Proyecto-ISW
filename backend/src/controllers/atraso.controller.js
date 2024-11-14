@@ -47,7 +47,19 @@ export async function registrarAtraso(req, res) {
 
 export async function verAtrasos(req,res) {
   try {
-    const [atrasos, errorAtrasos] = await obtenerAtrasos();
+    const token = req.cookies.jwt;
+
+    if (!token) {
+      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
+    }
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+
+    const { rut } = decoded;
+    if (!rut) {
+      return handleErrorClient(res, 401, "Token inválido o RUN no presente en el token");
+    }   
+    const [atrasos, errorAtrasos] = await obtenerAtrasos(rut);
 
     if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
     
@@ -55,11 +67,7 @@ export async function verAtrasos(req,res) {
     ? handleSuccess(res, 204)
     : handleSuccess(res, 200, "Atrasos encontrados", atrasos);
   } catch (error) {
-    handleErrorServer(
-      res,
-      500,
-      error.message,
-    );
+    handleErrorServer(res,500,error.message);
   }
 };
 
@@ -68,7 +76,7 @@ export async function infoAtraso(req, res) {
     const token = req.cookies.jwt;
 
     if (!token) {
-      return res.status(401).json({ error: "No se ha proporcionado un token de autenticación" });
+      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
     }
 
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);

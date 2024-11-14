@@ -51,7 +51,7 @@ const Navbar = () => {
                             to="/home" 
                             onClick={() => { 
                                 setMenuOpen(false); 
-                                addActiveClass();
+                                addActiveClass(false);
                             }} 
                             activeClassName="active"
                         >
@@ -94,5 +94,6 @@ const Navbar = () => {
         </nav>
     );
 };
+  
 
 export default Navbar;

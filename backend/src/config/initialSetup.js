@@ -1,38 +1,47 @@
 "use strict";
 import User from "../entity/user.entity.js";
 import Especialidad from "../entity/especialidad.entity.js";
+import Pertenece from "../entity/pertenece.entity.js";
+import Curso from "../entity/curso.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
 export async function createUsers() {
   try {
     const userRepository = AppDataSource.getRepository(User);
+    const perteneceRepository = AppDataSource.getRepository(Pertenece);
+    const cursoRepository = AppDataSource.getRepository(Curso);
 
     const count = await userRepository.count();
     if (count > 0) return;
 
+    const defaultCurso = await cursoRepository.findOne({ where: { nombre: "1ro Medio A" } });
+    if (!defaultCurso) {
+      throw new Error("Curso predeterminado no encontrado.");
+    }
+
     await Promise.all([
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Diego Alexis Salazar Jara",
+          nombreCompleto: "Administrador",
           rut: "21.308.770-3",
-          email: "administrador2024@gmail.cl",
+          email: "administrador@gmail.cl",
           password: await encryptPassword("admin1234"),
           rol: "administrador",
-        }),
+        })
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Jefe UTP Predeterminado",
+          nombreCompleto: "Jefe UTP",
           rut: "12.345.678-9",
           email: "jefeutp@gmail.cl",
-          password: await encryptPassword("jefe1234"),
+          password: await encryptPassword("jefeutp1234"),
           rol: "jefeUTP",
         })
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Profesor Predeterminado",
+          nombreCompleto: "Profesor Uno",
           rut: "11.223.344-5",
           email: "profesor@gmail.cl",
           password: await encryptPassword("profesor1234"),
@@ -41,69 +50,47 @@ export async function createUsers() {
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Diego Sebastián Ampuero Belmar",
-          rut: "21.151.897-9",
-          email: "usuario1.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "alumno",
-        })
-      ),
-        userRepository.save(
-          userRepository.create({
-            nombreCompleto: "Alexander Benjamín Marcelo Carrasco Fuentes",
-            rut: "20.630.735-8",
-            email: "usuario2.2024@gmail.cl",
-            password: await encryptPassword("user1234"),
-            rol: "alumno",
-          }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Pablo Andrés Castillo Fernández",
-          rut: "20.738.450-K",
-          email: "usuario3.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "alumno",
-        }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Felipe Andrés Henríquez Zapata",
-          rut: "20.976.635-3",
-          email: "usuario4.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "alumno",
-        }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Diego Alexis Meza Ortega",
-          rut: "21.172.447-1",
-          email: "usuario5.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "alumno",
-        }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Juan Pablo Rosas Martin",
-          rut: "20.738.415-1",
-          email: "usuario6.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "alumno",
-        }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Cristóbal Ariel Alarcón Pérez",
+          nombreCompleto: "Encargado de práctica",
           rut: "20.738.415-2",
           email: "profesorEDP@gmail.cl",
           password: await encryptPassword("profesorEDP1234"),
           rol: "EDP",
         }),
       ),
+      (async () => {
+        const alumno1 = userRepository.create({
+          nombreCompleto: "Alumno Uno",
+          rut: "21.151.897-9",
+          email: "alumno1@gmail.cl",
+          password: await encryptPassword("alumno1234"),
+          rol: "alumno",
+        });
+        const savedAlumno1 = await userRepository.save(alumno1);
+        await perteneceRepository.save(
+          perteneceRepository.create({
+            rut: savedAlumno1.rut,
+            ID_curso: defaultCurso.ID_curso,
+          })
+        );
+      })(),
+      (async () => {
+        const alumno2 = userRepository.create({
+          nombreCompleto: "Alumno Dos",
+          rut: "20.630.735-8",
+          email: "alumno2@gmail.cl",
+          password: await encryptPassword("alumno1234"),
+          rol: "alumno",
+        });
+        const savedAlumno2 = await userRepository.save(alumno2);
+        await perteneceRepository.save(
+          perteneceRepository.create({
+            rut: savedAlumno2.rut,
+            ID_curso: defaultCurso.ID_curso,
+          })
+        );
+      })(),
     ]);
-    console.log("* => Usuarios creados exitosamente");
+    
   } catch (error) {
     console.error("Error al crear usuarios:", error);
   }

@@ -26,19 +26,27 @@ export async function login(dataUser) {
 export async function register(data) {
     try {
         const dataRegister = convertirMinusculas(data);
-        const { nombreCompleto, email, rut, password , rol} = dataRegister
-        const response = await axios.post('/auth/register', {
-            nombreCompleto,
-            email,
-            rut,
-            password,
-            rol
-        });
+        const { nombreCompleto, email, rut, password, rol, curso } = dataRegister;
+     
+        const payload = { 
+            nombreCompleto, 
+            email, 
+            rut, 
+            password, 
+            rol 
+        };
+
+        if (rol === 'alumno' && curso) {
+            payload.curso = Number(curso); 
+        }
+
+        const response = await axios.post('/auth/register', payload);
         return response.data;
     } catch (error) {
-        return error.response.data;
+        return error.response?.data || { error: "Error en la solicitud" };
     }
 }
+
 
 export async function logout() {
     try {

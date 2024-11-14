@@ -1,42 +1,45 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const PertenceSchema = new EntitySchema({
+const PerteneceSchema = new EntitySchema({
   name: "Pertenece",
   tableName: "pertenecen",
   columns: {
-    rut: {
-      type: "varchar",
-      primaryKey: true,
-      length: 12,
-      nullable: false,
-      unique: true,
-    },
-    ID_curso: {
+    ID_pertenece: {
       type: "int",
       primary: true,
       generated: true,
     },
+    ID_curso: {
+      type: "int",
+      nullable: false,
+    },
+    rut: {
+      type: "varchar",
+      length: 12,
+      nullable: false,
+    },
   },
   relations: {
-    rut: {
+    user: { 
       type: "many-to-one",
       target: "User",
       joinColumn: {
         name: "rut",
-        referencedColumnName: "rut"
+        referencedColumnName: "rut",
       },
-      nullable: false, 
+      nullable: false,
     },
-    ID_Curso: {
+    curso: {
       type: "many-to-one",
       target: "Curso",
       joinColumn: {
         name: "ID_curso",
-        referencedColumnName: "ID_curso"
+        referencedColumnName: "ID_curso",
       },
+      nullable: false,
     },
   },
-})
+});
 
-export default PertenceSchema;
+export default PerteneceSchema;

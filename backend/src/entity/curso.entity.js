@@ -41,16 +41,13 @@ const CursoSchema = new EntitySchema({
     },
   ],
   relations: {
-    rut: {
-      type: "many-to-one",
-      target: "User",
-      joinColumn: {
-        name: "rut",
-        referencedColumnName: "rut"
-      },
-     
+    imparten: {
+      type: "one-to-many",
+      target: "Imparte",
+      inverseSide: "curso",
+      onDelete: "CASCADE",
     },
-  },
+  },  
 });
 
 export default CursoSchema;
