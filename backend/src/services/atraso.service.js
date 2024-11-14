@@ -1,8 +1,11 @@
 "use strict";
-import Atraso from "../entity/atraso.entity.js";  // Importa la entidad Atraso
-import Justificativo  from "../entity/justificativo.entity.js";
+import Atraso from "../entity/atraso.entity.js";  
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
+import Imparte from "../entity/imparte.entity.js";  
+import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+
+moment.locale('es'); // Establece el idioma en español
 
 export async function createAtrasoService(rut) {
   try {
@@ -48,20 +51,6 @@ export async function findAtraso(rut,fecha,hora){
 
 }
 
-export async function createJustificativo(justificativoData){
-  try{
-    const justificativoRepository = AppDataSource.getRepository(Justificativo);
-    const nuevoJustificativo = justificativoRepository.create(justificativoData);
-    await justificativoRepository.save(nuevoJustificativo);
-
-    return nuevoJustificativo;
-
-  }catch (error){
-    console.error('Error al crear justificativo:', error);
-    throw new Error('No se pudo crear el justificativo');
-  }
-}
-
 export async function obtenerAtrasos(){
   try {
     const atrasoRepository = AppDataSource.getRepository(Atraso);
@@ -80,5 +69,38 @@ export async function obtenerAtrasos(){
   } catch (error) {
     console.error("Error al obtener a los atrasos:", error);
     return [null, "Error interno del servidor"];
+  }
+}
+
+export async function obtenerInfoAtraso(rut) {
+  try {
+
+    const fechaActual = moment().tz("America/Santiago").format("YYYY-MM-DD");
+    const horaActual = moment().tz("America/Santiago").format("HH:mm:ss");
+    const diaSemana = moment.tz("America/Santiago").format('dddd'); // Día de la semana en español
+
+    const imparteRepository = AppDataSource.getRepository(Imparte);
+    console.log(fechaActual);
+    console.log(diaSemana);
+    console.log(horaActual);
+
+    const imparte = await imparteRepository.findOne({
+      where: {
+        rut: rut,
+        dia: diaSemana,                      
+        hora_Inicio: LessThanOrEqual(horaActual),
+        hora_Fin: MoreThanOrEqual(horaActual)     
+      }
+    });
+
+    if (imparte) {
+      return imparte;
+    } else {
+      throw new Error('No se encontró una coincidencia para el horario actual.');
+    }
+
+  } catch (error) {
+    console.error('Error al buscar el atraso:', error);
+    throw new Error('No se pudo buscar el atraso');
   }
 }

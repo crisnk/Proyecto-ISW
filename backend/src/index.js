@@ -11,6 +11,10 @@ import { connectDB } from "./config/configDb.js";
 import { createUsers, crearEspecialidades } from "./config/initialSetup.js";
 import { createDefaultEntities } from "./config/initialSetupEntities.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function setupServer() {
   try {
@@ -58,7 +62,11 @@ async function setupServer() {
     app.use(passport.session());
 
     passportJwtSetup();
-
+    
+    //const uploadsPath = path.join(__dirname, 'uploads');  // Sin el prefijo 'src'
+    //app.locals.uploadsPath = uploadsPath;
+    app.use("api/src/uploads", express.static("src/uploads"));
+    app.use("/api", indexRoutes);
     app.use("/api", indexRoutes);
 
     app.listen(PORT, () => {
