@@ -53,8 +53,12 @@ export const saveHorarioCurso = async (payload) => {
 };
 
 export const eliminarHorario = async (id) => {
-  const response = await axios.delete(`/horarios/eliminar/${id}`);
-  return response.data;
+  try {
+    const response = await axios.delete(`/horarios/eliminar/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error al eliminar el horario.");
+  }
 };
 
 export const getHorariosByCurso = async (ID_curso) => {
@@ -123,4 +127,8 @@ export const notifyCourse = async (emails, horarioDetails) => {
     console.error("Error al enviar notificación al curso:", error.response?.data || error.message);
     throw error;
   }
+};
+export const getHorariosConId = async (params) => {
+  const response = await axios.get("/horarios/ver/con-id", { params });
+  return response.data;
 };

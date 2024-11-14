@@ -6,23 +6,12 @@ import {
   saveHorarioCurso,
   notifyCourse,
   getEmailsByCourse,
-} from "../../services/horario.service"; 
-import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
+} from "../../services/horario.service";
+import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
+import Spinner from "../../hooks/Horarios/Spinner";
+import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
+import "@styles/Horarios/AsignarHorarioCursos.css";
 
-const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
-const horas = [
-  "08:00 - 08:45",
-  "08:50 - 09:35",
-  "09:40 - 10:25",
-  "10:30 - 11:15",
-  "11:20 - 12:05",
-  "12:10 - 12:55",
-  "13:00 - 13:45",
-  "14:30 - 15:15",
-  "15:20 - 16:05",
-  "16:10 - 16:55",
-  "17:00 - 17:45",
-];
 
 const AsignarHorarioCurso = () => {
   const [curso, setCurso] = useState("");
@@ -33,13 +22,12 @@ const AsignarHorarioCurso = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
+  const [notificationLoading, setNotificationLoading] = useState(false);
   const [notificationSuccess, setNotificationSuccess] = useState("");
   const [notificationError, setNotificationError] = useState("");
 
   const initializeHorario = useCallback(() => {
-    const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
     const newHorario = {};
-
     diasSemana.forEach((dia) => {
       newHorario[dia] = {};
       horas.forEach((hora) => {
@@ -48,7 +36,6 @@ const AsignarHorarioCurso = () => {
           : { materia: "Sin asignar" };
       });
     });
-
     return newHorario;
   }, []);
 
@@ -61,7 +48,7 @@ const AsignarHorarioCurso = () => {
       const formattedHorario = initializeHorario();
 
       if (existingHorario.length === 0) {
-        setHorario(formattedHorario); 
+        setHorario(formattedHorario);
         return;
       }
 
@@ -78,7 +65,7 @@ const AsignarHorarioCurso = () => {
       setError("");
     } catch (err) {
       setError("Error al cargar el horario del curso.", err);
-      setHorario(initializeHorario()); 
+      setHorario(initializeHorario());
     } finally {
       setLoading(false);
     }
@@ -171,6 +158,7 @@ const AsignarHorarioCurso = () => {
   };
 
   const handleSendNotification = async () => {
+    setNotificationLoading(true);
     try {
       const { emails } = await getEmailsByCourse(curso);
 
@@ -180,12 +168,14 @@ const AsignarHorarioCurso = () => {
       }
 
       const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
-      await notifyCourse(emails, horarioDetails); 
+      await notifyCourse(emails, horarioDetails);
       setNotificationSuccess("Notificación enviada correctamente.");
       setNotificationError("");
     } catch {
       setNotificationError("Error al enviar la notificación.");
       setNotificationSuccess("");
+    } finally {
+      setNotificationLoading(false);
     }
   };
 
@@ -215,8 +205,8 @@ const AsignarHorarioCurso = () => {
       <button onClick={handleGuardarHorario} disabled={loading || saving}>
         {saving ? "Guardando..." : "Guardar"}
       </button>
-      <button onClick={handleSendNotification} disabled={!curso}>
-        Enviar Notificación
+      <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
+        {notificationLoading ? <Spinner /> : "Enviar Notificación"}
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}

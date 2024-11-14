@@ -15,6 +15,7 @@ import {
   verHorarioByAlumno,
   verHorarioCurso,
   verHorarioProfesor,
+  verHorariosConId,
   verMaterias,
   verProfesores,
   verTodosHorarios,
@@ -46,5 +47,7 @@ router.post("/materias/crear", isAuthorized(["jefeUTP", "administrador"]), crear
 router.post("/cursos/crear", isAuthorized(["jefeUTP", "administrador"]), crearCurso);
 router.delete("/materias/eliminar/:ID_materia", isAuthorized(["jefeUTP", "administrador"]), eliminarMateria);
 router.delete("/cursos/eliminar/:ID_curso", isAuthorized(["jefeUTP", "administrador"]), eliminarCurso);
+router.get("/ver/con-id", isAuthorized(["jefeUTP", "administrador"]), verHorariosConId);
 
-export default router;
+
+export default router; 

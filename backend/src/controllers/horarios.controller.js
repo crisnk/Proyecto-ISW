@@ -14,6 +14,7 @@ import {
   getHorarioProfesor,
   getHorariosByAlumnoService,
   getHorariosByCursoService,
+  getHorariosConId,
   getMaterias,
   getProfesores,
   notifyCourse,
@@ -186,6 +187,15 @@ export const getEmailsByCurso = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error("Error al obtener los correos del curso:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const verHorariosConId = async (req, res) => {
+  try {
+    const horarios = await getHorariosConId(req.query);
+    res.status(200).json(horarios);
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };

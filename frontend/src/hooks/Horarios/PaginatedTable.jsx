@@ -1,3 +1,4 @@
+import "@styles/Horarios/botones.css";
 const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) => {
   if (loading) {
     return <p>Cargando horarios...</p>;
@@ -17,7 +18,7 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
               <th key={col.field}>{col.title}</th>
             ))}
           </tr>
-        </thead> 
+        </thead>
         <tbody>
           {data.length > 0 ? (
             data.map((row, rowIndex) => (
@@ -39,15 +40,17 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
           <button
             onClick={() => onPageChange(pagination.page - 1)}
             disabled={pagination.page === 1}
+            style={{ marginRight: "10px" }}
           >
             Anterior
           </button>
-          <span style={{ margin: "0 10px" }}>
+          <span>
             Página {pagination.page} de {pagination.totalPages}
           </span>
           <button
             onClick={() => onPageChange(pagination.page + 1)}
             disabled={pagination.page === pagination.totalPages}
+            style={{ marginLeft: "10px" }}
           >
             Siguiente
           </button>
@@ -58,4 +61,3 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
 };
 
 export default PaginatedTable;
-

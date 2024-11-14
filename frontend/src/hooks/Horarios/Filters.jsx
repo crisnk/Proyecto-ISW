@@ -1,3 +1,4 @@
+import "@styles/Horarios/botones.css";
 import { useState, useEffect } from "react";
 import { getCursos, getProfesores } from "../../services/horario.service";
 
@@ -40,8 +41,8 @@ const Filters = ({ onChange }) => {
   };
 
   return (
-    <div>
-      <select onChange={(e) => setFilterType(e.target.value)} value={filterType}>
+    <div style={{ marginBottom: "20px" }}>
+      <select onChange={(e) => setFilterType(e.target.value)} value={filterType} style={{ marginRight: "10px" }}>
         <option value="">Selecciona filtro</option>
         <option value="curso">Curso</option>
         <option value="profesor">Profesor</option>

@@ -424,3 +424,29 @@ export const getEmailByProfesorService = async (rut) => {
 
   return { email: profesor.email };
 };
+export const getHorariosConId = async (filters) => {
+  const { page = 1, limit = 10 } = filters;
+  const repository = AppDataSource.getRepository(Imparte);
+
+  const [horarios, total] = await repository.findAndCount({
+    select: ["id", "dia", "bloque"],
+    relations: ["materia", "profesor", "curso"],
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  return {
+    data: horarios.map((horario) => ({
+      id: horario.id,
+      dia: horario.dia,
+      bloque: horario.bloque,
+      nombre_materia: horario.materia?.nombre || "Sin materia",
+      nombre_profesor: horario.profesor?.nombre || "Sin profesor",
+      curso: horario.curso?.nombre || "Sin curso",
+    })),
+    total,
+    page: parseInt(page),
+    totalPages: Math.ceil(total / limit),
+  };
+};
+
