@@ -2,60 +2,54 @@ import { useState, useEffect } from "react";
 import { getCursos, getProfesores } from "../../services/horario.service";
 
 const Filters = ({ onChange }) => {
-  const [filter, setFilter] = useState({ type: "", value: "" });
+  const [filterType, setFilterType] = useState("");
   const [options, setOptions] = useState([]);
+  const [selectedValue, setSelectedValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchOptions = async () => {
       setLoading(true);
-      setError("");
       try {
-        if (filter.type === "curso") {
+        if (filterType === "curso") {
           const cursos = await getCursos();
           setOptions(cursos.map((curso) => ({ value: curso.ID_curso, label: curso.nombre })));
-        } else if (filter.type === "profesor") {
+        } else if (filterType === "profesor") {
           const profesores = await getProfesores();
           setOptions(profesores.map((profesor) => ({ value: profesor.rut, label: profesor.nombreCompleto })));
         } else {
           setOptions([]);
         }
-      } catch (err) {
-        console.error("Error al cargar opciones:", err);
-        setError("No se pudieron cargar las opciones, inténtelo de nuevo.");
+      } catch (error) {
+        console.error("Error al cargar opciones:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (filter.type) {
+    if (filterType) {
       fetchOptions();
+      setSelectedValue("");
     }
-  }, [filter.type]);
+  }, [filterType]);
 
-  const handleFilterTypeChange = (e) => {
-    setFilter({ type: e.target.value, value: "" });
-    setOptions([]);
-    onChange({ [e.target.value]: "" });
-  };
-
-  const handleFilterValueChange = (e) => {
-    setFilter((prev) => ({ ...prev, value: e.target.value }));
-    onChange({ [filter.type]: e.target.value });
+  const handleFilterChange = (e) => {
+    const newValue = e.target.value;
+    setSelectedValue(newValue);
+    onChange({ [filterType]: newValue });
   };
 
   return (
     <div>
-      <select value={filter.type} onChange={handleFilterTypeChange}>
+      <select onChange={(e) => setFilterType(e.target.value)} value={filterType}>
         <option value="">Selecciona filtro</option>
         <option value="curso">Curso</option>
         <option value="profesor">Profesor</option>
       </select>
 
-      {filter.type && !loading && (
-        <select value={filter.value} onChange={handleFilterValueChange}>
-          <option value="">Selecciona {filter.type}</option>
+      {filterType && !loading && (
+        <select onChange={handleFilterChange} value={selectedValue}>
+          <option value="">Selecciona {filterType}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -63,9 +57,7 @@ const Filters = ({ onChange }) => {
           ))}
         </select>
       )}
-
       {loading && <p>Cargando opciones...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };

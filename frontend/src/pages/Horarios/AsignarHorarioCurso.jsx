@@ -22,12 +22,11 @@ const AsignarHorarioCurso = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
-  const [notificationLoading, setNotificationLoading] = useState(false);
-  const [notificationSuccess, setNotificationSuccess] = useState("");
-  const [notificationError, setNotificationError] = useState("");
 
   const initializeHorario = useCallback(() => {
+    const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
     const newHorario = {};
+
     diasSemana.forEach((dia) => {
       newHorario[dia] = {};
       horas.forEach((hora) => {
@@ -36,6 +35,7 @@ const AsignarHorarioCurso = () => {
           : { materia: "Sin asignar" };
       });
     });
+
     return newHorario;
   }, []);
 
@@ -48,7 +48,7 @@ const AsignarHorarioCurso = () => {
       const formattedHorario = initializeHorario();
 
       if (existingHorario.length === 0) {
-        setHorario(formattedHorario);
+        setHorario(formattedHorario); 
         return;
       }
 
@@ -65,7 +65,7 @@ const AsignarHorarioCurso = () => {
       setError("");
     } catch (err) {
       setError("Error al cargar el horario del curso.", err);
-      setHorario(initializeHorario());
+      setHorario(initializeHorario()); 
     } finally {
       setLoading(false);
     }
@@ -80,8 +80,8 @@ const AsignarHorarioCurso = () => {
       try {
         const materiasData = await getMaterias();
         setMaterias(materiasData);
-      } catch {
-        setError("Error al cargar materias.");
+      } catch (err) {
+        setError("Error al cargar materias.", err);
       }
     };
     fetchMaterias();
@@ -92,8 +92,8 @@ const AsignarHorarioCurso = () => {
       try {
         const cursosData = await getCursos();
         setCursos(cursosData);
-      } catch {
-        setError("Error al cargar cursos.");
+      } catch (err) {
+        setError("Error al cargar cursos.", err);
       }
     };
     fetchCursos();
@@ -134,8 +134,8 @@ const AsignarHorarioCurso = () => {
       await saveHorarioCurso(payload);
       setSuccess("Horario guardado correctamente.");
       setError("");
-    } catch {
-      setError("Error al guardar el horario.");
+    } catch (error) {
+      setError("Error al guardar el horario.", error);
     } finally {
       setSaving(false);
     }
@@ -155,28 +155,6 @@ const AsignarHorarioCurso = () => {
         },
       },
     }));
-  };
-
-  const handleSendNotification = async () => {
-    setNotificationLoading(true);
-    try {
-      const { emails } = await getEmailsByCourse(curso);
-
-      if (!emails || emails.length === 0) {
-        setNotificationError("No hay correos electrónicos asociados a este curso.");
-        return;
-      }
-
-      const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
-      await notifyCourse(emails, horarioDetails);
-      setNotificationSuccess("Notificación enviada correctamente.");
-      setNotificationError("");
-    } catch {
-      setNotificationError("Error al enviar la notificación.");
-      setNotificationSuccess("");
-    } finally {
-      setNotificationLoading(false);
-    }
   };
 
   return (
@@ -205,9 +183,6 @@ const AsignarHorarioCurso = () => {
       <button onClick={handleGuardarHorario} disabled={loading || saving}>
         {saving ? "Guardando..." : "Guardar"}
       </button>
-      <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
-        {notificationLoading ? <Spinner /> : "Enviar Notificación"}
-      </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
       {notificationError && <p style={{ color: "red" }}>{notificationError}</p>}
@@ -217,3 +192,4 @@ const AsignarHorarioCurso = () => {
 };
 
 export default AsignarHorarioCurso;
+

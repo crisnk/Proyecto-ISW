@@ -5,19 +5,19 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
 
   const getCellValue = (row, field) => {
     const keys = field.split(".");
-    return keys.reduce((value, key) => value?.[key], row) || "N/A"; 
+    return keys.reduce((value, key) => value?.[key], row) || "N/A";
   };
-  
+
   return (
     <div>
-      <table border="1" style={{ width: "100%", textAlign: "center" }}>
+      <table border="1" style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
         <thead>
           <tr>
             {columns.map((col) => (
               <th key={col.field}>{col.title}</th>
             ))}
           </tr>
-        </thead>
+        </thead> 
         <tbody>
           {data.length > 0 ? (
             data.map((row, rowIndex) => (
@@ -34,25 +34,28 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
           )}
         </tbody>
       </table>
-      <div style={{ marginTop: "10px" }}>
-        <button
-          onClick={() => onPageChange(pagination.page - 1)}
-          disabled={pagination.page === 1}
-        >
-          Anterior
-        </button>
-        <span>
-          Página {pagination.page} de {pagination.totalPages}
-        </span>
-        <button
-          onClick={() => onPageChange(pagination.page + 1)}
-          disabled={pagination.page === pagination.totalPages}
-        >
-          Siguiente
-        </button>
-      </div>
+      {pagination && (
+        <div style={{ marginTop: "10px", textAlign: "center" }}>
+          <button
+            onClick={() => onPageChange(pagination.page - 1)}
+            disabled={pagination.page === 1}
+          >
+            Anterior
+          </button>
+          <span style={{ margin: "0 10px" }}>
+            Página {pagination.page} de {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => onPageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages}
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 export default PaginatedTable;
+
