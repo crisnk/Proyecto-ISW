@@ -5,6 +5,7 @@ import Imparte from "../entity/imparte.entity.js";
 import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
 import Pertenece from "../entity/pertenece.entity.js";
+import { sendEmail } from "./email.service.js";
 import {
   cursoValidation,
   horarioValidationCurso,
@@ -79,49 +80,6 @@ export const asignaHorarioProfesorService = async (horarioData) => {
   if (!profesor) {
     throw new Error("El profesor con el RUT proporcionado no existe o no tiene el rol adecuado.");
   }
-  const repository = AppDataSource.getRepository(Imparte);
-
-  for (const bloque of horario) {
-    validarHorario(bloque.dia, bloque.bloque);
-
-    let horarioExistente = await repository.findOne({
-      where: { rut, dia: bloque.dia, bloque: bloque.bloque },
-    });
-
-    if (horarioExistente) {
- 
-      horarioExistente.ID_materia = bloque.ID_materia;
-      horarioExistente.ID_curso = bloque.ID_curso;
-      await repository.save(horarioExistente);
-    } else {
-
-      const conflictoHorario = await repository.findOne({
-        where: { dia: bloque.dia, bloque: bloque.bloque, rut },
-      });
-
-      if (conflictoHorario) {
-        throw new Error(
-          `Conflicto de horario: El profesor con RUT
-           ${rut} ya tiene asignado el bloque ${bloque.bloque} el día ${bloque.dia}.`
-        );
-      }
-
-      const nuevoHorario = repository.create({
-        ID_materia: bloque.ID_materia,
-        ID_curso: bloque.ID_curso,
-        rut: rut,
-        dia: bloque.dia,
-        bloque: bloque.bloque,
-      });
-
-      await repository.save(nuevoHorario);
-    }
-  }
-
-  return { message: "Horario asignado correctamente para el profesor." };
-};
-
-export const eliminarHorarioService = async (id) => {
   const repository = AppDataSource.getRepository(Imparte);
 
   for (const bloque of horario) {
@@ -363,6 +321,7 @@ export const eliminarCursoService = async (ID_curso) => {
   const cursoRepository = AppDataSource.getRepository(Curso);
 
   await impartirRepository.delete({ ID_curso });
+
   const curso = await cursoRepository.findOneBy({ ID_curso });
   if (!curso) {
     throw new Error("Curso no encontrado.");
@@ -405,4 +364,88 @@ export const getHorariosByAlumnoService = async (rut) => {
     nombre_materia: horario.materia?.nombre || "Sin asignar",
     nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
   }));
+};
+
+export const notifyProfessor = async (profesorEmail, horarioDetails) => {
+    const subject = "Nuevo Horario Asignado";
+    const message = `Se ha asignado un nuevo horario a usted. Los detalles son los siguientes:\n\n${horarioDetails}`;
+
+    return await sendEmail(
+        profesorEmail,
+        subject,
+        message,
+        `<p>${message.replace(/\n/g, "<br>")}</p>`
+    );
+};
+
+export const notifyCourse = async (courseEmails, horarioDetails) => {
+    const subject = "Nuevo Horario de Curso";
+    const message = `Se ha asignado un nuevo horario al curso. Los detalles son:\n\n${horarioDetails}`;
+
+    for (const email of courseEmails) {
+        await sendEmail(
+            email,
+            subject,
+            message,
+            `<p>${message.replace(/\n/g, "<br>")}</p>`
+        );
+    }
+    return true;
+};
+
+export const getEmailsByCursoService = async (ID_curso) => {
+  const perteneceRepository = AppDataSource.getRepository(Pertenece);
+  
+  const estudiantes = await perteneceRepository.find({
+    where: { ID_curso },
+    relations: ["user"],
+    select: ["user.email"],
+  });
+
+  if (!estudiantes.length) {
+    throw new Error("No se encontraron alumnos para el curso proporcionado.");
+  }
+
+  const emails = estudiantes.map((estudiante) => estudiante.user.email);
+  return { emails };
+}; 
+
+export const getEmailByProfesorService = async (rut) => {
+  const profesorRepository = AppDataSource.getRepository(User);
+
+  const profesor = await profesorRepository.findOne({
+    where: { rut, rol: "profesor" },
+    select: ["email"],
+  });
+
+  if (!profesor) {
+    throw new Error("No se encontró un profesor con el RUT proporcionado.");
+  }
+
+  return { email: profesor.email };
+};
+export const getHorariosConId = async (filters) => {
+  const { page = 1, limit = 10 } = filters;
+  const repository = AppDataSource.getRepository(Imparte);
+
+  const [horarios, total] = await repository.findAndCount({
+    select: ["ID_imparte", "dia", "bloque"],
+    relations: ["materia", "profesor", "curso"],
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  return {
+    data: horarios.map((horario) => ({
+      ID_imparte: horario.ID_imparte,
+      dia: horario.dia,
+      bloque: horario.bloque,
+      nombre_materia: horario.materia?.nombre || "Sin materia",
+      nombre_profesor: horario.profesor?.nombre || "Sin profesor",
+      curso: horario.curso?.nombre || "Sin curso",
+    })),
+    total,
+    page: parseInt(page),
+    totalPages: Math.ceil(total / limit),
+  };
 };
