@@ -8,9 +8,15 @@ import {
   notifyProfessor,
   getEmailByProfesor,
 } from "../../services/horario.service";
-import EditarTablaHorarioProfesor from "../../hooks/Horarios/EditarTablaHorarioProfesor";
-import Spinner from "../../hooks/Horarios/Spinner"; 
-import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
+import EditarTablaHorarioProfesor from "../../components/Horarios/EditarTablaHorarioProfesor";
+
+const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
+const horas = [
+  "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
+  "10:30 - 11:15", "11:20 - 12:05", "12:10 - 12:55",
+  "13:00 - 13:45", "14:30 - 15:15", "15:20 - 16:05",
+  "16:10 - 16:55", "17:00 - 17:45",
+];
 
 const AsignarHorarioProfesor = () => {
   const [profesor, setProfesor] = useState("");
@@ -21,12 +27,10 @@ const AsignarHorarioProfesor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [notificationSuccess, setNotificationSuccess] = useState("");
-  const [notificationError, setNotificationError] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [notificationLoading, setNotificationLoading] = useState(false); 
+  const [saving, setSaving] = useState(false); 
 
   const initializeHorario = useCallback(() => {
+    const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
     const newHorario = {};
     diasSemana.forEach((dia) => {
       newHorario[dia] = {};
@@ -54,9 +58,9 @@ const AsignarHorarioProfesor = () => {
         }
       });
       setHorario(formattedHorario);
-      setError("");
     } catch (error) {
-      setError("Error al cargar el horario.", error);
+      setError("Error al cargar el horario.");
+      console.error("Error al cargar el horario:", error);
     } finally {
       setLoading(false);
     }
@@ -104,7 +108,7 @@ const AsignarHorarioProfesor = () => {
       setError("Debes seleccionar un profesor antes de guardar.");
       return;
     }
-    setSaving(true);
+    setSaving(true);  
     try {
       const cambios = diasSemana.flatMap((dia) =>
         horas.map((hora) => {
@@ -119,65 +123,26 @@ const AsignarHorarioProfesor = () => {
               bloque: hora,
             };
           }
-          return null;
+          return null; 
         }).filter(Boolean)
       );
-
+  
       if (cambios.length === 0) {
         setError("No se han asignado bloques válidos.");
         return;
       }
-
+  
       await saveHorarioProfesor({ rut: profesor || "SIN_PROFESOR", horario: cambios });
       setSuccess("Horario guardado correctamente.");
-    } catch {
+      setError("");
+    } catch (error) {
+      console.error("Error al guardar el horario:", error);
       setError("Error al guardar el horario.");
     } finally {
-      setSaving(false);
+      setSaving(false);  
     }
   };
-
-  const handleEnviarNotificacion = async () => {
-    try {
-      setNotificationLoading(true);
-      if (!profesor) {
-        setNotificationError("Debe seleccionar un profesor antes de enviar la notificación.");
-        return;
-      }
-
-      const { email } = await getEmailByProfesor(profesor);
-      if (!email) {
-        setNotificationError("No se encontró el email del profesor.");
-        return;
-      }
-
-      const bloquesAsignados = Object.entries(horario).flatMap(([dia, bloques]) =>
-        Object.entries(bloques).filter(([, detalle]) => detalle.materia !== "Sin asignar").map(([bloque, detalle]) => ({
-          dia,
-          bloque,
-          materia: detalle.materia,
-        }))
-      );
-
-      if (bloquesAsignados.length === 0) {
-        setNotificationError("No hay bloques asignados para notificar.");
-        return;
-      }
-
-      const horarioDetails = bloquesAsignados
-        .map((detalle) => `${detalle.dia} ${detalle.bloque}: ${detalle.materia}`)
-        .join("\n");
-
-      await notifyProfessor(email, horarioDetails);
-      setNotificationSuccess("Notificación enviada correctamente.");
-      setNotificationError("");
-    } catch (error) {
-      console.error("Error al enviar la notificación:", error);
-      setNotificationError("Error al enviar la notificación.");
-    } finally {
-      setNotificationLoading(false);
-    }
-  };
+  
 
   const handleMateriaCursoChange = (dia, bloque, key, value) => {
     setHorario((prev) => ({
@@ -218,9 +183,6 @@ const AsignarHorarioProfesor = () => {
       )}
       <button onClick={handleGuardarHorario} disabled={loading || saving}>
         {saving ? "Guardando..." : "Guardar"}
-      </button>
-      <button onClick={handleEnviarNotificacion} disabled={!profesor || notificationLoading}>
-        {notificationLoading ? <Spinner /> : "Enviar Notificación"}
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}

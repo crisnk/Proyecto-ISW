@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { getHorariosConId, eliminarHorario } from "../../services/horario.service";
-import PaginatedTable from "../../hooks/Horarios/PaginatedTable";
-import Filters from "../../hooks/Horarios/Filters";
+import { getHorarios, eliminarHorario } from "../../services/horario.service";
+import PaginatedTable from "../../components/Horarios/PaginatedTable";
+import Filters from "../../components/Horarios/Filters";
 import "@styles/Horarios/verHorarios.css";
-import { diasSemana, horas } from "../../hooks/Horarios/HorariosConfig";
 
 const EliminarHorario = () => {
   const [horarios, setHorarios] = useState([]);
@@ -29,8 +28,8 @@ const EliminarHorario = () => {
       setHorarios(sortedData);
       setPagination({ page, totalPages });
       setError("");
-    } catch {
-      setError("No se pudieron cargar los horarios.");
+    } catch (err) {
+      setError("No se pudieron cargar los horarios.", err);
     } finally {
       setLoading(false);
     }
@@ -50,24 +49,20 @@ const EliminarHorario = () => {
   };
 
   const handleEliminarHorario = async (id) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este horario?")) {
-      try {
-        await eliminarHorario(id);
-        setSuccess("Horario eliminado correctamente.");
-        setError("");
-        fetchHorarios(filters, pagination.page);
-      } catch {
-        setError("No se pudo eliminar el horario.");
-      }
+    try {
+      await eliminarHorario(id);
+      setSuccess("Horario eliminado correctamente.");
+      setError("");
+      fetchHorarios(filters, pagination.page);
+    } catch (err) {
+      setError("No se pudo eliminar el horario.", err);
     }
   };
 
   const columns = [
     { field: "bloque", title: "Bloque Horario" },
-    { field: "dia", title: "Día" },
     { field: "nombre_materia", title: "Materia" },
     { field: "nombre_profesor", title: "Profesor" },
-    { field: "curso", title: "Curso" },
     {
       field: "acciones",
       title: "Acciones",
@@ -84,7 +79,7 @@ const EliminarHorario = () => {
       <h1>Eliminar Horarios</h1>
       <Filters onChange={handleFilterChange} />
       {loading ? (
-        <p className="mensaje-cargando">Cargando horarios...</p>
+        <p>Cargando horarios...</p>
       ) : (
         <PaginatedTable
           columns={columns}

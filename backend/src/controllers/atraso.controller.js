@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 import { createAtrasoService,
          obtenerAtrasos,
-         obtenerInfoAtraso
+         obtenerAtrasosAlumnos,
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
