@@ -18,7 +18,6 @@ export const getHorarios = async (params) => {
   }
 };
 
-
 export const getCursos = async () => {
   const response = await axios.get("/horarios/cursos");
   return response.data;

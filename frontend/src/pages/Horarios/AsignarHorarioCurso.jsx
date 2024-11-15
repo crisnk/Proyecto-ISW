@@ -35,7 +35,6 @@ const AsignarHorarioCurso = () => {
           : { materia: "Sin asignar" };
       });
     });
-
     return newHorario;
   }, []);
 
@@ -192,4 +191,3 @@ const AsignarHorarioCurso = () => {
 };
 
 export default AsignarHorarioCurso;
-
