@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { getHorarios, eliminarHorario } from "../../services/horario.service";
-import PaginatedTable from "../../components/Horarios/PaginatedTable";
-import Filters from "../../components/Horarios/Filters";
+import { getHorariosConId, eliminarHorario } from "../../services/horario.service";
+import PaginatedTable from "../../hooks/Horarios/PaginatedTable";
+import Filters from "../../hooks/Horarios/Filters";
+import "@styles/Horarios/verHorarios.css";
+import { diasSemana, horas } from "../../hooks/Horarios/HorariosConfig";
 
 const EliminarHorario = () => {
   const [horarios, setHorarios] = useState([]);
@@ -14,12 +16,20 @@ const EliminarHorario = () => {
   const fetchHorarios = useCallback(async (appliedFilters, page = 1) => {
     setLoading(true);
     try {
-      const { data, totalPages } = await getHorarios({ ...appliedFilters, page, limit: 10 });
-      setHorarios(data);
+      const { data, totalPages } = await getHorariosConId({ ...appliedFilters, page, limit: 10 });
+
+      // Sort data for consistent order
+      const sortedData = data.sort((a, b) => {
+        if (a.bloque === b.bloque) {
+          return diasSemana.indexOf(a.dia) - diasSemana.indexOf(b.dia);
+        }
+        return horas.indexOf(a.bloque) - horas.indexOf(b.bloque);
+      });
+
+      setHorarios(sortedData);
       setPagination({ page, totalPages });
       setError("");
-    } catch (err) {
-      console.error("Error al obtener horarios:", err);
+    } catch {
       setError("No se pudieron cargar los horarios.");
     } finally {
       setLoading(false);
@@ -32,6 +42,7 @@ const EliminarHorario = () => {
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
+    setPagination({ page: 1, totalPages: pagination.totalPages }); 
   };
 
   const handlePageChange = (newPage) => {
@@ -39,28 +50,29 @@ const EliminarHorario = () => {
   };
 
   const handleEliminarHorario = async (id) => {
-    try {
-      await eliminarHorario(id);
-      setSuccess("Horario eliminado correctamente.");
-      setError("");
-      fetchHorarios(filters, pagination.page); 
-    } catch (err) {
-      console.error("Error al eliminar horario:", err);
-      setError("No se pudo eliminar el horario.");
+    if (window.confirm("¿Estás seguro de que deseas eliminar este horario?")) {
+      try {
+        await eliminarHorario(id);
+        setSuccess("Horario eliminado correctamente.");
+        setError("");
+        fetchHorarios(filters, pagination.page);
+      } catch {
+        setError("No se pudo eliminar el horario.");
+      }
     }
   };
 
   const columns = [
-    { field: "dia", title: "Día" },
     { field: "bloque", title: "Bloque Horario" },
-    { field: "materia.nombre", title: "Materia" },
-    { field: "curso.nombre", title: "Curso" },
-    { field: "profesor.nombreCompleto", title: "Profesor" },
+    { field: "dia", title: "Día" },
+    { field: "nombre_materia", title: "Materia" },
+    { field: "nombre_profesor", title: "Profesor" },
+    { field: "curso", title: "Curso" },
     {
       field: "acciones",
       title: "Acciones",
       render: (row) => (
-        <button onClick={() => handleEliminarHorario(row.id)} style={{ color: "red" }}>
+        <button className="btn-eliminar" onClick={() => handleEliminarHorario(row.id)}>
           Eliminar
         </button>
       ),
@@ -68,12 +80,12 @@ const EliminarHorario = () => {
   ];
 
   return (
-    <div>
+    <div className="eliminar-horarios-container">
       <h1>Eliminar Horarios</h1>
       <Filters onChange={handleFilterChange} />
       {loading ? (
-        <p>Cargando horarios...</p>
-      ) : horarios.length > 0 ? (
+        <p className="mensaje-cargando">Cargando horarios...</p>
+      ) : (
         <PaginatedTable
           columns={columns}
           data={horarios}
@@ -81,11 +93,9 @@ const EliminarHorario = () => {
           pagination={pagination}
           onPageChange={handlePageChange}
         />
-      ) : (
-        <p>No hay horarios disponibles para mostrar.</p>
       )}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+      {error && <p className="mensaje-error">{error}</p>}
+      {success && <p className="mensaje-exito">{success}</p>}
     </div>
   );
 };

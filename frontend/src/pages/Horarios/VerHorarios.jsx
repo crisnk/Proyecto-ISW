@@ -1,87 +1,125 @@
-import { useState, useCallback, useEffect } from "react";
-import Filters from "../../components/Horarios/Filters";
-import { getHorarios } from "../../services/horario.service";
-import PaginatedTable from "../../components/Horarios/PaginatedTable";
+import { useState, useEffect, useCallback } from "react";
+import VerTablaHorario from "../../hooks/Horarios/VerTablaHorario";
+import Filters from "../../hooks/Horarios/Filters";
+import { getHorarios, getCursos, getProfesores } from "../../services/horario.service"; 
+import "@styles/Horarios/verHorarios.css";
 
-const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
-
-const VerHorarios = ({ userRole, userCourse }) => {
-  const [horarioCompleto, setHorarioCompleto] = useState([]);
-  const [loading, setLoading] = useState(false);
+const VerHorarios = () => {
+  const [horarios, setHorarios] = useState({});
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
-  const [filters, setFilters] = useState(userRole === "alumno" ? { curso: userCourse } : {});
+  const [filters, setFilters] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [tituloHorario, setTituloHorario] = useState("");
+  const [cursos, setCursos] = useState([]);
+  const [profesores, setProfesores] = useState([]);
 
-  const formatHorarioParaTabla = useCallback((data) => {
-    return data.map((item) => ({
-      dia: item.dia,
-      bloque: item.bloque,
-      materia: recreoHoras.includes(item.bloque) ? "Recreo" : item.materia?.nombre || "Sin asignar",
-      curso: item.curso?.nombre || "Sin asignar",
-      profesor: item.profesor?.nombreCompleto || "Sin asignar",
-    }));
-  }, []);
-
-  const fetchHorarioCompleto = useCallback(async (appliedFilters, page = 1) => {
+  const fetchHorarios = useCallback(async (appliedFilters, page = 1) => {
     setLoading(true);
     try {
       const { data, totalPages } = await getHorarios({ ...appliedFilters, page, limit: 10 });
-      setHorarioCompleto(formatHorarioParaTabla(data));
-      setPagination({ page, totalPages });
-    } catch (error) {
-      console.error("Error al obtener horario completo:", error);
+      if (data.length > 0) {
+        const formattedHorario = {};
+        data.forEach((bloque) => {
+          if (!formattedHorario[bloque.dia]) {
+            formattedHorario[bloque.dia] = {};
+          }
+          formattedHorario[bloque.dia][bloque.bloque] = {
+            materia: bloque.nombre_materia || "Sin asignar",
+            profesor: bloque.nombre_profesor || "Sin profesor",
+            curso: bloque.curso || "Sin curso",
+          };
+        });
+        setHorarios(formattedHorario);
+        setPagination({ page, totalPages });
+        setError("");
+      } else {
+        setHorarios({});
+        setError("No se encontraron horarios para los filtros seleccionados.");
+      }
+    } catch (err) {
+      console.error("Error al cargar horarios:", err);
+      setError("Error al cargar horarios.");
     } finally {
       setLoading(false);
     }
-  }, [formatHorarioParaTabla]);
+  }, []);
 
   useEffect(() => {
-    if (userRole === "alumno") {
-      fetchHorarioCompleto({ curso: userCourse });
-    } else {
-      fetchHorarioCompleto(filters);
+    const fetchData = async () => {
+      try {
+        const cursosData = await getCursos();
+        const profesoresData = await getProfesores();
+        setCursos(cursosData);
+        setProfesores(profesoresData);
+      } catch (error) {
+        console.error("Error al cargar datos para títulos:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(filters).length > 0) {
+      fetchHorarios(filters);
+      if (filters.curso) {
+        const cursoSeleccionado = cursos.find((curso) => curso.ID_curso.toString() === filters.curso);
+        setTituloHorario(`Horario del curso: ${cursoSeleccionado?.nombre || filters.curso}`);
+      } else if (filters.profesor) {
+        const profesorSeleccionado = profesores.find((prof) => prof.rut === filters.profesor);
+        setTituloHorario(`Horario del profesor: ${profesorSeleccionado?.nombreCompleto || filters.profesor}`);
+      } else {
+        setTituloHorario("Todos los horarios");
+      }
     }
-  }, [userRole, userCourse, fetchHorarioCompleto, filters]);
+  }, [filters, fetchHorarios, cursos, profesores]);
 
-  const handleFilterChange = useCallback(
-    (newFilters) => {
-      setFilters(newFilters);
-      fetchHorarioCompleto(newFilters);
-    },
-    [fetchHorarioCompleto]
-  );
-
-  const handlePageChange = (newPage) => {
-    fetchHorarioCompleto(filters, newPage);
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
   };
 
-  const columns = [
-    { field: "dia", title: "Día" },
-    { field: "bloque", title: "Bloque Horario" },
-    { field: "materia", title: "Materia" },
-    { field: "curso", title: "Curso" },
-    { field: "profesor", title: "Profesor" },
-  ];
+  const handlePageChange = (newPage) => {
+    fetchHorarios(filters, newPage);
+  };
 
   return (
-    <div>
-      <h1>Gestión de Horarios</h1>
-      {userRole !== "alumno" && <Filters onChange={handleFilterChange} />}
+    <div className="ver-horarios">
+      <h1>Ver Horarios</h1>
+      <Filters onChange={handleFilterChange} />
+      {tituloHorario && <h2>{tituloHorario}</h2>}
       {loading ? (
-        <p>Cargando horarios...</p>
-      ) : horarioCompleto.length > 0 ? (
-        <PaginatedTable
-          columns={columns}
-          data={horarioCompleto}
-          loading={loading}
-          pagination={pagination}
-          onPageChange={handlePageChange}
-        />
+        <p className="loading-message">Cargando horarios...</p>
+      ) : error ? (
+        <p className="error-message">{error}</p>
       ) : (
-        <p>Selecciona un curso o profesor para ver su horario.</p>
+        Object.keys(horarios).length > 0 && (
+          <VerTablaHorario
+            horario={horarios}
+            showProfesor={filters.profesor === undefined}
+          />
+        )
+      )}
+      {pagination.totalPages > 1 && Object.keys(horarios).length > 0 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page === 1}
+          >
+            Anterior
+          </button>
+          <span>
+            Página {pagination.page} de {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages}
+          >
+            Siguiente
+          </button>
+        </div>
       )}
     </div>
   );
 };
 
 export default VerHorarios;
-

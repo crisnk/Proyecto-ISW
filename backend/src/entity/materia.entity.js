@@ -28,14 +28,15 @@ const MateriaSchema = new EntitySchema({
       nullable: false,
     },
   },
-    relations: {
-      imparten: {
-        type: "one-to-many",
-        target: "Imparte",
-        inverseSide: "materia",
-        onDelete: "CASCADE", 
-      },
+  relations: {
+    imparten: {
+      type: "one-to-many",
+      target: "Imparte",
+      inverseSide: "materia",
+      onDelete: "CASCADE",
     },
+  },
+  
   });
 
 export default MateriaSchema;

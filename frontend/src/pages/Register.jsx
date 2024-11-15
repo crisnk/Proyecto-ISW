@@ -53,9 +53,6 @@ const Register = () => {
             showErrorAlert('Cancelado', 'Ocurrió un error al registrarse.');
         }
     };
-    
-    
-    
 
     const handleRoleChange = (e) => {
         handleInputChange('rol', e.target.value);

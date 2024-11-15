@@ -1,25 +1,32 @@
-import { useEffect, useState } from "react";
-import { getHorarioCurso } from "../../services/horario.service"; // Asegúrate de que este servicio esté bien configurado
-import PaginatedTable from "../../components/Horarios/PaginatedTable"; // O cualquier otro componente que uses para mostrar horarios
+import { useState, useEffect } from "react";
+import VerTablaHorario from "../../hooks/Horarios/VerTablaHorario";
+import { getHorariosByAlumno } from "../../services/horario.service";
+import "@styles/Horarios/miHorario.css";
 
 const MiHorario = () => {
-  const [horario, setHorario] = useState([]);
+  const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchHorario = async () => {
       try {
-        const user = JSON.parse(sessionStorage.getItem("usuario"));
-        if (!user || !user.ID_curso) {
-          setError("No se encontró información de tu curso.");
-          return;
-        }
-        const data = await getHorarioCurso(user.ID_curso);
-        setHorario(data); // Se asume que el backend retorna el horario del curso
+        const data = await getHorariosByAlumno();
+        
+        const formattedHorario = {};
+        data.forEach((bloque) => {
+          if (!formattedHorario[bloque.dia]) {
+            formattedHorario[bloque.dia] = {};
+          }
+          formattedHorario[bloque.dia][bloque.bloque] = {
+            materia: bloque.nombre_materia || "Sin asignar",
+            profesor: bloque.nombre_profesor || "Sin profesor",
+          };
+        });
+        
+        setHorario(formattedHorario);
       } catch (err) {
-        setError("Error al cargar tu horario.");
-        console.error(err);
+        setError(err.response?.data?.message || "Error al cargar el horario.");
       } finally {
         setLoading(false);
       }
@@ -28,31 +35,15 @@ const MiHorario = () => {
     fetchHorario();
   }, []);
 
-  const columns = [
-    { field: "dia", title: "Día" },
-    { field: "bloque", title: "Bloque Horario" },
-    { field: "materia", title: "Materia" },
-    { field: "profesor", title: "Profesor" },
-  ];
-
   return (
-    <div>
-      <h2>Mi Horario</h2>
-      {loading && <p>Cargando...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && !error && (
-        <PaginatedTable
-          columns={columns}
-          data={Object.entries(horario).flatMap(([dia, bloques]) =>
-            Object.entries(bloques).map(([bloque, materia]) => ({
-              dia,
-              bloque,
-              materia: materia || "Sin asignar",
-              profesor: materia.profesor || "Sin asignar",
-            }))
-          )}
-          pagination={{ page: 1, totalPages: 1 }} 
-        />
+    <div className="mi-horario">
+      <h1>Mi Horario</h1>
+      {loading ? (
+        <p>Cargando...</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
+      ) : (
+        <VerTablaHorario horario={horario} />
       )}
     </div>
   );

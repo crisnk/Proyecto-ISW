@@ -1,0 +1,65 @@
+.tabla-horarios-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .tabla-horarios {
+    width: 90%;
+    border-collapse: collapse;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tabla-header {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  .hora-col {
+    font-weight: bold;
+    background-color: #fafafa;
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .contenido-col {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  .recreo-row {
+    background-color: #f0f8ff;
+  }
+  
+  .recreo-text {
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  .select-label {
+    display: block;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .materia-select,
+  .curso-select {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+  
+  .materia-select:focus,
+  .curso-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  

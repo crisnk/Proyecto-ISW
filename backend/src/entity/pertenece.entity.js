@@ -10,18 +10,18 @@ const PerteneceSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
+    ID_curso: {
+      type: "int",
+      nullable: false,
+    },
     rut: {
       type: "varchar",
       length: 12,
       nullable: false,
     },
-    ID_curso: {
-      type: "int",
-      nullable: false,
-    },
   },
   relations: {
-    rut: {
+    user: { 
       type: "many-to-one",
       target: "User",
       joinColumn: {
@@ -30,7 +30,7 @@ const PerteneceSchema = new EntitySchema({
       },
       nullable: false,
     },
-    ID_Curso: {
+    curso: {
       type: "many-to-one",
       target: "Curso",
       joinColumn: {
