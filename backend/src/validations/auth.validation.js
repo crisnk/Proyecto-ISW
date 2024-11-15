@@ -93,12 +93,12 @@ export const registerValidation = Joi.object({
       "string.pattern.base": "La contraseña solo puede contener letras y números.",
     }),
   rol: Joi.string()
-    .valid("alumno", "profesor", "jefeUTP", "administrador")
+    .valid("alumno", "profesor", "jefeUTP", "EDP")
     .required()
     .messages({
       "string.empty": "El rol no puede estar vacío.",
       "any.required": "El rol es obligatorio.",
-      "any.only": "El rol debe ser uno de los siguientes: alumno, profesor, jefeUTP, administrador.",
+      "any.only": "El rol debe ser uno de los siguientes: alumno, profesor, jefeUTP, EDP.",
     }),
   curso: Joi.when("rol", {
     is: "alumno",

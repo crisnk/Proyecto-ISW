@@ -16,7 +16,6 @@ const PostulaSchema = new EntitySchema({
     ID_practica: {
       type: "int",
       primary: true,
-      generated: true, 
     },
   },
   relations: {
@@ -27,7 +26,6 @@ const PostulaSchema = new EntitySchema({
         name: "rut",
         referencedColumnName: "rut"
       },
-      nullable: false, 
     },
     ID_practica: {
       type: "many-to-many",

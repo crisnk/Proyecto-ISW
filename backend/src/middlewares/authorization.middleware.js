@@ -4,8 +4,7 @@ import {
     handleErrorServer,
 } from "../handlers/responseHandlers.js";
 
-
-export const isAuthorized = (allowedRoles) => {
+export const isAuthorized = (...allowedRoles) => {
     return async (req, res, next) => {
         try {
             const { rol } = req.user;
@@ -25,6 +24,5 @@ export const isAuthorized = (allowedRoles) => {
         }
     };
 };
-
 
 export default isAuthorized;

@@ -4,23 +4,14 @@ import {
   getMaterias,
   getHorariosByCurso,
   saveHorarioCurso,
+  notifyCourse,
+  getEmailsByCourse,
 } from "../../services/horario.service";
-import EditarTablaHorarioCurso from "../../components/Horarios/EditarTablaHorarioCurso";
+import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
+import Spinner from "../../hooks/Horarios/Spinner";
+import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
+import "@styles/Horarios/AsignarHorarioCursos.css";
 
-const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
-const horas = [
-  "08:00 - 08:45",
-  "08:50 - 09:35",
-  "09:40 - 10:25",
-  "10:30 - 11:15",
-  "11:20 - 12:05",
-  "12:10 - 12:55",
-  "13:00 - 13:45",
-  "14:30 - 15:15",
-  "15:20 - 16:05",
-  "16:10 - 16:55",
-  "17:00 - 17:45",
-];
 
 const AsignarHorarioCurso = () => {
   const [curso, setCurso] = useState("");
@@ -31,11 +22,12 @@ const AsignarHorarioCurso = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
+  const [notificationLoading, setNotificationLoading] = useState(false);
+  const [notificationSuccess, setNotificationSuccess] = useState("");
+  const [notificationError, setNotificationError] = useState("");
 
   const initializeHorario = useCallback(() => {
-    const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
     const newHorario = {};
-
     diasSemana.forEach((dia) => {
       newHorario[dia] = {};
       horas.forEach((hora) => {
@@ -44,7 +36,6 @@ const AsignarHorarioCurso = () => {
           : { materia: "Sin asignar" };
       });
     });
-
     return newHorario;
   }, []);
 
@@ -57,7 +48,7 @@ const AsignarHorarioCurso = () => {
       const formattedHorario = initializeHorario();
 
       if (existingHorario.length === 0) {
-        setHorario(formattedHorario); 
+        setHorario(formattedHorario);
         return;
       }
 
@@ -74,7 +65,7 @@ const AsignarHorarioCurso = () => {
       setError("");
     } catch (err) {
       setError("Error al cargar el horario del curso.", err);
-      setHorario(initializeHorario()); 
+      setHorario(initializeHorario());
     } finally {
       setLoading(false);
     }
@@ -89,8 +80,8 @@ const AsignarHorarioCurso = () => {
       try {
         const materiasData = await getMaterias();
         setMaterias(materiasData);
-      } catch (err) {
-        setError("Error al cargar materias.", err);
+      } catch {
+        setError("Error al cargar materias.");
       }
     };
     fetchMaterias();
@@ -101,8 +92,8 @@ const AsignarHorarioCurso = () => {
       try {
         const cursosData = await getCursos();
         setCursos(cursosData);
-      } catch (err) {
-        setError("Error al cargar cursos.", err);
+      } catch {
+        setError("Error al cargar cursos.");
       }
     };
     fetchCursos();
@@ -143,8 +134,8 @@ const AsignarHorarioCurso = () => {
       await saveHorarioCurso(payload);
       setSuccess("Horario guardado correctamente.");
       setError("");
-    } catch (error) {
-      setError("Error al guardar el horario.", error);
+    } catch {
+      setError("Error al guardar el horario.");
     } finally {
       setSaving(false);
     }
@@ -164,6 +155,28 @@ const AsignarHorarioCurso = () => {
         },
       },
     }));
+  };
+
+  const handleSendNotification = async () => {
+    setNotificationLoading(true);
+    try {
+      const { emails } = await getEmailsByCourse(curso);
+
+      if (!emails || emails.length === 0) {
+        setNotificationError("No hay correos electrónicos asociados a este curso.");
+        return;
+      }
+
+      const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
+      await notifyCourse(emails, horarioDetails);
+      setNotificationSuccess("Notificación enviada correctamente.");
+      setNotificationError("");
+    } catch {
+      setNotificationError("Error al enviar la notificación.");
+      setNotificationSuccess("");
+    } finally {
+      setNotificationLoading(false);
+    }
   };
 
   return (
@@ -192,11 +205,15 @@ const AsignarHorarioCurso = () => {
       <button onClick={handleGuardarHorario} disabled={loading || saving}>
         {saving ? "Guardando..." : "Guardar"}
       </button>
+      <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
+        {notificationLoading ? <Spinner /> : "Enviar Notificación"}
+      </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
+      {notificationError && <p style={{ color: "red" }}>{notificationError}</p>}
+      {notificationSuccess && <p style={{ color: "green" }}>{notificationSuccess}</p>}
     </div>
   );
 };
 
 export default AsignarHorarioCurso;
-

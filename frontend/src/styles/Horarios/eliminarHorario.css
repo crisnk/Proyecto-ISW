@@ -1,53 +1,11 @@
-.eliminar-horarios {
-    padding: 25px;
-    margin: 40px auto;
-    background-color: #ffffff; 
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    max-width: 900px;
-    transition: margin-left 0.3s ease-in-out;
-  }
-  
-  .eliminar-horarios h1 {
-    font-size: 2.2rem;
-    color: #a83232;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .eliminar-horarios .filters {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .eliminar-horarios .success-message {
-    color: #28a745;
-    font-weight: bold;
-    text-align: center;
-  }
-  
-  .eliminar-horarios .error-message {
-    color: #dc3545;
-    font-weight: bold;
-    text-align: center;
-  }
-  
-  .eliminar-horarios .delete-button {
-    background-color: #a83232;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .eliminar-horarios .delete-button:hover {
-    background-color: #8b2a2a;
-  }
-  
-  .eliminar-horarios .pagination {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
+.btn-eliminar {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.btn-eliminar:hover {
+  background-color: #d9363e;
+}

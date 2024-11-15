@@ -5,22 +5,25 @@ const ImparteSchema = new EntitySchema({
   name: "Imparte",
   tableName: "imparten",
   columns: {
-    id: {
+    ID_imparte: {
       type: "int",
       primary: true,
       generated: true,
     },
     ID_materia: {
       type: "int",
+      primary: true,
       nullable: false, 
     },
     ID_curso: {
       type: "int",
+      primary: true,
       nullable: false, 
     },
     rut: {
       type: "varchar",
       length: 12,
+      primary: true,
       nullable: true, 
     },
     dia: {

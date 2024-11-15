@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { register } from '@services/auth.service.js';
 import Form from "@components/Form";
 import useRegister from '@hooks/auth/useRegister.jsx';
-import { getCursos } from "@services/horario.service";
+import { getCursosRegister } from "@services/horario.service";
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 import { useState, useEffect } from "react";
 import '@styles/form.css';
@@ -22,7 +22,7 @@ const Register = () => {
     useEffect(() => {
         const fetchCursos = async () => {
             try {
-                const data = await getCursos();
+                const data = await getCursosRegister();
                 setCursos(data);
             } catch (error) {
                 console.error("Error al cargar los cursos:", error);

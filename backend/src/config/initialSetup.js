@@ -48,6 +48,15 @@ export async function createUsers() {
           rol: "profesor",
         })
       ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Encargado de práctica",
+          rut: "20.738.415-2",
+          email: "profesorEDP@gmail.cl",
+          password: await encryptPassword("profesorEDP1234"),
+          rol: "EDP",
+        }),
+      ),
       (async () => {
         const alumno1 = userRepository.create({
           nombreCompleto: "Alumno Uno",

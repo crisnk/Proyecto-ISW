@@ -1,5 +1,6 @@
 "use strict";
 import Practica from "../entity/practica.entity.js";
+import Postula from "../entity/postula.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 export async function crearPracticaService(data) {
@@ -125,6 +126,99 @@ export async function eliminarPracticaService(ID_practica) {
     return [practicaEncontrada, null];
   } catch (error) {
     console.error("Error al eliminar la práctica:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function postularPracticaService(data) {
+  try {
+    const postulaRepository = AppDataSource.getRepository(Postula);
+    const { rut, ID_practica } = data;
+
+    const createErrorMessage = (dataInfo, message) => ({
+      dataInfo,
+      message
+    });
+
+    const usuario = await AppDataSource.getRepository("User").findOne({
+      where: { rut }
+    });
+
+    if (!usuario) {
+      return [null, createErrorMessage(rut, "El RUT del usuario no existe")];
+    }
+
+    const practica = await AppDataSource.getRepository("Practica").findOne({
+      where: { ID_practica }
+    });
+
+    if (!practica) {
+      return [null, createErrorMessage(ID_practica, "El ID de práctica no existe")];
+    }
+
+    const postulacionExistente = await postulaRepository.findOne({
+      where: { rut, ID_practica }
+    });
+
+    if (postulacionExistente) {
+      return [null, createErrorMessage(postulacionExistente, "Ya has postulado a esta práctica")];
+    }
+
+    if (practica.cupo <= 0) {
+      return [null, createErrorMessage(ID_practica, "No quedan cupos disponibles para esta práctica")];
+    }
+
+    const nuevaPostulacion = postulaRepository.create({
+      rut,
+      ID_practica,
+    });
+
+    await postulaRepository.save(nuevaPostulacion);
+
+    practica.cupo -= 1;
+    await AppDataSource.getRepository("Practica").save(practica);
+
+    return [nuevaPostulacion, null];
+  } catch (error) {
+    console.error("Error al postular a la práctica:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function cancelarPostulacionService(ID_practica, rut) {
+  try {
+    const postulaRepository = AppDataSource.getRepository(Postula);
+    const practicaRepository = AppDataSource.getRepository("Practica");
+
+    const practica = await practicaRepository.findOne({
+      where: { ID_practica },
+    });
+
+    const createErrorMessage = (dataInfo, message) => ({
+      dataInfo,
+      message
+    });
+
+    if (!practica) {
+      return [null, createErrorMessage(ID_practica, "No se ha encontrado la práctica asociada")];
+    }
+
+    const postulacionEncontrada = await postulaRepository.findOne({
+      where: { ID_practica, rut },
+    });
+
+    if (!postulacionEncontrada) {
+      return [null, createErrorMessage(ID_practica, "No se ha encontrado la postulación para cancelar")];
+    }
+
+    await postulaRepository.delete(postulacionEncontrada);
+
+    practica.cupo += 1;
+    await practicaRepository.save(practica);
+
+    return [postulacionEncontrada, null];
+  } catch (error) {
+    console.error("Error al cancelar la postulación:", error);
     return [null, "Error interno del servidor"];
   }
 }
