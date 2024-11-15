@@ -1,7 +1,18 @@
 "use strict";
-import { crearPracticaService, modificarPracticaService, obtenerPracticasService, obtenerPracticaService, eliminarPracticaService } from "../services/practica.service.js";
+import {
+  crearPracticaService,
+  modificarPracticaService,
+  obtenerPracticasService,
+  obtenerPracticaService,
+  eliminarPracticaService,
+  postularPracticaService,
+  cancelarPostulacionService
+} from "../services/practica.service.js";
 import { practicaValidation } from "../validations/practica.validation.js";
+import { postulaValidation } from "../validations/postula.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
+import jwt from "jsonwebtoken";
+import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 
 export async function crearPractica(req, res) {
   try {
@@ -89,6 +100,60 @@ export async function eliminarPractica(req, res) {
     }
 
     handleSuccess(res, 200, "Práctica eliminada con éxito", practicaEliminada);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function postularPractica(req, res) {
+  try {
+    const { ID_practica } = req.params;
+    
+    const token = req.cookies.jwt;
+    if (!token) {
+      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
+    }
+    
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    
+    const { rut } = decoded;
+    
+    const { error } = postulaValidation.validate({ ID_practica, rut });
+    if (error) {
+      return handleErrorClient(res, 400, "Error de validación", error.message);
+    }
+
+    const [nuevaPostulacion, errorNuevaPostulacion] = await postularPracticaService({ rut, ID_practica });
+
+    if (errorNuevaPostulacion) {
+      return handleErrorClient(res, 400, errorNuevaPostulacion.message || "Error creando la postulación", errorNuevaPostulacion.dataInfo);
+    }
+
+    handleSuccess(res, 201, "Postulación creada con éxito", nuevaPostulacion);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function cancelarPostulacion(req, res) {
+  try {
+    const { ID_practica } = req.params;
+
+    const token = req.cookies.jwt;
+    if (!token) {
+      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
+    }
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const { rut } = decoded;
+
+    const [postulacionEliminada, errorEliminar] = await cancelarPostulacionService(ID_practica, rut);
+
+    if (errorEliminar) {
+      return handleErrorClient(res, 400, "Error al cancelar la postulación", errorEliminar);
+    }
+
+    handleSuccess(res, 200, "Postulación cancelada con éxito", postulacionEliminada);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

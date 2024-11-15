@@ -122,9 +122,9 @@ export const asignaHorarioProfesorService = async (horarioData) => {
   return { message: "Horario asignado correctamente para el profesor." };
 };
 
-export const eliminarHorarioService = async (id) => {
+export const eliminarHorarioService = async (ID_imparte) => {
   const repository = AppDataSource.getRepository(Imparte);
-  const horario = await repository.findOneBy({ id });
+  const horario = await repository.findOneBy({ ID_imparte });
 
   if (!horario) {
     throw new Error("Horario no encontrado.");
@@ -429,7 +429,7 @@ export const getHorariosConId = async (filters) => {
   const repository = AppDataSource.getRepository(Imparte);
 
   const [horarios, total] = await repository.findAndCount({
-    select: ["id", "dia", "bloque"],
+    select: ["ID_imparte", "dia", "bloque"],
     relations: ["materia", "profesor", "curso"],
     skip: (page - 1) * limit,
     take: limit,
@@ -437,7 +437,7 @@ export const getHorariosConId = async (filters) => {
 
   return {
     data: horarios.map((horario) => ({
-      id: horario.id,
+      ID_imparte: horario.ID_imparte,
       dia: horario.dia,
       bloque: horario.bloque,
       nombre_materia: horario.materia?.nombre || "Sin materia",
