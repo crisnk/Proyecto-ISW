@@ -4,6 +4,10 @@ import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
 import Imparte from "../entity/imparte.entity.js";  
 import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import Pertenece from "../entity/pertenece.entity.js";  
+import Materia from "../entity/materia.entity.js";  
+import Curso from "../entity/curso.entity.js";  
+import User from "../entity/user.entity.js";  
 
 moment.locale('es'); // Establece el idioma en español
 
@@ -31,15 +35,13 @@ export async function createAtrasoService(rut) {
   }
 }
 
-export async function findAtraso(rut,fecha,hora){
+export async function findAtraso(rut, ID_atraso){
   try{
     const atrasoRepository = AppDataSource.getRepository(Atraso);
     const atraso = await atrasoRepository.findOne({
-      
       where: {
         rut: rut,
-        fecha: fecha,
-        hora: hora,
+        ID_atraso: ID_atraso
       },
     });
     return atraso;
@@ -134,25 +136,60 @@ export async function obtenerInfoAtraso(rut) {
     const horaActual = moment().tz("America/Santiago").format("HH:mm:ss");
     const diaSemana = moment.tz("America/Santiago").format('dddd'); // Día de la semana en español
 
-    const imparteRepository = AppDataSource.getRepository(Imparte);
-    console.log(fechaActual);
-    console.log(diaSemana);
-    console.log(horaActual);
+    const perteneceRepository = AppDataSource.getRepository(Pertenece);
+    const pertenece = await perteneceRepository.findOne({
+      select: ["ID_curso"], 
+      where: {
+        rut: rut,  
+      }
+    });
+    if (!pertenece) {
+      throw new Error('No se encontró el curso para el RUT especificado.');   
+    }
 
+    const imparteRepository = AppDataSource.getRepository(Imparte);
     const imparte = await imparteRepository.findOne({
       where: {
-        rut: rut,
+        ID_curso: pertenece.ID_curso,
         dia: diaSemana,                      
         hora_Inicio: LessThanOrEqual(horaActual),
         hora_Fin: MoreThanOrEqual(horaActual)     
       }
     });
-
-    if (imparte) {
-      return imparte;
-    } else {
-      throw new Error('No se encontró una coincidencia para el horario actual.');
+    if (!imparte) {
+      throw new Error('No tiene una clase ahora mismo.');   
     }
+
+    const materiaRepository = AppDataSource.getRepository(Materia);
+    const materia = await materiaRepository.findOne({
+      select: ["nombre"], 
+      where: {
+        ID_materia: imparte.ID_materia,   
+      }
+    });
+
+    const cursoRepository = AppDataSource.getRepository(Curso);
+    const curso = await cursoRepository.findOne({
+      select: ["nombre", "aula"], 
+      where: {
+        ID_curso: imparte.ID_curso,   
+      }
+    });
+
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      select: ["nombreCompleto"], 
+      where: {
+        rut: imparte.rut,   
+      }
+    });
+
+    return {
+      materia: materia?.nombre || "Materia no encontrada",
+      curso: curso?.nombre || "Curso no encontrado",
+      aula: curso?.aula || "Aula no asignada",
+      profesor: user?.nombreCompleto || "Profesor no encontrado"
+    };
 
   } catch (error) {
     console.error('Error al buscar el atraso:', error);

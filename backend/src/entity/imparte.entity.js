@@ -23,17 +23,19 @@ const ImparteSchema = new EntitySchema({
     rut: {
       type: "varchar",
       length: 12,
-      primary: true,
-      nullable: true, 
+      nullable: false, 
     },
     dia: {
       type: "varchar",
       length: 50,
       nullable: false,
     },
-    bloque: {
-      type: "varchar",
-      length: 15,
+    hora_Inicio: {
+      type: "time",
+      nullable: false,
+    },
+    hora_Fin: {
+      type: "time",
       nullable: false,
     },
     createdAt: {
