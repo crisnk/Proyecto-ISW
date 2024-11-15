@@ -23,7 +23,6 @@ const ImparteSchema = new EntitySchema({
     rut: {
       type: "varchar",
       length: 12,
-      primary: true,
       nullable: true, 
     },
     dia: {
