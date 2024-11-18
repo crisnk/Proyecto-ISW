@@ -8,3 +8,11 @@ export async function getAtrasos() {
         return error.response.data;
     }
 }
+export async function getAtrasosAlumnos() {
+    try {
+        const { data } = await axios.get('/atraso/tablaAlumnos');
+        return data;
+    } catch (error) {
+        return error.response.data;
+    }
+}

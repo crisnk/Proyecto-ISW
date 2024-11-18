@@ -7,6 +7,7 @@ import Register from '@pages/Register';
 import Root from '@pages/Root';
 import Users from '@pages/Users';
 import AtrasosAlumno from '@pages/AtrasosAlumno';
+import AtrasosProfesor from '@pages/AtrasosProfesor';
 import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorariosLayout from '@pages/Horarios/AsignarHorariosLayout';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
@@ -36,7 +37,19 @@ const router = createBrowserRouter([
       },
       {
         path:'/atrasos',
-        element: <AtrasosAlumno/>
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <AtrasosAlumno />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path:'/atrasosProfesor',
+        element: (
+          <ProtectedRoute allowedRoles={['profesor', 'alumno']}>
+            <AtrasosProfesor />
+          </ProtectedRoute>
+        )
       },
       {
         path: '/horarios',
