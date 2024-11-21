@@ -2,22 +2,22 @@ import Table from '@components/Table';
 import Search from '../components/Search';
 import { useState, useEffect } from 'react';
 import '@styles/atrasos.css';
-import { getAtrasos } from '@services/atrasos.service.js';
+import { getAtrasosAlumnos } from '@services/atrasos.service.js';
 
-const Atrasos = () => {
-    const [atrasos, setAtrasos] = useState([]);
+const AtrasosAlumnos = () => {
+    const [atrasos, setAtrasosAlumnos] = useState([]);
     const [filterText, setFilterText] = useState(''); 
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getAtrasos();
+                const response = await getAtrasosAlumnos();
                 console.log("Respuesta del backend:", response);
                 if (response.status === 'Success' && Array.isArray(response.data)) {
-                    setAtrasos(response.data);
+                    setAtrasosAlumnos(response.data);
                 } else {
                     console.error("La respuesta no es un array:", response);
-                    setAtrasos([]);
+                    setAtrasosAlumnos([]);
                 }
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
@@ -36,9 +36,12 @@ const Atrasos = () => {
     };
 
     const columns = [
-        { title: "Fecha", field: "fecha", width: 300, responsive: 0 },
-        { title: "Hora", field: "hora", width: 250, responsive: 3 },
-        { title: "Estado", field: "estado", width: 300, responsive: 2 },
+        { title: "Nombre", field: "nombre", width: 300, responsive: 1 },
+        { title: "Rut", field: "rut", width: 150, responsive: 0 },
+        { title: "Curso", field: "curso", width: 150, responsive: 0 },
+        { title: "Fecha", field: "fecha", width: 150, responsive: 0 },
+        { title: "Hora", field: "hora", width: 100, responsive: 3 },
+        { title: "Estado", field: "estado", width: 150, responsive: 2 },
         { title: "Justificativo", field: "estadoJustificativo", width: 200, responsive: 2 }
     ];
 
@@ -46,11 +49,11 @@ const Atrasos = () => {
         <div className='main-container'>
             <div className='table-container'>
                 <div className='top-table'>
-                    <h1 className='title-table'>Atrasos</h1>
+                    <h1 className='title-table'>Atrasos Alumnos</h1>
                     <div className='filter-actions'>
-                        <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado'} />
-                        <button className='justificar-button' onClick={handleJustificar}>
-                            Justificar
+                        <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado '} />
+                        <button className='revisar-button' onClick={handleJustificar}>
+                            Revisar
                         </button>
                     </div>
                 </div>
@@ -65,5 +68,4 @@ const Atrasos = () => {
         </div>
     );
 };
-
-export default Atrasos;
+export default AtrasosAlumnos;

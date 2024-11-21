@@ -3,6 +3,10 @@ import Atraso from "../entity/atraso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
 import Imparte from "../entity/imparte.entity.js";  
+import Justificativo from "../entity/justificativo.entity.js";
+import Pertenece from "../entity/pertenece.entity.js";
+import User from "../entity/user.entity.js";
+import Curso from "../entity/curso.entity.js";
 import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 
 moment.locale('es'); // Establece el idioma en español
@@ -51,7 +55,7 @@ export async function findAtraso(rut,fecha,hora){
 
 }
 
-export async function obtenerAtrasos(){
+export async function obtenerAtrasos(rut){
   try {
     const atrasoRepository = AppDataSource.getRepository(Atraso);
     const justificativoRepository = AppDataSource.getRepository(Justificativo);
@@ -116,6 +120,7 @@ export async function obtenerAtrasosAlumnos(rut) {
         id_atraso: atraso.ID_atraso,
         fecha: atraso.fecha,
         hora: atraso.hora,
+        estado: atraso.estado,
         estadoJustificativo: justificativo ? justificativo.estado : "No Justificado",
       };
     }));
