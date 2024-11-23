@@ -14,6 +14,7 @@ import AsignarHorarioCurso from '@pages/Horarios/AsignarHorarioCurso';
 import VerHorarios from '@pages/Horarios/VerHorarios';
 import EliminarHorario from '@pages/Horarios/EliminarHorario';
 import MiHorario from '@pages/Horarios/MiHorario';
+import RegistrarAtraso from '@pages/RegistrarAtraso';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -80,6 +81,17 @@ const router = createBrowserRouter([
             <EliminarHorario />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: '/atraso/registrar',
+        element: ( 
+        < RegistrarAtraso/> 
+        ),
+        /*element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <RegistrarAtraso />
+          </ProtectedRoute>
+        ),*/
       },
     ],
   },

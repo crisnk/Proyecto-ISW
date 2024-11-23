@@ -8,3 +8,21 @@ export async function getAtrasos() {
         return error.response.data;
     }
 }
+
+export async function obtenerInfoAtraso() {
+    try {
+        const { data } = await axios.get('/atraso/infoAtraso');
+        return data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+
+export async function registrarAtrasos() {
+    try {
+        const { data } = await axios.post('/atraso/registrar');
+        return data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
