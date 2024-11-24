@@ -12,12 +12,10 @@ const ImparteSchema = new EntitySchema({
     },
     ID_materia: {
       type: "int",
-      primary: true,
       nullable: false, 
     },
     ID_curso: {
       type: "int",
-      primary: true,
       nullable: false, 
     },
     rut: {

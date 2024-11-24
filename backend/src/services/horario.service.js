@@ -122,17 +122,26 @@ export const asignaHorarioProfesorService = async (horarioData) => {
   return { message: "Horario asignado correctamente para el profesor." };
 };
 
-export const eliminarHorarioService = async (ID_imparte) => {
+export const eliminarHorarioService = async (filters) => {
   const repository = AppDataSource.getRepository(Imparte);
-  const horario = await repository.findOneBy({ ID_imparte });
 
-  if (!horario) {
-    throw new Error("Horario no encontrado.");
+  const whereClause = {};
+  if (filters.profesor) {
+    whereClause["profesor.rut"] = filters.profesor;
+  }
+  if (filters.curso) {
+    whereClause["curso.ID_curso"] = filters.curso;
   }
 
-  await repository.remove(horario);
-  return horario;
+  const horarios = await repository.find({ where: whereClause });
+
+  if (horarios.length === 0) {
+    throw new Error("No se encontraron horarios para eliminar.");
+  }
+
+  await repository.remove(horarios);
 };
+
 
 export const getHorariosByCursoService = async (ID_curso) => {
   if (!ID_curso || isNaN(ID_curso)) {
@@ -424,29 +433,45 @@ export const getEmailByProfesorService = async (rut) => {
 
   return { email: profesor.email };
 };
+
+
 export const getHorariosConId = async (filters) => {
-  const { page = 1, limit = 10 } = filters;
-  const repository = AppDataSource.getRepository(Imparte);
+  try {
+    const { page = 1, limit = 10, profesor, curso } = filters;
+    const repository = AppDataSource.getRepository(Imparte);
 
-  const [horarios, total] = await repository.findAndCount({
-    select: ["ID_imparte", "dia", "bloque"],
-    relations: ["materia", "profesor", "curso"],
-    skip: (page - 1) * limit,
-    take: limit,
-  });
+    const queryBuilder = repository.createQueryBuilder("imparte")
+      .leftJoinAndSelect("imparte.curso", "curso")
+      .leftJoinAndSelect("imparte.profesor", "profesor")
+      .leftJoinAndSelect("imparte.materia", "materia");
 
-  return {
-    data: horarios.map((horario) => ({
-      ID_imparte: horario.ID_imparte,
-      dia: horario.dia,
-      bloque: horario.bloque,
-      nombre_materia: horario.materia?.nombre || "Sin materia",
-      nombre_profesor: horario.profesor?.nombre || "Sin profesor",
-      curso: horario.curso?.nombre || "Sin curso",
-    })),
-    total,
-    page: parseInt(page),
-    totalPages: Math.ceil(total / limit),
-  };
+    if (profesor) {
+      queryBuilder.andWhere("profesor.rut = :profesor", { profesor });
+    }
+    if (curso) {
+      queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
+    }
+
+    const [horarios, total] = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data: horarios.map((horario) => ({
+        ID_imparte: horario.ID_imparte,
+        dia: horario.dia,
+        bloque: horario.bloque,
+        nombre_materia: horario.materia?.nombre || "Sin materia",
+        nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
+        curso: horario.curso?.nombre || "Sin curso",
+      })),
+      total,
+      page: parseInt(page, 10),
+      totalPages: Math.ceil(total / limit),
+    };
+  } catch (error) {
+    console.error("Error en getHorariosConId:", error);
+    throw error;
+  }
 };
-

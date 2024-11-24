@@ -128,6 +128,7 @@ export const notifyCourse = async (emails, horarioDetails) => {
     throw error;
   }
 };
+
 export const getHorariosConId = async (params) => {
   const response = await axios.get("/horarios/ver/con-id", { params });
   return response.data;

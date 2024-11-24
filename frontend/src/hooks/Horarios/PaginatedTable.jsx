@@ -1,10 +1,12 @@
 import "@styles/Horarios/botones.css";
+
 const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) => {
   if (loading) {
     return <p>Cargando horarios...</p>;
   }
 
   const getCellValue = (row, field) => {
+    if (!field) return "N/A";
     const keys = field.split(".");
     return keys.reduce((value, key) => value?.[key], row) || "N/A";
   };
@@ -14,8 +16,8 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
       <table border="1" style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
         <thead>
           <tr>
-            {columns.map((col) => (
-              <th key={col.field}>{col.title}</th>
+            {columns.map((col, index) => (
+              <th key={index}>{col.title}</th>
             ))}
           </tr>
         </thead>
@@ -23,8 +25,10 @@ const PaginatedTable = ({ columns, data, loading, pagination, onPageChange }) =>
           {data.length > 0 ? (
             data.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {columns.map((col) => (
-                  <td key={col.field}>{getCellValue(row, col.field)}</td>
+                {columns.map((col, colIndex) => (
+                  <td key={colIndex}>
+                    {col.render ? col.render(row) : getCellValue(row, col.field)}
+                  </td>
                 ))}
               </tr>
             ))

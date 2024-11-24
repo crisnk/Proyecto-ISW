@@ -19,10 +19,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         return (
           <>
             <li>
-              <NavLink to="/horarios/asignar/profesor">Asignar a Profesores</NavLink>
-            </li>
-            <li>
-              <NavLink to="/horarios/asignar/curso">Asignar a Cursos</NavLink>
+              <NavLink to="/horarios/Asignar/">Asignar</NavLink>
             </li>
             <li>
               <NavLink to="/horarios">Ver todos</NavLink>
