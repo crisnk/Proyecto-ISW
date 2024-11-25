@@ -7,7 +7,8 @@ import { getAtrasosAlumnos } from '@services/atrasos.service.js';
 
 const AtrasosAlumnos = () => {
     const [atrasos, setAtrasosAlumnos] = useState([]);
-    const [filterText, setFilterText] = useState(''); 
+    const [filterText, setFilterText] = useState('');
+    const [rutSeleccionado, setRutSeleccionado] = useState(null); 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,13 +35,18 @@ const AtrasosAlumnos = () => {
 
     const handleJustificar = () => {
         console.log("Justificar botón presionado");
+        console.log("RUT seleccionado:", rutSeleccionado); 
         const modal = document.getElementById("modal-revisar");
-        modal.style.display = "flex"; // Muestra el modal
+        modal.style.display = "flex"; 
     };
 
     const handleCloseModal = () => {
         const modal = document.getElementById("modal-revisar");
-        modal.style.display = "none"; // Oculta el modal
+        modal.style.display = "none";
+    };
+
+    const handleRowSelect = (rut) => {
+        setRutSeleccionado(rut); 
     };
 
     const columns = [
@@ -59,7 +65,7 @@ const AtrasosAlumnos = () => {
                     <h1 className='title-table'>Atrasos del curso {atrasos.length > 0 ? atrasos[0].curso : 'Curso no disponible'}</h1>
                     <div className='filter-actions'>
                         <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado '} />
-                        <button className='revisar-button' onClick={handleJustificar}>
+                        <button className='revisar-button' onClick={handleJustificar} >
                             Revisar
                         </button>
                     </div>
@@ -70,10 +76,10 @@ const AtrasosAlumnos = () => {
                     filter={filterText} 
                     dataToFilter={['fecha', 'hora', 'estado']} 
                     initialSortName={'fecha'} 
+                    onRowSelect={handleRowSelect} 
                 />
             </div>
 
-            {/* Popup Modal */}
             <div className="modal" id="modal-revisar">
                 <div className="modal-content">
                     <h2>Revisar Justificativo</h2>
@@ -84,7 +90,7 @@ const AtrasosAlumnos = () => {
                     <div className="modal-actions">
                         <button type="submit" className="aceptar-button" onClick={handleCloseModal}>Aceptar</button>
                         <button type="button" className="rechazar-button" onClick={handleCloseModal}>Rechazar</button>
-                    </div>
+ </div>
                 </div>
             </div>
         </div>
