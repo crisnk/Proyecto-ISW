@@ -75,11 +75,18 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
     switch (userRole) {
       case "alumno":
         return (
-          <li>
-            <NavLink to="/atrasos" onClick={closeSidebar}>
-              Ver Atrasos
-            </NavLink>
-          </li>
+          <>
+            <li>
+              <NavLink to="/atrasos" onClick={closeSidebar}>
+                Ver Atrasos
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/atraso/registrar" onClick={closeSidebar}>
+                Registrar Atraso
+              </NavLink>
+            </li>
+          </>
         );
       case "profesor":
         return (

@@ -5,14 +5,17 @@ import { handleErrorClient, handleSuccess, handleErrorServer } from "../handlers
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET, HOST, PORT } from "../config/configEnv.js";
 import { extraerRut } from "../helpers/rut.helper.js";
+import { justificativoValidation } from "../validations/justificativo.validation.js";
 
 export async function generarJustificativo(req, res){
   try{
     const rut = await extraerRut(req);
     const estado = 'pendiente';
     const { motivo, ID_atraso} = req.body;
-    if (!motivo || !ID_atraso) {
-      return handleErrorClient(res, 400, "Faltan datos necesarios");
+
+    const { error } = justificativoValidation.validate(req.body);
+    if (error) {
+      return handleErrorClient(res, 400, "Error de validación", error.message);
     }
     
     const atraso = await findAtraso(rut, ID_atraso);

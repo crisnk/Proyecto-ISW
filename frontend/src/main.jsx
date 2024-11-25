@@ -100,7 +100,9 @@ const router = createBrowserRouter([
       {
         path: '/atraso/registrar',
         element: ( 
-        < RegistrarAtraso/> 
+        <ProtectedRoute allowedRoles={['alumno']}>
+          < RegistrarAtraso/> 
+        </ProtectedRoute>
         ),
       },
       {
