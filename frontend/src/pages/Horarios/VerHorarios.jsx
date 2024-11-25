@@ -4,7 +4,6 @@ import Filters from "../../hooks/Horarios/Filters";
 import { getHorarios, getCursos, getProfesores } from "../../services/horario.service";
 import "@styles/Horarios/verHorarios.css";
 
-// Días de la semana y horas del horario
 const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
 const horas = [
   "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
@@ -14,16 +13,15 @@ const horas = [
 ];
 
 const VerHorarios = () => {
-  const [horarios, setHorarios] = useState({}); // Estado para los horarios
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 }); // Paginación
-  const [filters, setFilters] = useState({}); // Filtros seleccionados
-  const [loading, setLoading] = useState(false); // Indicador de carga
-  const [error, setError] = useState(""); // Mensajes de error
-  const [tituloHorario, setTituloHorario] = useState(""); // Título de la tabla de horarios
-  const [cursos, setCursos] = useState([]); // Lista de cursos
-  const [profesores, setProfesores] = useState([]); // Lista de profesores
-
-  // Inicializa la estructura base del horario
+  const [horarios, setHorarios] = useState({}); 
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 }); 
+  const [filters, setFilters] = useState({}); 
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(""); 
+  const [tituloHorario, setTituloHorario] = useState(""); 
+  const [cursos, setCursos] = useState([]); 
+  const [profesores, setProfesores] = useState([]); 
+  
   const initializeHorario = useCallback(() => {
     const horarioBase = {};
     diasSemana.forEach((dia) => {
@@ -38,14 +36,12 @@ const VerHorarios = () => {
     });
     return horarioBase;
   }, []);
-
-  // Carga los horarios desde el backend
+  
   const fetchHorarios = useCallback(async (appliedFilters, page = 1) => {
     setLoading(true);
     try {
       const { data, totalPages } = await getHorarios({ ...appliedFilters, page, limit: 10 });
-
-      // Inicializa la estructura del horario
+     
       const formattedHorario = initializeHorario();
 
       if (data && data.length > 0) {
@@ -75,8 +71,7 @@ const VerHorarios = () => {
       setLoading(false);
     }
   }, [initializeHorario]);
-
-  // Cargar la lista de cursos y profesores al inicio
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -91,8 +86,7 @@ const VerHorarios = () => {
     };
     fetchData();
   }, []);
-
-  // Actualizar horarios según los filtros aplicados
+  
   useEffect(() => {
     if (Object.keys(filters).length > 0) {
       fetchHorarios(filters);
@@ -107,13 +101,11 @@ const VerHorarios = () => {
       }
     }
   }, [filters, fetchHorarios, cursos, profesores]);
-
-  // Manejo del cambio de filtros
+ 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
   };
 
-  // Cambio de página
   const handlePageChange = (newPage) => {
     fetchHorarios(filters, newPage);
   };
