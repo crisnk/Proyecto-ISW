@@ -14,12 +14,15 @@ const CursoSchema = new EntitySchema({
       type: "varchar",
       length: 50,
       nullable: false,
-
     },
     aula: {
       type: "varchar",
       length: 30,
-      
+    },
+    profesor: {
+      type: "varchar",
+      length: 12,
+      nullable: true, 
     },
     createdAt: {
       type: "timestamp with time zone",
@@ -37,7 +40,6 @@ const CursoSchema = new EntitySchema({
     {
       name: "IDX_CURSO",
       columns: ["ID_curso"],
-      
     },
   ],
   relations: {
@@ -46,6 +48,15 @@ const CursoSchema = new EntitySchema({
       target: "Imparte",
       inverseSide: "curso",
       onDelete: "CASCADE",
+    },
+    profesor: {
+      target: "User",
+      type: "many-to-one",
+      joinColumn: {
+        name: "rut",
+        referencedColumnName: "rut",
+      },
+      nullable: true, 
     },
   },  
 });
