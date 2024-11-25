@@ -9,6 +9,7 @@ import Users from '@pages/Users';
 import AtrasosAlumno from '@pages/AtrasosAlumno';
 import AtrasosProfesor from '@pages/AtrasosProfesor';
 import RegistrarAtraso from '@pages/RegistrarAtraso';
+import Practica from '@pages/Practica';
 import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorariosLayout from '@pages/Horarios/AsignarHorariosLayout';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
             <Users />
           </ProtectedRoute>
         ),
+        },
+      {
+        path: '/practica',
+        element: <Practica />
       },
       {
         path:'/atrasos',
