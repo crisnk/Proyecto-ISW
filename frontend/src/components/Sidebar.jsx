@@ -7,16 +7,19 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
   const userRole = user.rol;
 
   const [isHorariosOpen, setIsHorariosOpen] = useState(false);
+  const [isAtrasosOpen, setIsAtrasosOpen] = useState(false);
 
   useEffect(() => {
     if (!isVisible) {
       setIsHorariosOpen(false); 
+      setIsAtrasosOpen(false);
     }
   }, [isVisible]);
 
   const closeSidebar = () => {
     toggleSidebar();
     setIsHorariosOpen(false);
+    setIsAtrasosOpen(false);
   };
 
   const renderHorariosOptions = () => {
@@ -57,23 +60,34 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         );
       case "alumno":
         return (
-          <>
           <li>
             <NavLink to="/horarios/ver/alumno" onClick={closeSidebar}>
               Mi Horario <span className="hover-text">horarios</span>
             </NavLink>
           </li>
+        );
+      default:
+        return null;
+    }
+  };
+  const renderAtrasosOptions = () => {
+    if (!isAtrasosOpen) return null;
+    switch (userRole) {
+      case "alumno":
+        return (
           <li>
-          <NavLink to="/atrasos" className="sidebar-button">
-            Ver Atrasos
-          </NavLink>
+            <NavLink to="/atrasos" onClick={closeSidebar}>
+              Ver Atrasos
+            </NavLink>
           </li>
+        );
+      case "profesor":
+        return (
           <li>
-            <NavLink to="/atrasosProfesor" className="sidebar-button">
+            <NavLink to="/atrasosProfesor" onClick={closeSidebar}>
               Ver Atrasos Alumnos
             </NavLink>
           </li>
-          </>
         );
       default:
         return null;
@@ -89,6 +103,14 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
           </button>
           <ul className={`submenu ${isHorariosOpen ? "open" : ""}`}>
             {renderHorariosOptions()}
+          </ul>
+        </li>
+        <li>
+          <button onClick={() => setIsAtrasosOpen((prev) => !prev)} className="sidebar-button">
+            Atrasos
+          </button>
+          <ul className={`submenu ${isAtrasosOpen ? "open" : ""}`}>
+            {renderAtrasosOptions()}
           </ul>
         </li>
       </ul>
