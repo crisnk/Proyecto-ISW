@@ -4,6 +4,7 @@ import { sendEmailDefault } from "../controllers/email.controller.js";
 import { handleErrorClient, handleSuccess, handleErrorServer } from "../handlers/responseHandlers.js";
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET, HOST, PORT } from "../config/configEnv.js";
+import { extraerRut } from "../helpers/rut.helper.js";
 
 export async function generarJustificativo(req, res){
   try{

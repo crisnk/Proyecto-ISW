@@ -17,7 +17,7 @@ const PerteneceSchema = new EntitySchema({
     rut: {
       type: "varchar",
       length: 12,
-      nullable: false,
+      nullable: true,
     },
   },
   relations: {

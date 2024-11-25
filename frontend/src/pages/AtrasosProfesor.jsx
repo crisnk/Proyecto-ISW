@@ -2,7 +2,7 @@ import Table from '@components/Table';
 import Search from '../components/Search';
 import { useState, useEffect } from 'react';
 import '@styles/atrasos.css';
-import { getAtrasosAlumnos } from '@services/atrasos.service.js';
+//import { getAtrasosAlumnos } from '@services/atrasos.service.js';
 
 const AtrasosAlumnos = () => {
     const [atrasos, setAtrasosAlumnos] = useState([]);

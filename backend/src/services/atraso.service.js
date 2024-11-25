@@ -1,19 +1,16 @@
 "use strict";
-import Atraso from "../entity/atraso.entity.js";  
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
+import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import Atraso from "../entity/atraso.entity.js";  
 import Imparte from "../entity/imparte.entity.js";  
 import Justificativo from "../entity/justificativo.entity.js";
 import Pertenece from "../entity/pertenece.entity.js";
 import User from "../entity/user.entity.js";
 import Curso from "../entity/curso.entity.js";
-import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
-import Pertenece from "../entity/pertenece.entity.js";  
 import Materia from "../entity/materia.entity.js";  
-import Curso from "../entity/curso.entity.js";  
-import User from "../entity/user.entity.js";  
 
-moment.locale('es'); // Establece el idioma en español
+moment.locale('es'); 
 
 export async function createAtrasoService(rut) {
   try {
