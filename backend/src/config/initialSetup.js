@@ -5,6 +5,7 @@ import Pertenece from "../entity/pertenece.entity.js";
 import Curso from "../entity/curso.entity.js";
 import Materia from "../entity/materia.entity.js";
 import Imparte from "../entity/imparte.entity.js";
+import Atraso from "../entity/atraso.entity.js";
 
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
@@ -386,7 +387,7 @@ export async function createUsers() {
           password: await encryptPassword("alumno1234"),
         })
       );
-  
+
     await perteneceRepository.save(
         perteneceRepository.create({
           rut: alumno.rut,
@@ -504,3 +505,28 @@ export async function crearImparticiones() {
   }
 }
 
+export async function crearAtrasos() {
+  try {
+    const atrasoRepository = AppDataSource.getRepository(Atraso);
+    const count = await atrasoRepository.count();
+    if (count > 0) return;  
+
+    const atrasos = [
+      { fecha: "2023-10-01", hora: "08:30:00", estado: "activo", rut: "19.741.384-0" }, // Dilan Alejandro Aranguiz Vejar
+      { fecha: "2023-10-01", hora: "09:00:00", estado: "activo", rut: "21.237.487-3" }, // Esteban Patricio Bravo Suárez
+      { fecha: "2023-10-02", hora: "08:45:00", estado: "activo", rut: "11.111.111-9" }, // Cristobal Alarcon
+      { fecha: "2023-10-02", hora: "09:15:00", estado: "activo", rut: "21.012.009-2" }, // Diego Antonio Vargas Gómez
+      { fecha: "2023-10-03", hora: "08:50:00", estado: "activo", rut: "21.025.001-1" }, // Juan Carlos Silva Pérez
+      { fecha: "2023-10-03", hora: "09:05:00", estado: "activo", rut: "21.025.002-2" }, // Ana María Gómez Torres
+      { fecha: "2023-10-04", hora: "08:40:00", estado: "activo", rut: "21.025.003-3" }, // Pedro Luis Morales Díaz
+      { fecha: "2023-10-04", hora: "09:10:00", estado: "activo", rut: "21.025.004-4" }, // María Isabel López Fuentes
+      { fecha: "2023-10-05", hora: "08:55:00", estado: "activo", rut: "21.025.005-5" }, // Luis Eduardo Fernández Soto
+      { fecha: "2023-10-05", hora: "09:20:00", estado: "activo", rut: "21.025.006-6" }  // Sofía Alejandra Ramírez Gómez
+    ];
+    
+    await atrasoRepository.save(atrasos);
+  
+  } catch (error) {
+    console.error("Error al crear materias predeterminadas:", error);
+  }
+}
