@@ -10,7 +10,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
 
   useEffect(() => {
     if (!isVisible) {
-      setIsHorariosOpen(false); // Reiniciar el estado al cerrar la barra lateral
+      setIsHorariosOpen(false); 
     }
   }, [isVisible]);
 
@@ -31,6 +31,10 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
                 Asignar <span className="hover-text">horario</span>
               </NavLink>
             </li>
+            <li>
+                <NavLink to="/horarios/materias/">Gestión de Materias y Cursos</NavLink>
+            </li>
+
             <li>
               <NavLink to="/horarios" onClick={closeSidebar}>
                 Ver <span className="hover-text">horario</span>

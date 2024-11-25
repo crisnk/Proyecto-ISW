@@ -133,3 +133,37 @@ export const getHorariosConId = async (params) => {
   const response = await axios.get("/horarios/ver/con-id", { params });
   return response.data;
 };
+
+export const crearCursoService = async (cursoData) => {
+  try {
+    const response = await axios.post("/horarios/cursos/crear", cursoData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error al crear el curso.");
+  }
+};
+export const crearMateriaService = async (materiaData) => {
+  try {
+    const response = await axios.post("/horarios/materias/crear", materiaData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error al crear la materia.");
+  }
+};
+export const eliminarCursoService = async (ID_curso) => {
+  try {
+    const response = await axios.delete(`/horarios/cursos/eliminar/${ID_curso}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error al eliminar el curso.");
+  }
+};
+export const eliminarMateriaService = async (ID_materia) => {
+  try {
+    const response = await axios.delete(`/horarios/materias/eliminar/${ID_materia}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error al eliminar la materia.");
+  }
+};
+
