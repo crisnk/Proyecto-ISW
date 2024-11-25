@@ -2,6 +2,7 @@
 import { createAtrasoService,
          obtenerAtrasos,
          obtenerAtrasosAlumnos,
+         obtenerInfoAtraso,
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -31,18 +32,8 @@ export async function registrarAtraso(req, res) {
 
 export async function verAtrasos(req,res) {
   try {
-    const token = req.cookies.jwt;
+    const rut = await extraerRut(req);
 
-    if (!token) {
-      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
-    }
-
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-
-    const { rut } = decoded;
-    if (!rut) {
-      return handleErrorClient(res, 401, "Token inválido o RUN no presente en el token");
-    }   
     const [atrasos, errorAtrasos] = await obtenerAtrasos(rut);
 
     if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
@@ -57,15 +48,7 @@ export async function verAtrasos(req,res) {
 
 export async function tablaAtrasosAlumnos(req,res){
   try {
-    const token = req.cookies.jwt;
-    if (!token) {
-      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
-    }
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-    const { rut } = decoded;
-    if (!rut) {
-      return handleErrorClient(res, 401, "Token inválido o RUN no presente en el token");
-    }   
+    const rut = await extraerRut(req);
     const [atrasos, errorAtrasos] = await obtenerAtrasosAlumnos(rut);
     if (errorAtrasos) {
       return handleErrorClient(res, 404, errorAtrasos);

@@ -8,6 +8,7 @@ import Root from '@pages/Root';
 import Users from '@pages/Users';
 import AtrasosAlumno from '@pages/AtrasosAlumno';
 import AtrasosProfesor from '@pages/AtrasosProfesor';
+import RegistrarAtraso from '@pages/RegistrarAtraso';
 import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorariosLayout from '@pages/Horarios/AsignarHorariosLayout';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 

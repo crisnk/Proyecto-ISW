@@ -14,6 +14,7 @@ router.use(authenticateJwt);
 router  
     .post("/registrar", isAuthorized("alumno"), registrarAtraso)
     .get("/atrasos", verAtrasos)
+    .get("/tablaAlumnos", tablaAtrasosAlumnos)
     .post("/enviar", sendCustomEmail)
     .get("/infoAtraso", infoAtraso);
 export default router;

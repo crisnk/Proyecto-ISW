@@ -57,11 +57,23 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         );
       case "alumno":
         return (
+          <>
           <li>
             <NavLink to="/horarios/ver/alumno" onClick={closeSidebar}>
               Mi Horario <span className="hover-text">horarios</span>
             </NavLink>
           </li>
+          <li>
+          <NavLink to="/atrasos" className="sidebar-button">
+            Ver Atrasos
+          </NavLink>
+          </li>
+          <li>
+            <NavLink to="/atrasosProfesor" className="sidebar-button">
+              Ver Atrasos Alumnos
+            </NavLink>
+          </li>
+          </>
         );
       default:
         return null;
@@ -78,16 +90,6 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
           <ul className={`submenu ${isHorariosOpen ? "open" : ""}`}>
             {renderHorariosOptions()}
           </ul>
-        </li>
-        <li>
-          <NavLink to="/atrasos" className="sidebar-button">
-            Ver Atrasos
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/atrasosProfesor" className="sidebar-button">
-            Ver Atrasos Alumnos
-          </NavLink>
         </li>
       </ul>
     </aside>
