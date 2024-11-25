@@ -40,7 +40,11 @@ const router = createBrowserRouter([
         },
       {
         path: '/practica',
-        element: <Practica />
+          element: (
+            <ProtectedRoute allowedRoles={['EDP']}>
+              <Practica />            
+            </ProtectedRoute>
+          ),
       },
       {
         path:'/atrasos',
