@@ -84,13 +84,13 @@ const AtrasosAlumnos = () => {
                 <div className="modal-content">
                     <h2>Revisar Justificativo</h2>
                     <p>Info justificativo</p>
-                    <p>------------------</p>
-                    <p>------------------</p>
+                    <p>Motivo</p>
+                    <p>Documento</p>
                     <p>¿Deseas aprobar el justificativo?</p>
                     <div className="modal-actions">
                         <button type="submit" className="aceptar-button" onClick={handleCloseModal}>Aceptar</button>
                         <button type="button" className="rechazar-button" onClick={handleCloseModal}>Rechazar</button>
- </div>
+                </div>
                 </div>
             </div>
         </div>
