@@ -90,11 +90,32 @@
 
 @media (max-width: 480px) {
   .asignar-horarios {
+    width: 100%;
     margin: 15px auto;
     padding: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   }
 
   .asignar-horarios h1 {
     font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .asignar-horarios nav ul {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .asignar-horarios nav ul li a {
+    font-size: 0.9rem;
+    padding: 8px 10px;
+    border-radius: 6px;
+  }
+
+  .outlet-container {
+    margin-top: 20px;
+    padding: 5px;
   }
 }
+
+

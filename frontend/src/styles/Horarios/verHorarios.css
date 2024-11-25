@@ -46,3 +46,58 @@
   font-size: 1.1rem;
   color: #333333;
 }
+@media (max-width: 768px) {
+  .ver-horarios {
+    padding: 20px;
+    margin: 30px auto;
+    max-width: 95%;
+  }
+
+  .ver-horarios h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  .ver-horarios h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .pagination button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    margin: 0 4px;
+  }
+
+  .pagination span {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ver-horarios {
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 100%;
+  }
+
+  .ver-horarios h1 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .ver-horarios h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .pagination button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    margin: 0 3px;
+  }
+
+  .pagination span {
+    font-size: 0.9rem;
+  }
+}

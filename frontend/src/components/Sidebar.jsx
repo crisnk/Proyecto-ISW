@@ -35,7 +35,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
               </NavLink>
             </li>
             <li>
-                <NavLink to="/horarios/materias/">Gestión de Materias y Cursos</NavLink>
+                <NavLink to="/horarios/materias/">Gestión</NavLink>
             </li>
 
             <li>
