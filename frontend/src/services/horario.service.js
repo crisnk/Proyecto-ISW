@@ -7,7 +7,6 @@ export const getHorarios = async (params) => {
 
   try {
     const response = await axios.get("/horarios/ver/todos", { params: filteredParams });
-    console.log("Respuesta de la API (Horarios):", response.data); 
     return {
       data: response.data.data || [],
       totalPages: response.data.totalPages || 1,

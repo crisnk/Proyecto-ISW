@@ -53,4 +53,56 @@
     border-color: #007bff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   }
+  @media (max-width: 768px) {
+    .tabla-horarios-container {
+      flex-direction: column;
+      align-items: center;
+      margin: 15px 0;
+    }
+  
+    .tabla-horarios {
+      width: 95%;
+      font-size: 0.9rem;
+    }
+  
+    .tabla-header,
+    .hora-col,
+    .contenido-col {
+      padding: 6px;
+    }
+  
+    .materia-select {
+      padding: 4px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .tabla-horarios {
+      width: 100%;
+      font-size: 0.8rem;
+    }
+  
+    .tabla-header,
+    .hora-col,
+    .contenido-col {
+      padding: 5px;
+      font-size: 0.8rem;
+    }
+  
+    .tabla-horarios td {
+      display: block;
+      text-align: left;
+    }
+  
+    .tabla-header {
+      background-color: #e9ecef;
+    }
+  
+    .materia-select {
+      padding: 3px;
+      font-size: 0.8rem;
+    }
+  }
+  
   

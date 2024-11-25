@@ -26,7 +26,7 @@ import isAuthorized from "../middlewares/authorization.middleware.js";
 const router = Router();
 
 router.get("/materias", verMaterias);
-router.get("/cursosregister", verCursos); // Para frontend 
+router.get("/cursosregister", verCursos); 
 
 
 router.use(authenticateJwt);

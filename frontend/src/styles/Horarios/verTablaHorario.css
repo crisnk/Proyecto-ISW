@@ -49,3 +49,54 @@
   color: #555;
 }
 
+@media (max-width: 768px) {
+  .tabla-horarios-container {
+    margin-top: 15px;
+  }
+
+  .tabla-horarios {
+    font-size: 0.9rem;
+  }
+
+  .tabla-horarios th,
+  .tabla-horarios td {
+    padding: 8px;
+  }
+
+  .materia-display {
+    font-size: 0.9em;
+  }
+
+  .profesor-display {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla-horarios {
+    font-size: 0.8rem;
+  }
+
+  .tabla-horarios th,
+  .tabla-horarios td {
+    padding: 6px;
+  }
+
+  .tabla-horarios th,
+  .tabla-horarios td {
+    display: block;
+    text-align: left;
+  }
+
+  .tabla-header {
+    font-size: 0.9rem;
+  }
+
+  .materia-display {
+    font-size: 0.8em;
+  }
+
+  .profesor-display {
+    font-size: 0.7em;
+  }
+}

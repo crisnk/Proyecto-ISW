@@ -1,22 +1,14 @@
-import "@styles/Horarios/verTablaHorario.css";
+import "@styles/Horarios/tablaHorarioProfesor.css";
 
-const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
-const horas = [
-  "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
-  "10:30 - 11:15", "11:20 - 12:05", "12:10 - 12:55",
-  "13:00 - 13:45", "14:30 - 15:15", "15:20 - 16:05",
-  "16:10 - 16:55", "17:00 - 17:45",
-];
+const VerTablaHorario = ({ horario, diasSemana, horas }) => {
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
-const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
-
-const VerTablaHorario = ({ horario }) => {
   return (
     <div className="tabla-horarios-container">
       <table className="tabla-horarios">
         <thead>
           <tr>
-            <th className="tabla-header">Hora</th>
+            <th className="tabla-header">Horas</th>
             {diasSemana.map((dia) => (
               <th key={dia} className="tabla-header">
                 {dia.charAt(0).toUpperCase() + dia.slice(1)}
@@ -35,10 +27,13 @@ const VerTablaHorario = ({ horario }) => {
                   ) : (
                     <>
                       <div className="materia-display">
-                        {horario[dia]?.[hora]?.materia || "Sin asignar"}
+                        <strong>Materia:</strong> {horario[dia]?.[hora]?.materia || "Sin asignar"}
                       </div>
                       <div className="profesor-display">
-                        {horario[dia]?.[hora]?.profesor || ""}
+                        <strong>Profesor:</strong> {horario[dia]?.[hora]?.profesor || "Sin profesor"}
+                      </div>
+                      <div className="curso-display">
+                        <strong>Curso:</strong> {horario[dia]?.[hora]?.curso || "Sin curso"}
                       </div>
                     </>
                   )}
