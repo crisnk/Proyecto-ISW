@@ -17,18 +17,22 @@ const RegistrarAtraso = () => {
       setLoading(true);
       setError("");
       setSuccessMessage("");
-
+  
       try {
-        const data = await obtenerInfoAtraso();
-        console.log(data);
-        setInfoAtraso(data);
+        const response = await obtenerInfoAtraso();
+        console.log(response);
+        if (response.status === "Success") {
+          setInfoAtraso(response.data);  // Accede al objeto 'data' aquí
+        } else {
+          setError("No se pudo obtener la información del atraso.");
+        }
       } catch (err) {
         setError(err.message || "Error al cargar los datos.");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchInfoAtraso();
   }, []);
 
@@ -37,17 +41,17 @@ const RegistrarAtraso = () => {
     setLoading(true);
     setError("");
     setSuccessMessage("");
-
+  
     try {
-      const [atraso, error] = await registrarAtrasos();
-      if (error) {
-        setError(error);
-      } else {
+      const response = await registrarAtrasos(); // Llama al servicio
+      if (response.status === "Success") { // Verifica si la operación fue exitosa
         setSuccessMessage("Atraso registrado correctamente.");
-        setInfoAtraso(null); // Reiniciar datos si es necesario.
+        setInfoAtraso(null); // Limpia los datos si es necesario
+      } else {
+        setError(response.message || "Error al registrar el atraso.");
       }
     } catch (err) {
-      setError("Error al registrar el atraso.");
+      setError(err.message || "Error al registrar el atraso.");
     } finally {
       setLoading(false);
     }
