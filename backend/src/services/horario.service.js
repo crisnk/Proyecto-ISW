@@ -449,4 +449,3 @@ export const getHorariosConId = async (filters) => {
     totalPages: Math.ceil(total / limit),
   };
 };
-

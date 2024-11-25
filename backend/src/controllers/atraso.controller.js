@@ -2,7 +2,7 @@
 import { createAtrasoService,
          obtenerAtrasos,
          obtenerAtrasosAlumnos,
-         obtenerInfoAtraso
+         obtenerAtrasosAlumnos,
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
