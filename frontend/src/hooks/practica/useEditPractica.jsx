@@ -15,13 +15,14 @@ const useEditPractica = (setPracticas) => {
     const handleUpdate = async (updatedPracticaData) => {
         if (updatedPracticaData) {
             try {
+                console.log(updatedPracticaData);
                 const updatedPractica = await updatePractica(updatedPracticaData);
                 showSuccessAlert('¡Actualizado!', 'La práctica ha sido actualizada correctamente.');
                 setIsPopupOpen(false);
                 
                 setPracticas(prevPracticas => prevPracticas.map(practica => {
                     console.log("Práctica actual:", practica);
-                    if (practica.ID_practica === updatedPractica.ID_practica) {
+                    if (practica.ID === updatedPractica.ID) {
                         return updatedPractica;
                     }
                     return practica;

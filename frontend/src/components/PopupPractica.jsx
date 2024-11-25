@@ -1,10 +1,21 @@
+// PopupPractica.jsx
 import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 import QuestionIcon from '@assets/QuestionCircleIcon.svg';
 
 export default function Popup({ show, setShow, data, action }) {
-    const practicaData = data && Object.keys(data).length > 0 ? data : {};
+    const practicaData = data[0];
+    const convertToDate = (fechaString) => {
+        // Separar la fecha y la hora
+        const [datePart, timePart] = fechaString.split(', ');
+
+        const [day, month, year] = datePart.split('/');
+    
+        const date = new Date(`${year}-${month}-${day}T${timePart}`);
+        
+        return date.toISOString().slice(0, 16);
+    };
 
     const handleSubmit = (formData) => {
         action(formData);
@@ -67,7 +78,7 @@ export default function Popup({ show, setShow, data, action }) {
                             {
                                 label: "Fecha de publicación",
                                 name: "fechaPublicacion",
-                                defaultValue: practicaData.fechaPublicacion || "",
+                                defaultValue: convertToDate(practicaData.fechaPublicacion) || "",
                                 placeholder: 'Fecha de publicación',
                                 fieldType: 'input',
                                 type: "datetime-local",

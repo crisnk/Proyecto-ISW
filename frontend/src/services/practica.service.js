@@ -12,7 +12,6 @@ export async function getPracticas() {
 export async function updatePractica(data) {
     try {
         const response = await axios.patch(`/practica/modificar/${data.ID_practica}`);
-        console.log(response);
         return response.data.data;
     } catch (error) {
         return error.response.data;
