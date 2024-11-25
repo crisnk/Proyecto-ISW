@@ -2,6 +2,7 @@ import Table from '@components/Table';
 import Search from '../components/Search';
 import { useState, useEffect } from 'react';
 import '@styles/atrasos.css';
+import '@styles/modal.css';
 import { getAtrasosAlumnos } from '@services/atrasos.service.js';
 
 const AtrasosAlumnos = () => {
@@ -33,23 +34,29 @@ const AtrasosAlumnos = () => {
 
     const handleJustificar = () => {
         console.log("Justificar botón presionado");
+        const modal = document.getElementById("modal-revisar");
+        modal.style.display = "flex"; // Muestra el modal
+    };
+
+    const handleCloseModal = () => {
+        const modal = document.getElementById("modal-revisar");
+        modal.style.display = "none"; // Oculta el modal
     };
 
     const columns = [
-        { title: "Nombre", field: "nombre", width: 300, responsive: 1 },
-        { title: "Rut", field: "rut", width: 150, responsive: 0 },
-        { title: "Curso", field: "curso", width: 150, responsive: 0 },
+        { title: "Nombre", field: "nombre", width: 300, responsive: 0 },
+        { title: "Rut", field: "rut", width: 200, responsive: 0 },
         { title: "Fecha", field: "fecha", width: 150, responsive: 0 },
-        { title: "Hora", field: "hora", width: 100, responsive: 3 },
-        { title: "Estado", field: "estado", width: 150, responsive: 2 },
-        { title: "Justificativo", field: "estadoJustificativo", width: 200, responsive: 2 }
+        { title: "Hora", field: "hora", width: 150, responsive: 0 },
+        { title: "Estado", field: "estado", width: 150, responsive: 0 },
+        { title: "Justificativo", field: "estadoJustificativo", width: 200, responsive: 0 }
     ];
 
     return (
         <div className='main-container'>
             <div className='table-container'>
                 <div className='top-table'>
-                    <h1 className='title-table'>Atrasos Alumnos</h1>
+                    <h1 className='title-table'>Atrasos del curso {atrasos.length > 0 ? atrasos[0].curso : 'Curso no disponible'}</h1>
                     <div className='filter-actions'>
                         <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado '} />
                         <button className='revisar-button' onClick={handleJustificar}>
@@ -65,7 +72,23 @@ const AtrasosAlumnos = () => {
                     initialSortName={'fecha'} 
                 />
             </div>
+
+            {/* Popup Modal */}
+            <div className="modal" id="modal-revisar">
+                <div className="modal-content">
+                    <h2>Revisar Justificativo</h2>
+                    <p>Info justificativo</p>
+                    <p>------------------</p>
+                    <p>------------------</p>
+                    <p>¿Deseas aprobar el justificativo?</p>
+                    <div className="modal-actions">
+                        <button type="submit" className="aceptar-button" onClick={handleCloseModal}>Aceptar</button>
+                        <button type="button" className="rechazar-button" onClick={handleCloseModal}>Rechazar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
+
 export default AtrasosAlumnos;

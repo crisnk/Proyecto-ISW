@@ -90,41 +90,48 @@ export async function obtenerAtrasosAlumnos(rut) {
     const atrasoRepository = AppDataSource.getRepository(Atraso);
     const justificativoRepository = AppDataSource.getRepository(Justificativo);
 
-    const user = await userRepository.findOne({ where: { rut } });
-    if (!user) {
-      return [null, "Usuario no encontrado"];
+    const profesor = await userRepository.findOne({ where: { rut, rol: 'profesor' } });
+    if (!profesor) {
+      return [null, "Usuario no encontrado o no es un profesor"];
     }
 
-    const pertenece = await perteneceRepository.findOne({ where: { rut } });
-    let cursoNombre = "Sin curso asignado";
+    const curso = await cursoRepository.findOne({
+      select: ["ID_curso"],
+      where: { profesor: profesor.rut }
+    });
 
-    if (pertenece) {
-      const curso = await cursoRepository.findOne({ where: { ID_curso: pertenece.ID_curso } });
-      if (curso) {
-        cursoNombre = curso.nombre; 
-      }
+    const alumnos = await perteneceRepository.find({ where: { ID_curso: curso.ID_curso } });
+    if (!Array.isArray(alumnos) || alumnos.length === 0) {
+      return [null, "No hay alumnos en este curso"];
     }
 
-    const atrasos = await atrasoRepository.find({ where: { rut } });
-    if (!atrasos || atrasos.length === 0) {
-      return [null, "No hay atrasos para el alumno"];
-    }
+    const resultados = await Promise.all(alumnos.map(async (alumno) => {
+      const user = await userRepository.findOne({ where: { rut: alumno.rut } });
+      const atrasos = await atrasoRepository.find({ where: { rut: alumno.rut } });
+      const nombreCurso = await cursoRepository.findOne({ where: { ID_curso: alumno.ID_curso } });
 
-    const resultados = await Promise.all(atrasos.map(async (atraso) => {  
-      const justificativo = await justificativoRepository.findOne({ where: { ID_atraso: atraso.ID_atraso } });
-      return {
-        nombre: user.nombreCompleto,
-        rut: user.rut,
-        curso: cursoNombre, 
-        id_atraso: atraso.ID_atraso,
-        fecha: atraso.fecha,
-        hora: atraso.hora,
-        estado: atraso.estado,
-        estadoJustificativo: justificativo ? justificativo.estado : "No Justificado",
-      };
+      const resultadosAtrasos = await Promise.all(atrasos.map(async (atraso) => {
+        const justificativo = await justificativoRepository.findOne({ where: { ID_atraso: atraso.ID_atraso } });
+
+        return {
+          nombre: user.nombreCompleto,
+          rut: alumno.rut,
+          curso: nombreCurso.nombre,
+          ID_atraso: atraso.ID_atraso,
+          fecha: atraso.fecha,
+          hora: atraso.hora,
+          estado: atraso.estado,
+          estadoJustificativo: justificativo ? justificativo.estado : "No Justificado",
+        };
+      }));
+
+      return resultadosAtrasos;
     }));
 
-    return [resultados, null];
+    const resultadosFinales = resultados.flat().filter(atraso => atraso !== undefined); // Filtrar undefined si hay
+
+    return [resultadosFinales.length > 0 ? resultadosFinales : null, resultadosFinales.length > 0 ? null : "No hay atrasos para los alumnos"];
+
   } catch (error) {
     console.error("Error al obtener los atrasos de los alumnos:", error);
     return [null, "Error interno del servidor"];

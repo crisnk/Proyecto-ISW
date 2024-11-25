@@ -43,8 +43,8 @@ const Login = () => {
                         errorMessageData: errorEmail,
                         validate: {
                             emailDomain: (value) => {
-                                const validDomains = ['@gmail.cl', '@gmail.com', '@alumnos.ubiobio.cl'];
-                                return validDomains.some(domain => value.endsWith(domain)) || 'El correo debe terminar en @gmail.cl, @gmail.com o @alumnos.ubiobio.cl';
+                                const validDomains = ['@gmail.cl', '@gmail.com', '@alumnos.ubiobio.cl','@liceo.cl'];
+                                return validDomains.some(domain => value.endsWith(domain)) || 'El correo debe terminar en @gmail.cl, @gmail.com o @alumnos.ubiobio.cl o @liceo.cl';
                             }
                         },
                         onChange: (e) => handleInputChange('email', e.target.value),
