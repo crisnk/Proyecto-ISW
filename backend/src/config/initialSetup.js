@@ -132,7 +132,7 @@ export async function createUsers() {
 
     const alumnos = [
       { rut: "19.741.384-0", nombre: "Dilan Alejandro Aranguiz Vejar", email: "dilan.aranguiz2201@alumnos.ubiobio.cl", ID_curso: 1 },
-      { rut: "21.237.487-3", nombre: "Esteban Patricio Bravo Suárez", email: "esteban.bravo2101@alumnos.ubiobio.cl.cl", ID_curso: 1 },
+      { rut: "21.237.487-3", nombre: "Esteban Patricio Bravo Suárez", email: "esteban.bravo2101@alumnos.ubiobio.cl", ID_curso: 1 },
       { rut: "11.111.111-9", nombre: "Cristobal Alarcon", email: "cristobal.alarcon2101@alumnos.ubiobio.cl", ID_curso: 1 },
       { rut: "21.012.009-2", nombre: "Diego Antonio Vargas Gómez", email: "diego.vargas2001@alumnos.ubiobio.cl", ID_curso: 1 },
       { rut: "21.025.001-1", nombre: "Juan Carlos Silva Pérez", email: "juan.carlos.silva.1@gmail.cl", ID_curso: 1 },

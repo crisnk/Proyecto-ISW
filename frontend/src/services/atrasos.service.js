@@ -29,7 +29,7 @@ export async function obtenerInfoAtraso() {
 export async function registrarAtrasos() {
     try {
         const { data } = await axios.post('/atraso/registrar');
-        return data;
+        return data; // Retorna directamente la data del backend
     } catch (error) {
         return error.response.data;
     }

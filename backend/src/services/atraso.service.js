@@ -161,7 +161,7 @@ export async function obtenerInfoAtraso(rut) {
     if (!imparte) {
       throw new Error('No tiene una clase ahora mismo.');   
     }
-    console.log(horaActual);
+
     const materiaRepository = AppDataSource.getRepository(Materia);
     const materia = await materiaRepository.findOne({
       select: ["nombre"], 
