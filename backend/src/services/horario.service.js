@@ -8,12 +8,24 @@ import Pertenece from "../entity/pertenece.entity.js";
 import { sendEmail } from "./email.service.js";
 import {
   cursoValidation,
-  horarioValidationCurso,
   horarioValidationProfesor,
-  materiaValidation,
   paginationAndFilterValidation,
-  validarHorario,
+  validarSincronizacionBloque,
+  materiaValidation,
 } from "../validations/horario.validation.js";
+
+const BLOQUES_HORARIOS = {
+  "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },
+  "08:50 - 09:35": { hora_Inicio: "08:50", hora_Fin: "09:35" },
+  "09:40 - 10:25": { hora_Inicio: "09:40", hora_Fin: "10:25" },
+  "11:20 - 12:05": { hora_Inicio: "11:20", hora_Fin: "12:05" },
+  "12:10 - 12:55": { hora_Inicio: "12:10", hora_Fin: "12:55" },
+  "14:30 - 15:15": { hora_Inicio: "14:30", hora_Fin: "15:15" },
+  "15:20 - 16:05": { hora_Inicio: "15:20", hora_Fin: "16:05" },
+  "16:10 - 16:55": { hora_Inicio: "16:10", hora_Fin: "16:55" },
+  "17:00 - 17:45": { hora_Inicio: "17:00", hora_Fin: "17:45" },
+};
+
 
 export const asignaHorarioCursoService = async (horarioData) => {
   const { ID_curso, horario } = horarioData;
@@ -32,40 +44,44 @@ export const asignaHorarioCursoService = async (horarioData) => {
   const repository = AppDataSource.getRepository(Imparte);
 
   for (const bloque of horario) {
+    const { hora_Inicio, hora_Fin } = BLOQUES_HORARIOS[bloque.bloque] || {};
+    if (!hora_Inicio || !hora_Fin) {
+      throw new Error(`El bloque ${bloque.bloque} no tiene horas asignadas.`);
+    }
+
+    validarSincronizacionBloque(bloque.bloque, hora_Inicio, hora_Fin);
+
     const materia = await materiaRepository.findOneBy({ ID_materia: bloque.ID_materia });
     if (!materia) {
       throw new Error(`La materia con ID ${bloque.ID_materia} no existe.`);
     }
-
-    const { error } = horarioValidationCurso.validate(bloque, { abortEarly: false });
-    if (error) {
-      throw new Error(error.details.map((e) => e.message).join(", "));
-    }
-
-    validarHorario(bloque.dia, bloque.bloque);
 
     let horarioExistente = await repository.findOne({
       where: { ID_curso: ID_curso, dia: bloque.dia, bloque: bloque.bloque },
     });
 
     if (horarioExistente) {
+      horarioExistente.hora_Inicio = hora_Inicio;
+      horarioExistente.hora_Fin = hora_Fin;
       horarioExistente.ID_materia = bloque.ID_materia;
-      await repository.save(horarioExistente); 
+      await repository.save(horarioExistente);
     } else {
       const nuevoHorario = repository.create({
         ID_materia: bloque.ID_materia,
         ID_curso: ID_curso,
-        rut: null, 
         dia: bloque.dia,
         bloque: bloque.bloque,
+        hora_Inicio,
+        hora_Fin,
       });
 
-      await repository.save(nuevoHorario); 
+      await repository.save(nuevoHorario);
     }
   }
 
   return { message: "Horario asignado correctamente para el curso." };
 };
+
 
 export const asignaHorarioProfesorService = async (horarioData) => {
   const { rut, horario } = horarioData;
@@ -80,39 +96,36 @@ export const asignaHorarioProfesorService = async (horarioData) => {
   if (!profesor) {
     throw new Error("El profesor con el RUT proporcionado no existe o no tiene el rol adecuado.");
   }
+
   const repository = AppDataSource.getRepository(Imparte);
 
   for (const bloque of horario) {
-    validarHorario(bloque.dia, bloque.bloque);
+    const { hora_Inicio, hora_Fin } = BLOQUES_HORARIOS[bloque.bloque] || {};
+    if (!hora_Inicio || !hora_Fin) {
+      throw new Error(`El bloque ${bloque.bloque} no tiene horas asignadas.`);
+    }
+
+    validarSincronizacionBloque(bloque.bloque, hora_Inicio, hora_Fin);
 
     let horarioExistente = await repository.findOne({
       where: { rut, dia: bloque.dia, bloque: bloque.bloque },
     });
 
     if (horarioExistente) {
- 
+      horarioExistente.hora_Inicio = hora_Inicio;
+      horarioExistente.hora_Fin = hora_Fin;
       horarioExistente.ID_materia = bloque.ID_materia;
       horarioExistente.ID_curso = bloque.ID_curso;
       await repository.save(horarioExistente);
     } else {
-
-      const conflictoHorario = await repository.findOne({
-        where: { dia: bloque.dia, bloque: bloque.bloque, rut },
-      });
-
-      if (conflictoHorario) {
-        throw new Error(
-          `Conflicto de horario: El profesor con RUT
-           ${rut} ya tiene asignado el bloque ${bloque.bloque} el día ${bloque.dia}.`
-        );
-      }
-
       const nuevoHorario = repository.create({
         ID_materia: bloque.ID_materia,
         ID_curso: bloque.ID_curso,
         rut: rut,
         dia: bloque.dia,
         bloque: bloque.bloque,
+        hora_Inicio,
+        hora_Fin,
       });
 
       await repository.save(nuevoHorario);
@@ -121,6 +134,75 @@ export const asignaHorarioProfesorService = async (horarioData) => {
 
   return { message: "Horario asignado correctamente para el profesor." };
 };
+
+
+export const getHorariosByCursoService = async (ID_curso) => {
+  if (!ID_curso || isNaN(ID_curso)) {
+    throw new Error("ID_curso debe ser un número válido.");
+  }
+
+  const repository = AppDataSource.getRepository(Imparte);
+
+  const horarios = await repository.find({
+    where: { ID_curso: Number(ID_curso) },
+    relations: ["materia", "profesor"],
+  });
+
+  if (horarios.length === 0) {
+    throw new Error("No se encontraron horarios para el curso proporcionado.");
+  }
+
+  return horarios.map((horario) => ({
+    dia: horario.dia,
+    bloque: horario.bloque,
+    hora_Inicio: horario.hora_Inicio,
+    hora_Fin: horario.hora_Fin,
+    ID_materia: horario.ID_materia,
+    nombre_materia: horario.materia?.nombre || "Materia no disponible",
+    rut_profesor: horario.profesor?.rut || null,
+    nombre_profesor: horario.profesor?.nombre || "Sin profesor",
+  }));
+};
+
+export const getAllHorarios = async (query) => {
+  const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
+  if (error) {
+    throw new Error(error.details.map((err) => err.message).join(", "));
+  }
+
+  const { profesor, curso, page = 1, limit = 10 } = value;
+  const repository = AppDataSource.getRepository(Imparte);
+
+  const queryBuilder = repository
+    .createQueryBuilder("horario")
+    .leftJoinAndSelect("horario.materia", "materia")
+    .leftJoinAndSelect("horario.curso", "curso")
+    .leftJoinAndSelect("horario.profesor", "profesor")
+    .orderBy("horario.dia", "ASC")
+    .addOrderBy("horario.bloque", "ASC");
+
+  if (profesor) {
+    queryBuilder.andWhere("(profesor.rut = :profesor)", { profesor });
+  }
+
+  if (curso) {
+    queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
+  }
+
+  const total = await queryBuilder.getCount();
+  const data = await queryBuilder
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getMany();
+
+  return {
+    data,
+    total,
+    page: Number(page),
+    totalPages: Math.ceil(total / limit),
+  };
+};
+
 
 export const eliminarHorarioService = async (filters) => {
   const repository = AppDataSource.getRepository(Imparte);
@@ -141,104 +223,6 @@ export const eliminarHorarioService = async (filters) => {
 
   await repository.remove(horarios);
 };
-
-
-export const getHorariosByCursoService = async (ID_curso) => {
-  if (!ID_curso || isNaN(ID_curso)) {
-    throw new Error("ID_curso debe ser un número válido.");
-  }
-
-  const repository = AppDataSource.getRepository(Imparte);
-
-  const horarios = await repository.find({
-    where: { ID_curso: Number(ID_curso) },
-    relations: ["materia", "profesor"], 
-  });
-
-  if (horarios.length === 0) {
-    throw new Error("No se encontraron horarios para el curso proporcionado.");
-  }
-
-  return horarios.map((horario) => ({
-    dia: horario.dia,
-    bloque: horario.bloque,
-    ID_materia: horario.ID_materia,
-    nombre_materia: horario.materia?.nombre || "Materia no disponible",
-    rut_profesor: horario.profesor?.rut || null,
-    nombre_profesor: horario.profesor?.nombre || "Sin profesor",
-  }));
-};
-
-export const getAllHorarios = async (query) => {
-  console.log("Query recibida:", query);
-  
-  const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
-  if (error) {
-    throw new Error(error.details.map((err) => err.message).join(", "));
-  }
-
-  const { profesor, curso, page = 1, limit = 10 } = value;
-  const repository = AppDataSource.getRepository(Imparte);
-
-  const queryBuilder = repository
-    .createQueryBuilder("horario")
-    .leftJoinAndSelect("horario.materia", "materia")
-    .leftJoinAndSelect("horario.curso", "curso")
-    .leftJoinAndSelect("horario.profesor", "profesor")
-    .orderBy("horario.dia", "ASC")
-    .addOrderBy("horario.bloque", "ASC"); 
-
-  if (profesor) {
-    queryBuilder.andWhere(
-      "(profesor.rut = :profesor OR LOWER(profesor.nombreCompleto) LIKE LOWER(:profesor))",
-      { profesor }
-    );
-  }
-
-  if (curso) {
-    queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
-  }
-
-  if (profesor || curso) {
-    const data = await queryBuilder.getMany();
-    const formattedData = data.map((item) => ({
-      dia: item.dia,
-      bloque: item.bloque,
-      nombre_materia: item.materia?.nombre || "Sin asignar",
-      nombre_profesor: item.profesor?.nombreCompleto || "Sin profesor",
-      curso: item.curso?.nombre || "Sin curso",
-    }));
-
-    return {
-      data: formattedData,
-      total: formattedData.length,
-      page: 1,
-      totalPages: 1,
-    };
-  }
-
-  const total = await queryBuilder.getCount();
-  const data = await queryBuilder
-    .skip((page - 1) * limit)
-    .take(limit)
-    .getMany();
-  
-  const formattedData = data.map((item) => ({
-    dia: item.dia,
-    bloque: item.bloque,
-    nombre_materia: item.materia?.nombre || "Sin asignar",
-    nombre_profesor: item.profesor?.nombreCompleto || "Sin profesor",
-    curso: item.curso?.nombre || "Sin curso",
-  }));
-
-  return {
-    data: formattedData,
-    total,
-    page: Number(page),
-    totalPages: Math.ceil(total / limit),
-  };
-};
-
 
 export const getHorarioProfesor = async (rut) => {
   const repository = AppDataSource.getRepository(Imparte);

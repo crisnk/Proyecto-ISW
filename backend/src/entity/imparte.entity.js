@@ -12,16 +12,16 @@ const ImparteSchema = new EntitySchema({
     },
     ID_materia: {
       type: "int",
-      nullable: false, 
+      nullable: false,
     },
     ID_curso: {
       type: "int",
-      nullable: false, 
+      nullable: false,
     },
     rut: {
       type: "varchar",
       length: 12,
-      nullable: true, 
+      nullable: true,
     },
     dia: {
       type: "varchar",
@@ -31,7 +31,15 @@ const ImparteSchema = new EntitySchema({
     bloque: {
       type: "varchar",
       length: 15,
-      nullable: false,
+      nullable: false, 
+    },
+    hora_Inicio: {
+      type: "time",
+      nullable: true,
+    },
+    hora_Fin: {
+      type: "time",
+      nullable: true,
     },
     createdAt: {
       type: "timestamp with time zone",
@@ -53,7 +61,7 @@ const ImparteSchema = new EntitySchema({
         name: "rut",
         referencedColumnName: "rut",
       },
-      nullable: true, 
+      nullable: true,
     },
     curso: {
       target: "Curso",

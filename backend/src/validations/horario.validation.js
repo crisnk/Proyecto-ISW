@@ -1,5 +1,6 @@
 import Joi from "joi";
 
+
 export const materiaValidation = Joi.object({
   nombre: Joi.string()
     .max(55)
@@ -8,7 +9,6 @@ export const materiaValidation = Joi.object({
       "any.required": "El nombre de la materia es obligatorio.",
       "string.empty": "El nombre de la materia no puede estar vacío.",
       "string.max": "El nombre de la materia no puede tener más de 55 caracteres.",
-      "string.base": "El nombre de la materia debe ser un texto.",
     }),
 });
 
@@ -19,9 +19,8 @@ export const cursoValidation = Joi.object({
     .messages({
       "any.required": "El nombre del curso es obligatorio.",
       "string.empty": "El nombre del curso no puede estar vacío.",
-      "string.pattern.base": 
+      "string.pattern.base":
         "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a D. Ejemplo: '1ro medio A'.",
-      "string.base": "El nombre del curso debe ser un texto.",
     }),
   aula: Joi.number()
     .integer()
@@ -50,7 +49,20 @@ export const horarioValidationCurso = Joi.object({
   bloque: Joi.string().required().messages({
     "any.required": "El bloque es obligatorio.",
   }),
+  hora_Inicio: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .optional()
+    .messages({
+      "string.pattern.base": "La hora de inicio debe estar en formato HH:mm.",
+    }),
+  hora_Fin: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .optional()
+    .messages({
+      "string.pattern.base": "La hora de fin debe estar en formato HH:mm.",
+    }),
 });
+
 
 export const horarioValidationProfesor = Joi.object({
   rut: Joi.string()
@@ -74,41 +86,55 @@ export const horarioValidationProfesor = Joi.object({
           .required()
           .messages({
             "any.required": "El día es obligatorio.",
-            "any.only": "El día debe ser uno de los siguientes: lunes, martes, miércoles, jueves, viernes.",
           }),
         bloque: Joi.string().required().messages({
           "any.required": "El bloque es obligatorio.",
         }),
+        hora_Inicio: Joi.string()
+          .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+          .optional()
+          .messages({
+            "string.pattern.base": "La hora de inicio debe estar en formato HH:mm.",
+          }),
+        hora_Fin: Joi.string()
+          .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+          .optional()
+          .messages({
+            "string.pattern.base": "La hora de fin debe estar en formato HH:mm.",
+          }),
       }).unknown(true)
     )
-    .required()
-    .messages({
-      "array.base": "El horario debe ser un arreglo.",
-      "any.required": "El horario es obligatorio.",
-    }),
+    .required(),
 });
-
 
 export const paginationAndFilterValidation = Joi.object({
-  page: Joi.number().integer().min(1).optional().messages({
-    "number.base": "La página debe ser un número.",
-    "number.min": "La página debe ser al menos 1.",
-  }),
-  limit: Joi.number().integer().min(1).optional().messages({
-    "number.base": "El límite debe ser un número.",
-    "number.min": "El límite debe ser al menos 1.",
-  }),
-  curso: Joi.string().allow("").optional().messages({
-    "string.base": "El curso debe ser un texto.",
-  }),
-  profesor: Joi.string().allow("").optional().messages({
-    "string.base": "El profesor debe ser un texto.",
-  }),
+  page: Joi.number().integer().min(1).optional(),
+  limit: Joi.number().integer().min(1).optional(),
+  curso: Joi.string().allow("").optional(),
+  profesor: Joi.string().allow("").optional(),
 });
 
-export const validarHorario = (dia, bloque) => {
-  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
-  if (recreoHoras.includes(bloque)) {
-    throw new Error(`No se puede asignar una materia en el bloque de recreo (${dia}, ${bloque}).`);
+const BLOQUES_HORARIOS = {
+  "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },
+  "08:50 - 09:35": { hora_Inicio: "08:50", hora_Fin: "09:35" },
+  "09:40 - 10:25": { hora_Inicio: "09:40", hora_Fin: "10:25" },
+  "11:20 - 12:05": { hora_Inicio: "11:20", hora_Fin: "12:05" },
+  "12:10 - 12:55": { hora_Inicio: "12:10", hora_Fin: "12:55" },
+  "14:30 - 15:15": { hora_Inicio: "14:30", hora_Fin: "15:15" },
+  "15:20 - 16:05": { hora_Inicio: "15:20", hora_Fin: "16:05" },
+  "16:10 - 16:55": { hora_Inicio: "16:10", hora_Fin: "16:55" },
+  "17:00 - 17:45": { hora_Inicio: "17:00", hora_Fin: "17:45" },
+};
+
+
+export const validarSincronizacionBloque = (bloque, hora_Inicio, hora_Fin) => {
+  const rango = BLOQUES_HORARIOS[bloque];
+  if (!rango) {
+    throw new Error(`El bloque "${bloque}" no es válido.`);
+  }
+  if (rango.hora_Inicio !== hora_Inicio || rango.hora_Fin !== hora_Fin) {
+    throw new Error(
+      `Las horas (${hora_Inicio} - ${hora_Fin}) no coinciden con el bloque "${bloque}" (${rango.hora_Inicio} - ${rango.hora_Fin}).`
+    );
   }
 };
