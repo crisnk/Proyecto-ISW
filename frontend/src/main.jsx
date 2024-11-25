@@ -7,6 +7,8 @@ import Register from '@pages/Register';
 import Root from '@pages/Root';
 import Users from '@pages/Users';
 import AtrasosAlumno from '@pages/AtrasosAlumno';
+import AtrasosProfesor from '@pages/AtrasosProfesor';
+import RegistrarAtraso from '@pages/RegistrarAtraso';
 import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorariosLayout from '@pages/Horarios/AsignarHorariosLayout';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
@@ -14,7 +16,7 @@ import AsignarHorarioCurso from '@pages/Horarios/AsignarHorarioCurso';
 import VerHorarios from '@pages/Horarios/VerHorarios';
 import EliminarHorario from '@pages/Horarios/EliminarHorario';
 import MiHorario from '@pages/Horarios/MiHorario';
-import RegistrarAtraso from '@pages/RegistrarAtraso';
+import Materias from '@pages/Horarios/Materias';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -37,7 +39,19 @@ const router = createBrowserRouter([
       },
       {
         path:'/atrasos',
-        element: <AtrasosAlumno/>
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <AtrasosAlumno />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path:'/atrasosProfesor',
+        element: (
+          <ProtectedRoute allowedRoles={['profesor', 'alumno']}>
+            <AtrasosProfesor />
+          </ProtectedRoute>
+        )
       },
       {
         path: '/horarios',
@@ -47,6 +61,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      
       {
         path: '/horarios/ver/alumno',
         element: (
@@ -87,11 +102,14 @@ const router = createBrowserRouter([
         element: ( 
         < RegistrarAtraso/> 
         ),
-        /*element: (
-          <ProtectedRoute allowedRoles={['alumno']}>
-            <RegistrarAtraso />
+      },
+      {
+        path: '/horarios/materias',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
+            <Materias />
           </ProtectedRoute>
-        ),*/
+        ),
       },
     ],
   },

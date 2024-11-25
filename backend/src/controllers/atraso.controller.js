@@ -1,7 +1,8 @@
 "use strict";
 import { createAtrasoService,
          obtenerAtrasos,
-         obtenerInfoAtraso
+         obtenerAtrasosAlumnos,
+         obtenerInfoAtraso,
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -31,7 +32,8 @@ export async function registrarAtraso(req, res) {
 
 export async function verAtrasos(req,res) {
   try {
-    rut = await obtener
+    const rut = await extraerRut(req);
+
     const [atrasos, errorAtrasos] = await obtenerAtrasos(rut);
 
     if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
@@ -43,6 +45,24 @@ export async function verAtrasos(req,res) {
     handleErrorServer(res,500,error.message);
   }
 };
+
+export async function tablaAtrasosAlumnos(req,res){
+  try {
+    const rut = await extraerRut(req);
+    const [atrasos, errorAtrasos] = await obtenerAtrasosAlumnos(rut);
+    if (errorAtrasos) {
+      return handleErrorClient(res, 404, errorAtrasos);
+    }
+    
+    if (atrasos.length === 0) {
+      return handleSuccess(res, 204); 
+    } else {
+      return handleSuccess(res, 200, "Atrasos encontrados", atrasos);
+    }
+  } catch (error) {
+    handleErrorServer(res,500,error.message);
+  }
+}
 
 export async function infoAtraso(req, res) {
   try {
