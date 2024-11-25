@@ -113,7 +113,7 @@ export async function createUsers() {
       userRepository.save(
         userRepository.create({
           nombreCompleto: "Jefe UTP",
-          rut: "12.345.678-9",          
+          rut: "12.345.008-9",          
           email: "jefeutp@gmail.cl",          
           password: await encryptPassword("jefeutp1234"),
           rol: "jefeUTP",
@@ -484,7 +484,21 @@ export async function crearImparticiones() {
   try {
     const imparteRepository = AppDataSource.getRepository(Imparte);
     const count = await imparteRepository.count();
-    if (count > 0) return;    
+    if (count > 0) return;  
+    const imparticiones = [
+      { ID_curso: 1, ID_materia: 1, rut: "12.345.678-9", dia: "lunes", bloque: "08:00 - 08:45", hora_Inicio: "08:00", hora_Fin: "08:45" },
+      { ID_curso: 1, ID_materia: 2, rut: "11.234.567-8", dia: "lunes", bloque: "08:50 - 09:35", hora_Inicio: "08:50", hora_Fin: "09:35" },
+      { ID_curso: 1, ID_materia: 3, rut: "10.123.456-7", dia: "lunes", bloque: "09:40 - 10:25", hora_Inicio: "09:40", hora_Fin: "10:25" },
+      { ID_curso: 1, ID_materia: 4, rut: "9.012.345-6", dia: "lunes", bloque: "11:20 - 12:05", hora_Inicio: "11:20", hora_Fin: "12:05" },
+      { ID_curso: 1, ID_materia: 5, rut: "8.901.234-5", dia: "lunes", bloque: "12:10 - 12:55", hora_Inicio: "12:10", hora_Fin: "12:55" },
+      { ID_curso: 1, ID_materia: 6, rut: "7.890.123-4", dia: "lunes", bloque: "14:30 - 15:15", hora_Inicio: "14:30", hora_Fin: "15:15" },
+      { ID_curso: 1, ID_materia: 7, rut: "6.789.012-3", dia: "lunes", bloque: "15:20 - 16:05", hora_Inicio: "15:20", hora_Fin: "16:05" },
+      { ID_curso: 1, ID_materia: 8, rut: "5.678.901-2", dia: "lunes", bloque: "16:10 - 16:55", hora_Inicio: "16:10", hora_Fin: "16:55" },
+      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" }  
+    ];
+    
+    await imparteRepository.save(imparticiones);
+  
   } catch (error) {
     console.error("Error al crear materias predeterminadas:", error);
   }
