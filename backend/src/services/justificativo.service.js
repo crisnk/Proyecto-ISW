@@ -76,3 +76,22 @@ export async function aprobarJustificativo(ID_atraso) {
     }
   }
   
+  export async function obtenerJustificativo(ID_atraso) {
+    try {
+      const justificativoRepository = AppDataSource.getRepository(Justificativo);
+      const justificativo = await justificativoRepository.findOne({
+        where: {
+          ID_atraso: ID_atraso
+        }
+      });
+      if (!justificativo) {
+        return [null, "Justificativo no encontrado"];
+      }
+  
+      return [justificativo, null];
+
+    } catch (error) {
+      console.error("Error al obtener el justificativo:", error);
+      return [null, "Error interno del servidor"];
+    }
+  }

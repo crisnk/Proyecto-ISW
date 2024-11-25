@@ -1,4 +1,4 @@
-import { createJustificativo, aprobarJustificativo, rechazarJustificativo, obtenerDocumentoJustificante  } from "../services/justificativo.service.js";
+import { createJustificativo, aprobarJustificativo, rechazarJustificativo, obtenerDocumentoJustificante, obtenerJustificativo } from "../services/justificativo.service.js";
 import { findAtraso  } from "../services/atraso.service.js";
 import { sendEmailDefault } from "../controllers/email.controller.js";
 import { handleErrorClient, handleSuccess, handleErrorServer } from "../handlers/responseHandlers.js";
@@ -112,3 +112,18 @@ export async function manejarRechazarJustificativo(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
+export async function verJustificativo(req,res) {
+  try {
+    const { ID_atraso } = req.params;
+
+    const [justificativo, errorJustificativo] = await obtenerJustificativo( ID_atraso);
+
+    if (errorJustificativo) return handleErrorClient(res, 404, errorJustificativo);
+    
+    justificativo.length === 0
+    ? handleSuccess(res, 204)
+    : handleSuccess(res, 200, "Justificativo encontrado", justificativo);
+  } catch (error) {
+    handleErrorServer(res,500,error.message);
+  }
+};

@@ -7,7 +7,8 @@ import {
     generarJustificativo,
     manejarAprobarJustificativo,
     manejarRechazarJustificativo,
-    verArchivoJustificativo
+    verArchivoJustificativo,
+    verJustificativo,
 } from "../controllers/justificativo.controller.js";
 
 
@@ -18,4 +19,5 @@ router
     .get('/archivo/:filePath', isAuthorized("alumno"), verArchivoJustificativo)
     .post("/aprobar/:ID_atraso", manejarAprobarJustificativo)
     .post("/rechazar/:ID_atraso", manejarRechazarJustificativo)
+    .get("/ver/:ID_atraso", verJustificativo);
 export default router;
