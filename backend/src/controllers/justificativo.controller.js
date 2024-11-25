@@ -7,31 +7,19 @@ import { ACCESS_TOKEN_SECRET, HOST, PORT } from "../config/configEnv.js";
 
 export async function generarJustificativo(req, res){
   try{
-    const { motivo, fecha, hora } = req.body;
+    const rut = await extraerRut(req);
     const estado = 'pendiente';
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
-    }
-
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-    const { rut } = decoded; 
-    if (!rut) {
-      return handleErrorClient(res, 401, "Token inválido o RUN no presente en el token");
-    }   
-
-    if (!motivo || !fecha || !hora ) {
+    const { motivo, ID_atraso} = req.body;
+    if (!motivo || !ID_atraso) {
       return handleErrorClient(res, 400, "Faltan datos necesarios");
     }
     
-    const atraso = await findAtraso(rut, fecha, hora);
+    const atraso = await findAtraso(rut, ID_atraso);
     
     if (!atraso) {
       return handleErrorClient(res, 404, 'Atraso no encontrado');
     }
       const documento = req.file ? `http://${HOST}:${PORT}/api/src/uploads/${req.file.filename}` : null;
-      const ID_atraso = atraso.ID_atraso;
       // Crear el justificativo
       const nuevoJustificativo = await createJustificativo({
           rut,
@@ -40,12 +28,9 @@ export async function generarJustificativo(req, res){
           documento,
           ID_atraso
       });
-      res.status(201).json({
-        justificativo: nuevoJustificativo
-      });
+      handleSuccess(res, 200, "Justificativo Creado", nuevoJustificativo);
   }catch (error){
-    console.error("Error:", error);
-    res.status(500).json({ message: "Error al procesar justificativo" });
+    handleErrorServer(res, 500, error.message);
   }
 }
 
@@ -56,8 +41,7 @@ export async function verArchivoJustificativo(req, res) {
 
     res.sendFile(file);
   } catch (error) {
-    console.error('Error al acceder al archivo:', error);
-    res.status(404).json({ message: 'Archivo no encontrado' });
+    handleErrorServer(res, 500, error.message);
   }
 }
 

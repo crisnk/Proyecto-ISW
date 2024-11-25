@@ -30,9 +30,12 @@ const ImparteSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
-    bloque: {
-      type: "varchar",
-      length: 15,
+    hora_Inicio: {
+      type: "time",
+      nullable: false,
+    },
+    hora_Fin: {
+      type: "time",
       nullable: false,
     },
     createdAt: {
