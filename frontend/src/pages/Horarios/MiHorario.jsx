@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import VerTablaHorario from "../../components/Horarios/VerTablaHorario";
+import VerTablaHorario from "../../hooks/Horarios/VerTablaHorario";
 import { getHorariosByAlumno } from "../../services/horario.service";
 import "@styles/Horarios/miHorario.css";
 

@@ -1,96 +1,77 @@
 import { useState, useEffect, useCallback } from "react";
-import { getHorarios, eliminarHorario } from "../../services/horario.service";
-import PaginatedTable from "../../components/Horarios/PaginatedTable";
-import Filters from "../../components/Horarios/Filters";
+import { getHorariosConId, eliminarHorario } from "../../services/horario.service";
+import EliminarTablaHorario from "../../hooks/Horarios/EliminarTablaHorario";
+import Filters from "../../hooks/Horarios/Filters";
 import "@styles/Horarios/verHorarios.css";
 
 const EliminarHorario = () => {
-  const [horarios, setHorarios] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+  const [horarios, setHorarios] = useState({});
   const [filters, setFilters] = useState({});
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const fetchHorarios = useCallback(async (appliedFilters, page = 1) => {
+  const fetchHorarios = useCallback(async (appliedFilters) => {
     setLoading(true);
     try {
-      const { data, totalPages } = await getHorariosConId({ ...appliedFilters, page, limit: 10 });
-
-      // Sort data for consistent order
-      const sortedData = data.sort((a, b) => {
-        if (a.bloque === b.bloque) {
-          return diasSemana.indexOf(a.dia) - diasSemana.indexOf(b.dia);
+      const { data } = await getHorariosConId({ ...appliedFilters, page: 1, limit: 50 });
+      const formattedHorario = {};
+      data.forEach((bloque) => {
+        if (!formattedHorario[bloque.dia]) {
+          formattedHorario[bloque.dia] = {};
         }
-        return horas.indexOf(a.bloque) - horas.indexOf(b.bloque);
+        formattedHorario[bloque.dia][bloque.bloque] = {
+          materia: bloque.nombre_materia || "Sin asignar",
+          profesor: bloque.nombre_profesor || "",
+        };
       });
-
-      setHorarios(sortedData);
-      setPagination({ page, totalPages });
+      setHorarios(formattedHorario);
       setError("");
     } catch (err) {
-      setError("No se pudieron cargar los horarios.", err);
+      console.error("Error al cargar horarios:", err);
+      setError("Error al cargar horarios.");
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    
     fetchHorarios(filters);
   }, [filters, fetchHorarios]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    setPagination({ page: 1, totalPages: pagination.totalPages }); 
   };
 
-  const handlePageChange = (newPage) => {
-    fetchHorarios(filters, newPage);
-  };
-
-  const handleEliminarHorario = async (id) => {
+  const handleEliminarHorario = async () => {
     try {
-      await eliminarHorario(id);
+      await eliminarHorario(filters);
       setSuccess("Horario eliminado correctamente.");
-      setError("");
-      fetchHorarios(filters, pagination.page);
+      setHorarios({}); 
+
+      setTimeout(() => setSuccess(""), 3000); 
     } catch (err) {
-      setError("No se pudo eliminar el horario.", err);
+      console.error("Error al eliminar horario:", err);
+      setError("No se pudo eliminar el horario.");
+
+      setTimeout(() => setError(""), 3000); 
     }
   };
 
-  const columns = [
-    { field: "bloque", title: "Bloque Horario" },
-    { field: "nombre_materia", title: "Materia" },
-    { field: "nombre_profesor", title: "Profesor" },
-    {
-      field: "acciones",
-      title: "Acciones",
-      render: (row) => (
-        <button className="btn-eliminar" onClick={() => handleEliminarHorario(row.id)}>
-          Eliminar
-        </button>
-      ),
-    },
-  ];
-
   return (
     <div className="eliminar-horarios-container">
-      <h1>Eliminar Horarios</h1>
+      <h1>Eliminar Horario</h1>
       <Filters onChange={handleFilterChange} />
       {loading ? (
-        <p>Cargando horarios...</p>
+        <p className="mensaje-cargando">Cargando horarios...</p>
       ) : (
-        <PaginatedTable
-          columns={columns}
-          data={horarios}
-          loading={loading}
-          pagination={pagination}
-          onPageChange={handlePageChange}
-        />
+        <>
+          <EliminarTablaHorario horario={horarios} onEliminarHorario={handleEliminarHorario} />
+          {success && <p className="mensaje-exito">{success}</p>}
+          {error && <p className="mensaje-error">{error}</p>}
+        </>
       )}
-      {error && <p className="mensaje-error">{error}</p>}
-      {success && <p className="mensaje-exito">{success}</p>}
     </div>
   );
 };

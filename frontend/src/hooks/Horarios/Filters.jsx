@@ -37,12 +37,16 @@ const Filters = ({ onChange }) => {
   const handleFilterChange = (e) => {
     const newValue = e.target.value;
     setSelectedValue(newValue);
-    onChange({ [filterType]: newValue });
+    onChange({ [filterType]: newValue || null });
   };
 
   return (
     <div style={{ marginBottom: "20px" }}>
-      <select onChange={(e) => setFilterType(e.target.value)} value={filterType} style={{ marginRight: "10px" }}>
+      <select
+        onChange={(e) => setFilterType(e.target.value)}
+        value={filterType}
+        style={{ marginRight: "10px" }}
+      >
         <option value="">Selecciona filtro</option>
         <option value="curso">Curso</option>
         <option value="profesor">Profesor</option>
