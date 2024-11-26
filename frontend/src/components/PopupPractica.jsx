@@ -31,7 +31,14 @@ export default function Popup({ show, setShow, data, action }) {
                     </button>
                     <Form
                         title="Editar práctica"
-                        fields={[
+                            fields={[
+                            {
+                                label: "",
+                                name: "ID_practica",
+                                defaultValue: practicaData.ID || "",
+                                fieldType: 'input',
+                                type: "hidden",
+                            },
                             {
                                 label: "Nombre de la práctica",
                                 name: "nombre",
@@ -74,6 +81,9 @@ export default function Popup({ show, setShow, data, action }) {
                                 required: true,
                                 min: 1,
                                 max: 100,
+                                },
+                            {
+                                
                             },
                             {
                                 label: "Fecha de publicación",

@@ -12,27 +12,33 @@ const useEditPractica = (setPracticas) => {
         }
     };
 
-    const handleUpdate = async (updatedPracticaData) => {
-        if (updatedPracticaData) {
-            try {
-                console.log(updatedPracticaData);
-                const updatedPractica = await updatePractica(updatedPracticaData);
-                showSuccessAlert('¡Actualizado!', 'La práctica ha sido actualizada correctamente.');
-                setIsPopupOpen(false);
-                
-                setPracticas(prevPracticas => prevPracticas.map(practica => {
-                    console.log("Práctica actual:", practica);
-                    if (practica.ID === updatedPractica.ID) {
-                        return updatedPractica;
-                    }
-                    return practica;
-                }));
+    async function handleUpdate(updatedPracticaData) {
+        if (!updatedPracticaData) return;
+        console.log(updatedPracticaData);
+        const formattedData = {
+            ID_practica: Number(updatedPracticaData.ID_practica),
+            nombre: updatedPracticaData.nombre,
+            descripcion: updatedPracticaData.descripcion,
+            cupo: Number(updatedPracticaData.cupo),
+            estado: updatedPracticaData.estado,
+        }
+        try {
+            const updatedPractica = await updatePractica(updatedPracticaData);
+            showSuccessAlert('¡Actualizado!', 'La práctica ha sido actualizada correctamente.');
+            setIsPopupOpen(false);
 
-                setDataPractica([]);
-            } catch (error) {
-                console.error('Error al actualizar la práctica:', error);
-                showErrorAlert('Cancelado', 'Ocurrió un error al actualizar la práctica.');
-            }
+            setPracticas(prevPracticas => prevPracticas.map(practica => {
+                console.log("Práctica actual:", practica);
+                if (practica.ID === updatedPractica.ID) {
+                    return updatedPractica;
+                }
+                return practica;
+            }));
+
+            setDataPractica([]);
+        } catch (error) {
+            console.error('Error al actualizar la práctica:', error);
+            showErrorAlert('Cancelado', 'Ocurrió un error al actualizar la práctica.');
         }
     };
 
