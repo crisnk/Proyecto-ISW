@@ -5,16 +5,15 @@ import {
   crearCursoService,
   crearMateriaService,
   eliminarCursoService,
-  eliminarHorarioService,
   eliminarMateriaService,
-  getAllHorarios,
   getCursos,
   getEmailByProfesorService,
   getEmailsByCursoService,
   getHorarioProfesor,
   getHorariosByAlumnoService,
-  getHorariosByCursoService,
-  getHorariosConId,
+  getHorarioCurso,
+  eliminarHorarioCursoService,
+  eliminarHorarioProfesorService,
   getMaterias,
   getProfesores,
   notifyCourse,
@@ -38,15 +37,6 @@ export const crearHorarioProfesor = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error("Error al asignar horario al profesor:", error.message);
-    res.status(400).json({ message: error.message });
-  }
-};
-
-export const eliminarHorario = async (req, res) => {
-  try {
-    const horarioEliminado = await eliminarHorarioService(req.params.id);
-    res.status(200).json({ message: "Horario eliminado correctamente", horario: horarioEliminado });
-  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
@@ -89,23 +79,12 @@ export const verHorarioProfesor = async (req, res) => {
 
 export const verHorarioCurso = async (req, res) => {
   try {
-    const result = await getHorariosByCursoService(req.params.ID_curso);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-export const verTodosHorarios = async (req, res) => {
-  
-  try {
-    const horarios = await getAllHorarios(req.query);
+    const horarios = await getHorarioCurso(req.query.ID_curso);
     res.status(200).json(horarios);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(404).json({ message: error.message });
   }
 };
-
 export const crearMateria = async (req, res) => {
   try {
     const nuevaMateria = await crearMateriaService(req.body);
@@ -191,11 +170,24 @@ export const getEmailsByCurso = async (req, res) => {
   }
 };
 
-export const verHorariosConId = async (req, res) => {
+
+export const eliminarHorarioCurso = async (req, res) => {
   try {
-    const horarios = await getHorariosConId(req.query);
-    res.status(200).json(horarios);
+    const { ID_horario } = req.params;
+    const resultado = await eliminarHorarioCursoService(ID_horario);
+    res.status(200).json(resultado);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const eliminarHorarioProfesor = async (req, res) => {
+  try {
+    const { rut } = req.params;
+    const { dia, bloque } = req.query;
+    const resultado = await eliminarHorarioProfesorService(rut, dia, bloque);
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

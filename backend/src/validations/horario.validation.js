@@ -107,12 +107,6 @@ export const horarioValidationProfesor = Joi.object({
     .required(),
 });
 
-export const paginationAndFilterValidation = Joi.object({
-  page: Joi.number().integer().min(1).optional(),
-  limit: Joi.number().integer().min(1).optional(),
-  curso: Joi.string().allow("").optional(),
-  profesor: Joi.string().allow("").optional(),
-});
 
 const BLOQUES_HORARIOS = {
   "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },

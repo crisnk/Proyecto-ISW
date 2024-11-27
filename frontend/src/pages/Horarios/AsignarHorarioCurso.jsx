@@ -10,7 +10,7 @@ import {
 import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
 import Spinner from "../../hooks/Horarios/Spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
-import "@styles/Horarios/AsignarHorarioCursos.css";
+import "@styles/Horarios/asignarHorarioCursos.css";
 
 
 const AsignarHorarioCurso = () => {

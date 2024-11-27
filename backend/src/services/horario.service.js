@@ -9,7 +9,6 @@ import { sendEmail } from "./email.service.js";
 import {
   cursoValidation,
   horarioValidationProfesor,
-  paginationAndFilterValidation,
   validarSincronizacionBloque,
   materiaValidation,
 } from "../validations/horario.validation.js";
@@ -43,6 +42,8 @@ export const asignaHorarioCursoService = async (horarioData) => {
   const materiaRepository = AppDataSource.getRepository(Materia);
   const repository = AppDataSource.getRepository(Imparte);
 
+  const nuevoIDHorario = Date.now();  
+
   for (const bloque of horario) {
     const { hora_Inicio, hora_Fin } = BLOQUES_HORARIOS[bloque.bloque] || {};
     if (!hora_Inicio || !hora_Fin) {
@@ -64,6 +65,7 @@ export const asignaHorarioCursoService = async (horarioData) => {
       horarioExistente.hora_Inicio = hora_Inicio;
       horarioExistente.hora_Fin = hora_Fin;
       horarioExistente.ID_materia = bloque.ID_materia;
+      horarioExistente.ID_horario = nuevoIDHorario;
       await repository.save(horarioExistente);
     } else {
       const nuevoHorario = repository.create({
@@ -73,6 +75,7 @@ export const asignaHorarioCursoService = async (horarioData) => {
         bloque: bloque.bloque,
         hora_Inicio,
         hora_Fin,
+        ID_horario: nuevoIDHorario
       });
 
       await repository.save(nuevoHorario);
@@ -81,6 +84,7 @@ export const asignaHorarioCursoService = async (horarioData) => {
 
   return { message: "Horario asignado correctamente para el curso." };
 };
+
 
 export const asignaHorarioProfesorService = async (horarioData) => {
   const { rut, horario } = horarioData;
@@ -133,22 +137,62 @@ export const asignaHorarioProfesorService = async (horarioData) => {
 
   return { message: "Horario asignado correctamente para el profesor." };
 };
-
-
-export const getHorariosByCursoService = async (ID_curso) => {
+export const getHorarioCurso = async (ID_curso) => {
   if (!ID_curso || isNaN(ID_curso)) {
     throw new Error("ID_curso debe ser un número válido.");
   }
 
   const repository = AppDataSource.getRepository(Imparte);
-
   const horarios = await repository.find({
     where: { ID_curso: Number(ID_curso) },
     relations: ["materia", "profesor"],
+    order: {
+      ID_horario: "ASC",
+      bloque: "ASC",
+    },
   });
 
   if (horarios.length === 0) {
     throw new Error("No se encontraron horarios para el curso proporcionado.");
+  }
+
+  return horarios.reduce((acc, horario) => {
+    const idHorario = horario.ID_horario;
+    if (!acc[idHorario]) {
+      acc[idHorario] = [];
+    }
+    acc[idHorario].push({
+      dia: horario.dia,
+      bloque: horario.bloque,
+      hora_Inicio: horario.hora_Inicio,
+      hora_Fin: horario.hora_Fin,
+      ID_materia: horario.ID_materia,
+      nombre_materia: horario.materia?.nombre || "Materia no disponible",
+      rut_profesor: horario.profesor?.rut || null,
+      nombre_profesor: horario.profesor?.nombre || "Sin profesor",
+    });
+    return acc;
+  }, {});
+};
+
+
+export const getHorarioProfesor = async (rut) => {
+  if (!rut) {
+    throw new Error("Debe proporcionar un RUT válido.");
+  }
+
+  const repository = AppDataSource.getRepository(Imparte);
+  const horarios = await repository.find({
+    where: { rut },
+    relations: ["materia", "curso", "profesor"],
+    order: {
+      dia: "ASC",
+      bloque: "ASC",
+    },
+  });
+
+  if (horarios.length === 0) {
+    throw new Error("No se encontraron horarios para el profesor proporcionado.");
   }
 
   return horarios.map((horario) => ({
@@ -158,77 +202,46 @@ export const getHorariosByCursoService = async (ID_curso) => {
     hora_Fin: horario.hora_Fin,
     ID_materia: horario.ID_materia,
     nombre_materia: horario.materia?.nombre || "Materia no disponible",
-    rut_profesor: horario.profesor?.rut || null,
-    nombre_profesor: horario.profesor?.nombre || "Sin profesor",
+    ID_curso: horario.curso?.ID_curso,
+    nombre_curso: horario.curso?.nombre || "Curso no disponible",
   }));
 };
 
-export const getAllHorarios = async (query) => {
-  const { error, value } = paginationAndFilterValidation.validate(query, { abortEarly: false });
-  if (error) {
-    throw new Error(error.details.map((err) => err.message).join(", "));
+
+
+export const eliminarHorarioCursoService = async (ID_horario) => {
+  if (!ID_horario || isNaN(ID_horario)) {
+    throw new Error("ID_horario debe ser un número válido.");
   }
 
-  const { profesor, curso, page = 1, limit = 10 } = value;
   const repository = AppDataSource.getRepository(Imparte);
+  const resultado = await repository.delete({ ID_horario: Number(ID_horario) });
 
-  const queryBuilder = repository
-    .createQueryBuilder("horario")
-    .leftJoinAndSelect("horario.materia", "materia")
-    .leftJoinAndSelect("horario.curso", "curso")
-    .leftJoinAndSelect("horario.profesor", "profesor")
-    .orderBy("horario.dia", "ASC")
-    .addOrderBy("horario.bloque", "ASC");
-
-  if (profesor) {
-    queryBuilder.andWhere("(profesor.rut = :profesor)", { profesor });
+  if (resultado.affected === 0) {
+    throw new Error("No se encontraron horarios para el ID_horario proporcionado.");
   }
 
-  if (curso) {
-    queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
-  }
-
-  const total = await queryBuilder.getCount();
-  const data = await queryBuilder
-    .skip((page - 1) * limit)
-    .take(limit)
-    .getMany();
-
-  return {
-    data,
-    total,
-    page: Number(page),
-    totalPages: Math.ceil(total / limit),
-  };
+  return { message: "Horario del curso eliminado correctamente." };
 };
 
+export const eliminarHorarioProfesorService = async (rut, dia, bloque) => {
+  if (!rut) {
+    throw new Error("Debe proporcionar un RUT válido.");
+  }
 
-export const eliminarHorarioService = async (filters) => {
   const repository = AppDataSource.getRepository(Imparte);
 
-  const whereClause = {};
-  if (filters.profesor) {
-    whereClause["profesor.rut"] = filters.profesor;
-  }
-  if (filters.curso) {
-    whereClause["curso.ID_curso"] = filters.curso;
-  }
+  const condiciones = { rut };
+  if (dia) condiciones.dia = dia;
+  if (bloque) condiciones.bloque = bloque;
 
-  const horarios = await repository.find({ where: whereClause });
+  const resultado = await repository.delete(condiciones);
 
-  if (horarios.length === 0) {
-    throw new Error("No se encontraron horarios para eliminar.");
+  if (resultado.affected === 0) {
+    throw new Error("No se encontraron bloques de horario para el profesor proporcionado.");
   }
 
-  await repository.remove(horarios);
-};
-
-export const getHorarioProfesor = async (rut) => {
-  const repository = AppDataSource.getRepository(Imparte);
-  return await repository.find({
-    where: { rut },
-    relations: ["materia", "curso", "profesor"],
-  });
+  return { message: "Bloque(s) del horario del profesor eliminado(s) correctamente." };
 };
 
 export const getCursos = async () => {
@@ -415,46 +428,4 @@ export const getEmailByProfesorService = async (rut) => {
   }
 
   return { email: profesor.email };
-};
-
-
-export const getHorariosConId = async (filters) => {
-  try {
-    const { page = 1, limit = 10, profesor, curso } = filters;
-    const repository = AppDataSource.getRepository(Imparte);
-
-    const queryBuilder = repository.createQueryBuilder("imparte")
-      .leftJoinAndSelect("imparte.curso", "curso")
-      .leftJoinAndSelect("imparte.profesor", "profesor")
-      .leftJoinAndSelect("imparte.materia", "materia");
-
-    if (profesor) {
-      queryBuilder.andWhere("profesor.rut = :profesor", { profesor });
-    }
-    if (curso) {
-      queryBuilder.andWhere("curso.ID_curso = :curso", { curso });
-    }
-
-    const [horarios, total] = await queryBuilder
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return {
-      data: horarios.map((horario) => ({
-        ID_imparte: horario.ID_imparte,
-        dia: horario.dia,
-        bloque: horario.bloque,
-        nombre_materia: horario.materia?.nombre || "Sin materia",
-        nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
-        curso: horario.curso?.nombre || "Sin curso",
-      })),
-      total,
-      page: parseInt(page, 10),
-      totalPages: Math.ceil(total / limit),
-    };
-  } catch (error) {
-    console.error("Error en getHorariosConId:", error);
-    throw error;
-  }
 };
