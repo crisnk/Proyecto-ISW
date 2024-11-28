@@ -24,24 +24,27 @@ const VerTablaHorarioCurso = ({
           {horas.map((hora) => (
             <tr key={hora} className={recreoHoras.includes(hora) ? "recreo-row" : ""}>
               <td className="hora-col">{hora}</td>
-              {diasSemana.map((dia) => (
-                <td key={`${dia}-${hora}`} className="contenido-col">
-                  {recreoHoras.includes(hora) ? (
-                    <span className="recreo-text">Recreo</span>
-                  ) : horario[dia]?.[hora]?.materia ? (
-                    <div className="contenido-bloque">
-                      <div className="materia">
-                        {horario[dia][hora].materia || "Sin asignar"}
+              {diasSemana.map((dia) => {
+                const bloque = horario[dia]?.[hora];
+                return (
+                  <td key={`${dia}-${hora}`} className="contenido-col">
+                    {recreoHoras.includes(hora) ? (
+                      <span className="recreo-text">Recreo</span>
+                    ) : bloque ? (
+                      <div className="contenido-bloque">
+                        <div className="materia">
+                          {bloque.materia || "Sin asignar"}
+                        </div>
+                        <div className="profesor">
+                          {bloque.profesor || "Sin profesor"}
+                        </div>
                       </div>
-                      <div className="profesor">
-                        {horario[dia][hora].profesor || "Sin profesor"}
-                      </div>
-                    </div>
-                  ) : (
-                    <span className="sin-asignar">Sin asignar</span>
-                  )}
-                </td>
-              ))}
+                    ) : (
+                      <span className="sin-asignar">Sin asignar</span>
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

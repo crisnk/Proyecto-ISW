@@ -138,8 +138,8 @@ export const eliminarCurso = async (req, res) => {
 
 export const eliminarHorarioCurso = async (req, res) => {
   try {
-    const { ID_horario } = req.params;
-    const resultado = await eliminarHorarioCursoService(ID_horario);
+    const { ID_curso, dia, bloque } = req.params;
+    const resultado = await eliminarHorarioCursoService(ID_curso, dia, bloque);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(500).json({ message: error.message });

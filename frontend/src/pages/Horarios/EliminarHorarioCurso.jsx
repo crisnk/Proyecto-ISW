@@ -2,18 +2,14 @@ import { useState, useEffect } from "react";
 import EliminarTablaHorario from "../../hooks/Horarios/EliminarTablaHorario";
 import {
   getCursos,
-  getProfesores,
   getHorariosCurso,
-  getHorarioProfesor,
   eliminarHorarioCurso,
-  eliminarHorarioProfesor,
 } from "../../services/horario.service";
 import "@styles/Horarios/eliminarHorario.css";
 
-const EliminarHorario = () => {
+const EliminarHorarioCurso = () => {
   const [selectedId, setSelectedId] = useState("");
-  const [filterType, setFilterType] = useState("curso");
-  const [options, setOptions] = useState([]);
+  const [cursos, setCursos] = useState([]);
   const [horario, setHorario] = useState({});
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -36,40 +32,30 @@ const EliminarHorario = () => {
   ];
 
   useEffect(() => {
-    const fetchOptions = async () => {
-      setLoading(true);
+    const fetchCursos = async () => {
       try {
-        if (filterType === "curso") {
-          const data = await getCursos();
-          setOptions(data.map((curso) => ({ value: curso.ID_curso, label: curso.nombre })));
-        } else if (filterType === "profesor") {
-          const data = await getProfesores();
-          setOptions(data.map((profesor) => ({ value: profesor.rut, label: profesor.nombreCompleto })));
-        }
+        setLoading(true);
+        const data = await getCursos();
+        setCursos(data.map((curso) => ({ value: curso.ID_curso, label: curso.nombre })));
         setError("");
       } catch {
-        setError("Error al cargar las opciones. Intente nuevamente.");
+        setError("Error al cargar los cursos. Intente nuevamente.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOptions();
-  }, [filterType]);
+    fetchCursos();
+  }, []);
 
   const fetchHorario = async () => {
     if (!selectedId) return;
 
     setLoading(true);
     try {
-      let data;
-      if (filterType === "curso") {
-        data = await getHorariosCurso(selectedId);
-      } else if (filterType === "profesor") {
-        data = await getHorarioProfesor(selectedId);
-      }
+      const data = await getHorariosCurso(selectedId);
 
-      const bloques = filterType === "curso" ? data[selectedId] || [] : data;
+      const bloques = data[selectedId] || [];
 
       if (!bloques || bloques.length === 0) {
         setNoData(true);
@@ -110,25 +96,16 @@ const EliminarHorario = () => {
 
   const handleEliminarHorario = async () => {
     if (!selectedId) {
-      setError("Debe seleccionar un elemento para eliminar el horario.");
+      setError("Debe seleccionar un curso para eliminar el horario.");
       return;
     }
 
-    const confirmMessage =
-      filterType === "curso"
-        ? "¿Está seguro de que desea eliminar el horario completo de este curso?"
-        : "¿Está seguro de que desea eliminar el horario completo de este profesor?";
-
-    if (!window.confirm(confirmMessage)) {
+    if (!window.confirm("¿Está seguro de que desea eliminar el horario completo de este curso?")) {
       return;
     }
 
     try {
-      if (filterType === "curso") {
-        await eliminarHorarioCurso(selectedId);
-      } else if (filterType === "profesor") {
-        await eliminarHorarioProfesor(selectedId);
-      }
+      await eliminarHorarioCurso(selectedId);
       setSuccess("Horario eliminado correctamente.");
       fetchHorario();
     } catch {
@@ -149,42 +126,25 @@ const EliminarHorario = () => {
 
   return (
     <div className="eliminar-horarios-container">
-      <h1>Eliminar Horarios</h1>
-      <div className="filter-container">
-        <label>
-          Seleccionar por:
-          <select
-            value={filterType}
-            onChange={(e) => {
-              setFilterType(e.target.value);
-              setSelectedId("");
-              setHorario({});
-              setNoData(false);
-            }}
-          >
-            <option value="curso">Curso</option>
-            <option value="profesor">Profesor</option>
-          </select>
-        </label>
-      </div>
+      <h1>Eliminar Horarios de Cursos</h1>
       <div className="options-container">
         <label>
-          {filterType === "curso" ? "Curso:" : "Profesor:"}
+          Curso:
           <select
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
           >
-            <option value="">Seleccione {filterType}</option>
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            <option value="">Seleccione un curso</option>
+            {cursos.map((curso) => (
+              <option key={curso.value} value={curso.value}>
+                {curso.label}
               </option>
             ))}
           </select>
         </label>
       </div>
       {loading && <p className="mensaje-cargando">Cargando horarios...</p>}
-      {noData && <p>No se encontraron horarios para la selección.</p>}
+      {noData && <p>No se encontraron horarios para el curso seleccionado.</p>}
       {error && <p className="mensaje-error">{error}</p>}
       {success && <p className="mensaje-exito">{success}</p>}
       {Object.keys(horario).length > 0 && !noData && (
@@ -194,4 +154,4 @@ const EliminarHorario = () => {
   );
 };
 
-export default EliminarHorario;
+export default EliminarHorarioCurso;

@@ -45,8 +45,6 @@ export const asignaHorarioCursoService = async (horarioData) => {
   const materiaRepository = AppDataSource.getRepository(Materia);
   const repository = AppDataSource.getRepository(Imparte);
 
-  const nuevoIDHorario = ID_curso;
-
   for (const bloque of horario) {
     const { hora_Inicio, hora_Fin } = BLOQUES_HORARIOS[bloque.bloque] || {};
     if (!hora_Inicio || !hora_Fin) {
@@ -57,7 +55,7 @@ export const asignaHorarioCursoService = async (horarioData) => {
     if (!materia) {
       throw new Error(`La materia con ID ${bloque.ID_materia} no existe.`);
     }
-  
+
     let horarioExistente = await repository.findOne({
       where: { ID_curso: ID_curso, dia: bloque.dia, bloque: bloque.bloque },
     });
@@ -66,7 +64,6 @@ export const asignaHorarioCursoService = async (horarioData) => {
       horarioExistente.hora_Inicio = hora_Inicio;
       horarioExistente.hora_Fin = hora_Fin;
       horarioExistente.ID_materia = bloque.ID_materia;
-      horarioExistente.ID_horario = nuevoIDHorario;
       await repository.save(horarioExistente);
     } else {
       const nuevoHorario = repository.create({
@@ -76,7 +73,6 @@ export const asignaHorarioCursoService = async (horarioData) => {
         bloque: bloque.bloque,
         hora_Inicio,
         hora_Fin,
-        ID_horario: nuevoIDHorario,
       });
 
       await repository.save(nuevoHorario);
@@ -109,17 +105,16 @@ export const asignaHorarioProfesorService = async (horarioData) => {
     }
 
     validarSincronizacionBloque(bloque.bloque, hora_Inicio, hora_Fin);
-    
+
     let horarioExistente = await repository.findOne({
       where: { ID_curso: bloque.ID_curso, dia: bloque.dia, bloque: bloque.bloque },
     });
 
     if (horarioExistente) {
- 
       horarioExistente.hora_Inicio = hora_Inicio;
       horarioExistente.hora_Fin = hora_Fin;
       horarioExistente.ID_materia = bloque.ID_materia;
-      horarioExistente.rut = rut; 
+      horarioExistente.rut = rut;
       await repository.save(horarioExistente);
     } else {
       const nuevoHorario = repository.create({
@@ -172,27 +167,25 @@ export const getHorarioCursoService = async (ID_curso) => {
   }
 
   const repository = AppDataSource.getRepository(Imparte);
- 
+
   const horarios = await repository.find({
     where: { ID_curso: Number(ID_curso) },
     relations: ["materia", "profesor"],
     order: {
-      ID_horario: "ASC",
       bloque: "ASC",
     },
   });
- 
+
   if (horarios.length === 0) {
     throw new Error("No se encontraron horarios para el curso proporcionado.");
   }
- 
+
   return horarios.reduce((acc, horario) => {
-    const idHorario = horario.ID_horario;
-    if (!acc[idHorario]) {
-      acc[idHorario] = [];
+    const dia = horario.dia;
+    if (!acc[dia]) {
+      acc[dia] = [];
     }
-    acc[idHorario].push({
-      dia: horario.dia,
+    acc[dia].push({
       bloque: horario.bloque,
       hora_Inicio: horario.hora_Inicio,
       hora_Fin: horario.hora_Fin,
@@ -204,6 +197,7 @@ export const getHorarioCursoService = async (ID_curso) => {
     return acc;
   }, {});
 };
+
 
 export const getHorarioProfesorService = async (rut) => {
   if (!rut) {
@@ -336,16 +330,26 @@ export const eliminarCursoService = async (ID_curso) => {
   return curso;
 };
 
-export const eliminarHorarioCursoService = async (ID_horario) => {
-  if (!ID_horario || isNaN(ID_horario)) {
-    throw new Error("ID_horario debe ser un número válido.");
+export const eliminarHorarioCursoService = async (ID_curso, dia, bloque) => {
+  if (!ID_curso || isNaN(ID_curso)) {
+    throw new Error("ID_curso debe ser un número válido.");
+  }
+  if (!dia || typeof dia !== "string") {
+    throw new Error("Debe proporcionar un día válido.");
+  }
+  if (!bloque || typeof bloque !== "string") {
+    throw new Error("Debe proporcionar un bloque válido.");
   }
 
   const repository = AppDataSource.getRepository(Imparte);
-  const resultado = await repository.delete({ ID_horario: Number(ID_horario) });
+  const resultado = await repository.delete({
+    ID_curso: Number(ID_curso),
+    dia: dia.trim(),
+    bloque: bloque.trim(),
+  });
 
   if (resultado.affected === 0) {
-    throw new Error("No se encontraron horarios para el ID_horario proporcionado.");
+    throw new Error("No se encontró un horario con los criterios proporcionados.");
   }
 
   return { message: "Horario del curso eliminado correctamente." };

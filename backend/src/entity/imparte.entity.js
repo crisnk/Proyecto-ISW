@@ -10,10 +10,6 @@ const ImparteSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    ID_horario: {  
-      type: "int",
-      nullable: true,
-    },
     ID_materia: {
       type: "int",
       nullable: false,

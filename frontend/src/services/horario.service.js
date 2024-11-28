@@ -85,9 +85,9 @@ export const saveHorarioCurso = async (payload) => {
   return response.data;
 };
 
-export const eliminarHorarioCurso = async (ID_horario) => {
+export const eliminarHorarioCurso = async (ID_curso, dia, bloque) => {
   try {
-    const response = await axios.delete(`/horarios/eliminar/curso/${ID_horario}`);
+    const response = await axios.delete(`/horarios/eliminar/curso/${ID_curso}/${dia}/${bloque}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Error al eliminar el horario del curso.");

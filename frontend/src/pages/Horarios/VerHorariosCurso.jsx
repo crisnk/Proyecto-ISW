@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import VerTablaHorarioCurso from "@hooks/Horarios/VerTablaHorarioCurso";
-import { getCursos, getHorariosCurso } from "@services/horario.service";
+import { getCursos, getHorariosCurso, getProfesores } from "@services/horario.service";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -11,7 +11,7 @@ const VerHorarioCurso = () => {
   const [horario, setHorario] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [noData, setNoData] = useState(false); 
+  const [noData, setNoData] = useState(false);
 
   const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
   const horas = [
@@ -21,36 +21,30 @@ const VerHorarioCurso = () => {
     "16:10 - 16:55", "17:00 - 17:45",
   ];
 
-  useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        setLoading(true);
-        const data = await getCursos();
-        setCursos(data);
-        setError("");
-      } catch (err) {
-        setError("Error al cargar los cursos. Por favor, intente más tarde.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCursos();
-  }, []);
+  const fetchProfesores = async () => {
+    try {
+      const data = await getProfesores();
+      return data.reduce((map, profesor) => {
+        map[profesor.rut] = profesor.nombreCompleto;
+        return map;
+      }, {});
+    } catch {
+      console.error("Error al cargar los profesores.");
+      return {};
+    }
+  };
 
   const fetchHorario = async () => {
     if (!curso) return;
+
     try {
       setLoading(true);
-      setNoData(false); 
-      const data = await getHorariosCurso(curso);
+      setNoData(false);
 
-      const bloques = data[curso] || [];
-
-      if (bloques.length === 0) {
-        setNoData(true); 
-        setHorario({});
-        return;
-      }
+      const [data, profesoresMap] = await Promise.all([
+        getHorariosCurso(curso),
+        fetchProfesores(),
+      ]);
 
       const formattedHorario = {};
       diasSemana.forEach((dia) => {
@@ -63,23 +57,54 @@ const VerHorarioCurso = () => {
         });
       });
 
-      bloques.forEach((bloque) => {
-        if (formattedHorario[bloque.dia]) {
-          formattedHorario[bloque.dia][bloque.bloque] = {
-            materia: bloque.nombre_materia || "Sin asignar",
-            profesor: bloque.nombre_profesor || "Sin profesor",
-          };
-        }
-      });
+      if (data) {
+        Object.entries(data).forEach(([dia, bloques]) => {
+          bloques.forEach((bloque) => {
+            if (formattedHorario[dia]?.[bloque.bloque]) {
+              formattedHorario[dia][bloque.bloque] = {
+                materia: bloque.nombre_materia || "Sin asignar",
+                profesor: profesoresMap[bloque.rut_profesor] || bloque.nombre_profesor || "Sin profesor",
+              };
+            }
+          });
+        });
+      }
+
+      if (
+        Object.values(formattedHorario).every((dia) =>
+          Object.values(dia).every((bloque) => bloque.materia === "Sin asignar")
+        )
+      ) {
+        setNoData(true);
+        setHorario({});
+        return;
+      }
 
       setHorario(formattedHorario);
       setError("");
-    } catch (err) {
-      setError("Error al cargar el horario del curso. Por favor, intente más tarde.");
+    } catch {
+      setError("No hay horarios asignados para el curso");
+      setHorario({});
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchCursos = async () => {
+      try {
+        setLoading(true);
+        const data = await getCursos();
+        setCursos(data);
+        setError("");
+      } catch {
+        setError("No hay horarios asignados para el curso");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCursos();
+  }, []);
 
   useEffect(() => {
     if (curso) {
@@ -124,7 +149,14 @@ const VerHorarioCurso = () => {
   return (
     <div>
       <h1>Horario del Curso {cursoNombre && `- ${cursoNombre}`}</h1>
-      <select value={curso} onChange={(e) => setCurso(e.target.value)}>
+      <select
+        value={curso}
+        onChange={(e) => {
+          setCurso(e.target.value);
+          setError("");
+          setNoData(false);
+        }}
+      >
         <option value="">Seleccione un curso</option>
         {cursos.map((c) => (
           <option key={c.ID_curso} value={c.ID_curso}>
@@ -137,16 +169,7 @@ const VerHorarioCurso = () => {
       {noData && <p>No hay horario disponible para el curso seleccionado.</p>}
       {curso && !loading && Object.keys(horario).length > 0 && !noData && (
         <>
-          <VerTablaHorarioCurso
-            horario={horario} 
-            diasSemana={diasSemana} 
-            horas={horas} 
-            displayFormat={{
-              showProfesor: true,
-              showMateriaOnly: true, 
-              omitCurso: true 
-            }}
-          />
+          <VerTablaHorarioCurso horario={horario} diasSemana={diasSemana} horas={horas} />
           <div className="export-buttons">
             <button onClick={handleExportToPNG}>Exportar como PNG</button>
             <button onClick={handleExportToPDF}>Exportar como PDF</button>

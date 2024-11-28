@@ -26,7 +26,7 @@ const VerHorarioProfesor = () => {
         const data = await getProfesores();
         setProfesores(data);
         setError("");
-      } catch (err) {
+      } catch {
         setError("Error al cargar los profesores.");
       } finally {
         setLoading(false);
@@ -36,11 +36,15 @@ const VerHorarioProfesor = () => {
   }, []);
 
   const fetchHorario = async () => {
-    if (!profesor) return;
+    if (!profesor) {
+      setHorario({});
+      return;
+    }
+
     try {
       setLoading(true);
       const data = await getHorarioProfesor(profesor);
-      
+
       const formattedHorario = {};
       diasSemana.forEach((dia) => {
         formattedHorario[dia] = {};
@@ -52,26 +56,29 @@ const VerHorarioProfesor = () => {
         });
       });
 
-      data.forEach((bloque) => {
-        if (formattedHorario[bloque.dia]) {
-          formattedHorario[bloque.dia][bloque.bloque] = {
-            materia: bloque.nombre_materia || "Sin asignar",
-            curso: bloque.nombre_curso || "Sin curso",
-          };
-        }
-      });
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach((bloque) => {
+          if (formattedHorario[bloque.dia]?.[bloque.bloque]) {
+            formattedHorario[bloque.dia][bloque.bloque] = {
+              materia: bloque.nombre_materia || "Sin asignar",
+              curso: bloque.nombre_curso || "Sin curso",
+            };
+          }
+        });
+      }
 
       setHorario(formattedHorario);
       setError("");
-    } catch (err) {
-      setError("Error al cargar el horario del profesor.");
+    } catch {
+      setHorario({});
+      setError("");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (profesor) fetchHorario();
+    fetchHorario();
   }, [profesor]);
 
   const handleExportToPNG = async () => {
@@ -84,7 +91,7 @@ const VerHorarioProfesor = () => {
       link.download = `Horario_Profesor_${profesor}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-    } catch (err) {
+    } catch {
       setError("Error al exportar el horario como PNG.");
     }
   };
@@ -101,7 +108,7 @@ const VerHorarioProfesor = () => {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Horario_Profesor_${profesor}.pdf`);
-    } catch (err) {
+    } catch {
       setError("Error al exportar el horario como PDF.");
     }
   };
@@ -109,7 +116,13 @@ const VerHorarioProfesor = () => {
   return (
     <div>
       <h1>Horario del Profesor</h1>
-      <select value={profesor} onChange={(e) => setProfesor(e.target.value)}>
+      <select
+        value={profesor}
+        onChange={(e) => {
+          setProfesor(e.target.value);
+          setError("");
+        }}
+      >
         <option value="">Seleccione un profesor</option>
         {profesores.map((p) => (
           <option key={p.rut} value={p.rut}>

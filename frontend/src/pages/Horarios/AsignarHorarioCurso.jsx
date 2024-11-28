@@ -39,75 +39,80 @@ const AsignarHorarioCurso = () => {
   }, []);
 
   const fetchHorarioCurso = useCallback(async () => {
-    if (!curso) return;
-  
+    if (!curso) {
+      setHorario(initializeHorario());
+      setSuccess("");
+      setError("");
+      return;
+    }
+
     setLoading(true);
     try {
-      
-      const response = await getHorariosCurso(curso); 
-      const existingHorario = response[curso]; 
+      const response = await getHorariosCurso(curso);
       const formattedHorario = initializeHorario();
-  
-      if (existingHorario && existingHorario.length > 0) {
-        existingHorario.forEach((item) => {
-          const { dia, bloque, ID_materia, nombre_materia } = item;
-          if (formattedHorario[dia]?.[bloque]) {
-            formattedHorario[dia][bloque] = {
-              materia: ID_materia.toString(),
-              nombre_materia: nombre_materia || "Sin asignar",
-            };
-          }
+
+      if (response && typeof response === "object" && Object.keys(response).length > 0) {
+        Object.entries(response).forEach(([dia, bloques]) => {
+          bloques.forEach(({ bloque, ID_materia, nombre_materia }) => {
+            if (formattedHorario[dia]?.[bloque]) {
+              formattedHorario[dia][bloque] = {
+                materia: ID_materia?.toString() || "Sin asignar",
+                nombre_materia: nombre_materia || "Sin asignar",
+              };
+            }
+          });
         });
       }
-  
+
       setHorario(formattedHorario);
       setError("");
     } catch (err) {
-      console.error("Error al cargar el horario del curso:", err);
-      setError("Error al cargar el horario del curso.");
-      setHorario(initializeHorario()); 
+      setHorario(initializeHorario());
+      setError("");
     } finally {
       setLoading(false);
     }
   }, [curso, initializeHorario]);
-  
-  
+
+  const fetchMaterias = useCallback(async () => {
+    try {
+      const materiasData = await getMaterias();
+      setMaterias(materiasData);
+    } catch {
+      setError("Error al cargar materias.");
+    }
+  }, []);
+
+  const fetchCursos = useCallback(async () => {
+    try {
+      const cursosData = await getCursos();
+      setCursos(cursosData);
+    } catch {
+      setError("Error al cargar cursos.");
+    }
+  }, []);
 
   useEffect(() => {
     fetchHorarioCurso();
   }, [curso, fetchHorarioCurso]);
 
   useEffect(() => {
-    const fetchMaterias = async () => {
-      try {
-        const materiasData = await getMaterias();
-        setMaterias(materiasData);
-      } catch {
-        setError("Error al cargar materias.");
-      }
-    };
     fetchMaterias();
-  }, []);
+  }, [fetchMaterias]);
 
   useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const cursosData = await getCursos();
-        setCursos(cursosData);
-      } catch {
-        setError("Error al cargar cursos.");
-      }
-    };
     fetchCursos();
-  }, []);
+  }, [fetchCursos]);
 
   const handleGuardarHorario = async () => {
     if (!curso) {
       setError("Debes seleccionar un curso antes de guardar.");
+      setSuccess("");
       return;
     }
 
     setSaving(true);
+    setSuccess("");
     try {
       const payload = {
         ID_curso: parseInt(curso, 10),
@@ -160,6 +165,12 @@ const AsignarHorarioCurso = () => {
   };
 
   const handleSendNotification = async () => {
+    if (!curso) {
+      setNotificationError("Debes seleccionar un curso antes de enviar una notificación.");
+      setNotificationSuccess("");
+      return;
+    }
+
     setNotificationLoading(true);
     try {
       const { emails } = await getEmailsCurso(curso);
@@ -186,7 +197,14 @@ const AsignarHorarioCurso = () => {
       <h2>Asignar Horario a Cursos</h2>
       <div>
         <label>Curso:</label>
-        <select value={curso} onChange={(e) => setCurso(e.target.value)}>
+        <select
+          value={curso}
+          onChange={(e) => {
+            setCurso(e.target.value);
+            setSuccess("");
+            setError("");
+          }}
+        >
           <option value="">Selecciona curso</option>
           {cursos.map((c) => (
             <option key={c.ID_curso} value={c.ID_curso}>

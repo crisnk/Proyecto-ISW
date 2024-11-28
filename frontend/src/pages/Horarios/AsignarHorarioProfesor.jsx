@@ -9,7 +9,7 @@ import {
   getEmailProfesor,
 } from "../../services/horario.service";
 import EditarTablaHorarioProfesor from "../../hooks/Horarios/EditarTablaHorarioProfesor";
-import Spinner from "../../hooks/Horarios/Spinner"; 
+import Spinner from "../../hooks/Horarios/Spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
 
 const AsignarHorarioProfesor = () => {
@@ -24,7 +24,7 @@ const AsignarHorarioProfesor = () => {
   const [notificationSuccess, setNotificationSuccess] = useState("");
   const [notificationError, setNotificationError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [notificationLoading, setNotificationLoading] = useState(false); 
+  const [notificationLoading, setNotificationLoading] = useState(false);
 
   const initializeHorario = useCallback(() => {
     const newHorario = {};
@@ -40,23 +40,31 @@ const AsignarHorarioProfesor = () => {
   }, []);
 
   const fetchHorarioProfesor = useCallback(async () => {
-    if (!profesor) return;
+    if (!profesor) {
+      setHorario(initializeHorario());
+      setSuccess("");
+      setError("");
+      return;
+    }
     setLoading(true);
     try {
       const existingHorario = await getHorarioProfesor(profesor);
       const formattedHorario = initializeHorario();
-      existingHorario.forEach((item) => {
-        if (formattedHorario[item.dia]?.[item.bloque]) {
-          formattedHorario[item.dia][item.bloque] = {
-            materia: item.ID_materia.toString() || "Sin asignar",
-            curso: item.ID_curso.toString() || "Sin asignar",
-          };
-        }
-      });
+      if (existingHorario && Array.isArray(existingHorario)) {
+        existingHorario.forEach((item) => {
+          if (formattedHorario[item.dia]?.[item.bloque]) {
+            formattedHorario[item.dia][item.bloque] = {
+              materia: item.ID_materia?.toString() || "Sin asignar",
+              curso: item.ID_curso?.toString() || "Sin asignar",
+            };
+          }
+        });
+      }
       setHorario(formattedHorario);
       setError("");
-    } catch (error) {
-      setError("Error al cargar el horario.");
+    } catch {
+      setHorario(initializeHorario());
+      setError("");
     } finally {
       setLoading(false);
     }
@@ -102,25 +110,35 @@ const AsignarHorarioProfesor = () => {
   const handleGuardarHorario = async () => {
     if (!profesor) {
       setError("Debes seleccionar un profesor antes de guardar.");
+      setSuccess("");
       return;
     }
     setSaving(true);
+    setSuccess("");
     try {
       const cambios = diasSemana.flatMap((dia) =>
-        horas.map((hora) => {
-          const materia = horario[dia]?.[hora]?.materia;
-          const curso = horario[dia]?.[hora]?.curso;
-          if (materia && curso && materia !== "Sin asignar" && curso !== "Recreo" && curso !== "Sin asignar") {
-            return {
-              ID_materia: parseInt(materia, 10),
-              ID_curso: parseInt(curso, 10),
-              rut: profesor,
-              dia,
-              bloque: hora,
-            };
-          }
-          return null;
-        }).filter(Boolean)
+        horas
+          .map((hora) => {
+            const materia = horario[dia]?.[hora]?.materia;
+            const curso = horario[dia]?.[hora]?.curso;
+            if (
+              materia &&
+              curso &&
+              materia !== "Sin asignar" &&
+              curso !== "Recreo" &&
+              curso !== "Sin asignar"
+            ) {
+              return {
+                ID_materia: parseInt(materia, 10),
+                ID_curso: parseInt(curso, 10),
+                rut: profesor,
+                dia,
+                bloque: hora,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean)
       );
 
       if (cambios.length === 0) {
@@ -130,6 +148,7 @@ const AsignarHorarioProfesor = () => {
 
       await saveHorarioProfesor({ rut: profesor, horario: cambios });
       setSuccess("Horario guardado correctamente.");
+      setError("");
     } catch {
       setError("Error al guardar el horario.");
     } finally {
@@ -138,13 +157,13 @@ const AsignarHorarioProfesor = () => {
   };
 
   const handleEnviarNotificacion = async () => {
+    if (!profesor) {
+      setNotificationError("Debe seleccionar un profesor antes de enviar la notificación.");
+      setNotificationSuccess("");
+      return;
+    }
+    setNotificationLoading(true);
     try {
-      setNotificationLoading(true);
-      if (!profesor) {
-        setNotificationError("Debe seleccionar un profesor antes de enviar la notificación.");
-        return;
-      }
-
       const { email } = await getEmailProfesor(profesor);
       if (!email) {
         setNotificationError("No se encontró el email del profesor.");
@@ -152,11 +171,13 @@ const AsignarHorarioProfesor = () => {
       }
 
       const bloquesAsignados = Object.entries(horario).flatMap(([dia, bloques]) =>
-        Object.entries(bloques).filter(([, detalle]) => detalle.materia !== "Sin asignar").map(([bloque, detalle]) => ({
-          dia,
-          bloque,
-          materia: detalle.materia,
-        }))
+        Object.entries(bloques)
+          .filter(([, detalle]) => detalle.materia !== "Sin asignar")
+          .map(([bloque, detalle]) => ({
+            dia,
+            bloque,
+            materia: detalle.materia,
+          }))
       );
 
       if (bloquesAsignados.length === 0) {
@@ -197,7 +218,14 @@ const AsignarHorarioProfesor = () => {
       <h2>Asignar Horario a Profesores</h2>
       <div>
         <label>Profesor:</label>
-        <select value={profesor} onChange={(e) => setProfesor(e.target.value)}>
+        <select
+          value={profesor}
+          onChange={(e) => {
+            setProfesor(e.target.value);
+            setSuccess("");
+            setError("");
+          }}
+        >
           <option value="">Selecciona profesor</option>
           {profesores.map((p) => (
             <option key={p.rut} value={p.rut}>
