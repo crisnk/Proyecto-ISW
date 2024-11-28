@@ -69,10 +69,10 @@ export const verProfesores = async (req, res) => {
 };
 export const verHorarioCurso = async (req, res) => {
   try {
-    const horarios = await getHorarioCursoService (req.query.ID_curso);
+    const horarios = await getHorarioCursoService(req.params.ID_curso);
     res.status(200).json(horarios);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 

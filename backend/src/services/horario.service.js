@@ -13,6 +13,7 @@ import {
   materiaValidation,
 } from "../validations/horario.validation.js";
 
+
 const BLOQUES_HORARIOS = {
   "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },
   "08:50 - 09:35": { hora_Inicio: "08:50", hora_Fin: "09:35" },
@@ -42,7 +43,7 @@ export const asignaHorarioCursoService = async (horarioData) => {
   const materiaRepository = AppDataSource.getRepository(Materia);
   const repository = AppDataSource.getRepository(Imparte);
 
-  const nuevoIDHorario = Date.now();  
+  const nuevoIDHorario = ID_curso;
 
   for (const bloque of horario) {
     const { hora_Inicio, hora_Fin } = BLOQUES_HORARIOS[bloque.bloque] || {};
@@ -50,13 +51,11 @@ export const asignaHorarioCursoService = async (horarioData) => {
       throw new Error(`El bloque ${bloque.bloque} no tiene horas asignadas.`);
     }
 
-    validarSincronizacionBloque(bloque.bloque, hora_Inicio, hora_Fin);
-
     const materia = await materiaRepository.findOneBy({ ID_materia: bloque.ID_materia });
     if (!materia) {
       throw new Error(`La materia con ID ${bloque.ID_materia} no existe.`);
     }
-
+  
     let horarioExistente = await repository.findOne({
       where: { ID_curso: ID_curso, dia: bloque.dia, bloque: bloque.bloque },
     });
@@ -75,16 +74,15 @@ export const asignaHorarioCursoService = async (horarioData) => {
         bloque: bloque.bloque,
         hora_Inicio,
         hora_Fin,
-        ID_horario: nuevoIDHorario
+        ID_horario: nuevoIDHorario,
       });
 
       await repository.save(nuevoHorario);
     }
   }
 
-  return { message: "Horario asignado correctamente para el curso." };
+  return { message: "Horario asignado o editado correctamente para el curso." };
 };
-
 
 export const asignaHorarioProfesorService = async (horarioData) => {
   const { rut, horario } = horarioData;
@@ -109,16 +107,17 @@ export const asignaHorarioProfesorService = async (horarioData) => {
     }
 
     validarSincronizacionBloque(bloque.bloque, hora_Inicio, hora_Fin);
-
+    
     let horarioExistente = await repository.findOne({
-      where: { rut, dia: bloque.dia, bloque: bloque.bloque },
+      where: { ID_curso: bloque.ID_curso, dia: bloque.dia, bloque: bloque.bloque },
     });
 
     if (horarioExistente) {
+ 
       horarioExistente.hora_Inicio = hora_Inicio;
       horarioExistente.hora_Fin = hora_Fin;
       horarioExistente.ID_materia = bloque.ID_materia;
-      horarioExistente.ID_curso = bloque.ID_curso;
+      horarioExistente.rut = rut; 
       await repository.save(horarioExistente);
     } else {
       const nuevoHorario = repository.create({
@@ -165,13 +164,13 @@ export const getProfesoresService = async () => {
   return profesores;
 };
 
-
 export const getHorarioCursoService = async (ID_curso) => {
-  if (!ID_curso || isNaN(ID_curso)) {
+  if (!ID_curso || isNaN(Number(ID_curso))) {
     throw new Error("ID_curso debe ser un número válido.");
   }
 
   const repository = AppDataSource.getRepository(Imparte);
+ 
   const horarios = await repository.find({
     where: { ID_curso: Number(ID_curso) },
     relations: ["materia", "profesor"],
@@ -180,11 +179,11 @@ export const getHorarioCursoService = async (ID_curso) => {
       bloque: "ASC",
     },
   });
-
+ 
   if (horarios.length === 0) {
     throw new Error("No se encontraron horarios para el curso proporcionado.");
   }
-
+ 
   return horarios.reduce((acc, horario) => {
     const idHorario = horario.ID_horario;
     if (!acc[idHorario]) {
@@ -203,7 +202,6 @@ export const getHorarioCursoService = async (ID_curso) => {
     return acc;
   }, {});
 };
-
 
 export const getHorarioProfesorService = async (rut) => {
   if (!rut) {

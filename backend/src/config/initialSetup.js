@@ -496,8 +496,7 @@ export async function crearImparticiones() {
       { ID_horario: 1, ID_curso: 1, ID_materia: 6, rut: "7.890.123-4", dia: "lunes", bloque: "14:30 - 15:15", hora_Inicio: "14:30", hora_Fin: "15:15" },
       { ID_horario: 1, ID_curso: 1, ID_materia: 7, rut: "6.789.012-3", dia: "lunes", bloque: "15:20 - 16:05", hora_Inicio: "15:20", hora_Fin: "16:05" },
       { ID_horario: 1, ID_curso: 1, ID_materia: 8, rut: "5.678.901-2", dia: "lunes", bloque: "16:10 - 16:55", hora_Inicio: "16:10", hora_Fin: "16:55" },
-      { ID_horario: 1, ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" },
-      { ID_horario: 1, ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "19:00 - 23:45", hora_Inicio: "19:00", hora_Fin: "23:45" }
+      { ID_horario: 1, ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" }
     ];
 
     await imparteRepository.save(imparticiones);
