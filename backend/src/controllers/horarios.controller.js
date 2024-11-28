@@ -186,7 +186,7 @@ try {
 };
 export const verEmailsCurso = async (req, res) => {
 try {
-  const result = await getEmailsCursosServicee(req.params.ID_curso);
+  const result = await getEmailsCursosService(req.params.ID_curso);
   res.status(200).json(result);
 } catch (error) {
   console.error("Error al obtener los correos del curso:", error.message);
