@@ -4,20 +4,20 @@ import {
   crearHorarioCurso,
   crearHorarioProfesor,
   crearMateria,
+  verEmailProfesor, 
+  verEmailsCurso ,
+  verMaterias,
+  verProfesores,
+  verCursos,
+  verHorarioAlumno,
+  verHorarioCurso,
+  verHorarioProfesor,
+  NotificationCurso,
+  NotificationProfesor ,
+  eliminarHorarioCurso,
   eliminarCurso,
   eliminarHorarioProfesor,
   eliminarMateria, 
-  getEmailByProfesor, 
-  getEmailsByCurso ,
-  sendNotificationToCourse,
-  sendNotificationToProfessor,
-  verCursos,
-  verHorarioByAlumno,
-  verHorarioCurso,
-  verHorarioProfesor,
-  eliminarHorarioCurso,
-  verMaterias,
-  verProfesores,
 } from "../controllers/horarios.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import isAuthorized from "../middlewares/authorization.middleware.js";
@@ -29,11 +29,11 @@ router.get("/cursosregister", verCursos);
 
 
 router.use(authenticateJwt);
-router.get("/profesor/email/:rut", isAuthorized("jefeUTP", "administrador"), getEmailByProfesor);
-router.get("/curso/emails/:ID_curso", isAuthorized("jefeUTP", "administrador"), getEmailsByCurso);
-router.post("/notificacion/profesor",isAuthorized("jefeUTP", "administrador"),sendNotificationToProfessor);
-router.post("/notificacion/curso",isAuthorized("jefeUTP", "administrador"),sendNotificationToCourse);
-router.get("/alumno", isAuthorized("alumno"), verHorarioByAlumno);
+router.get("/profesor/email/:rut", isAuthorized("jefeUTP", "administrador"), verEmailProfesor);
+router.get("/curso/emails/:ID_curso", isAuthorized("jefeUTP", "administrador"), verEmailsCurso);
+router.post("/notificacion/profesor",isAuthorized("jefeUTP", "administrador"), NotificationProfesor);
+router.post("/notificacion/curso",isAuthorized("jefeUTP", "administrador"), NotificationCurso);
+router.get("/alumno", isAuthorized("alumno"), verHorarioAlumno);
 router.post("/asignar/curso", isAuthorized("jefeUTP", "administrador"), crearHorarioCurso);
 router.post("/asignar/profesor", isAuthorized("jefeUTP", "administrador"), crearHorarioProfesor);
 router.get("/cursos", isAuthorized("jefeUTP", "administrador", "profesor"), verCursos);

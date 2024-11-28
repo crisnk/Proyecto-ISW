@@ -137,7 +137,36 @@ export const asignaHorarioProfesorService = async (horarioData) => {
 
   return { message: "Horario asignado correctamente para el profesor." };
 };
-export const getHorarioCurso = async (ID_curso) => {
+
+export const getMateriasService = async () => {
+  const repository = AppDataSource.getRepository(Materia);
+  const materias = await repository.find();
+  if (!materias.length) {
+    throw new Error("No se encontraron materias.");
+  }
+  return materias;
+};
+
+export const getCursosService = async () => {
+  const repository = AppDataSource.getRepository(Curso);
+  const cursos = await repository.find();
+  if (!cursos.length) {
+    throw new Error("No se encontraron cursos en la base de datos.");
+  }
+  return cursos;
+};
+
+export const getProfesoresService = async () => {
+  const repository = AppDataSource.getRepository(User);
+  const profesores = await repository.find({ where: { rol: "profesor" } });
+  if (!profesores.length) {
+    throw new Error("No se encontraron profesores.");
+  }
+  return profesores;
+};
+
+
+export const getHorarioCursoService = async (ID_curso) => {
   if (!ID_curso || isNaN(ID_curso)) {
     throw new Error("ID_curso debe ser un número válido.");
   }
@@ -176,7 +205,7 @@ export const getHorarioCurso = async (ID_curso) => {
 };
 
 
-export const getHorarioProfesor = async (rut) => {
+export const getHorarioProfesorService = async (rut) => {
   if (!rut) {
     throw new Error("Debe proporcionar un RUT válido.");
   }
@@ -207,68 +236,40 @@ export const getHorarioProfesor = async (rut) => {
   }));
 };
 
-
-
-export const eliminarHorarioCursoService = async (ID_horario) => {
-  if (!ID_horario || isNaN(ID_horario)) {
-    throw new Error("ID_horario debe ser un número válido.");
-  }
-
-  const repository = AppDataSource.getRepository(Imparte);
-  const resultado = await repository.delete({ ID_horario: Number(ID_horario) });
-
-  if (resultado.affected === 0) {
-    throw new Error("No se encontraron horarios para el ID_horario proporcionado.");
-  }
-
-  return { message: "Horario del curso eliminado correctamente." };
-};
-
-export const eliminarHorarioProfesorService = async (rut, dia, bloque) => {
+export const getHorarioAlumnoService = async (rut) => {
   if (!rut) {
-    throw new Error("Debe proporcionar un RUT válido.");
+    throw new Error("El RUT del alumno es requerido.");
   }
 
-  const repository = AppDataSource.getRepository(Imparte);
+  const perteneceRepository = AppDataSource.getRepository(Pertenece);
+  const imparteRepository = AppDataSource.getRepository(Imparte);
 
-  const condiciones = { rut };
-  if (dia) condiciones.dia = dia;
-  if (bloque) condiciones.bloque = bloque;
+  const pertenece = await perteneceRepository.findOne({
+    where: { rut },
+    relations: ["curso"],
+  });
 
-  const resultado = await repository.delete(condiciones);
-
-  if (resultado.affected === 0) {
-    throw new Error("No se encontraron bloques de horario para el profesor proporcionado.");
+  if (!pertenece) {
+    throw new Error("El alumno no pertenece a ningún curso.");
   }
 
-  return { message: "Bloque(s) del horario del profesor eliminado(s) correctamente." };
-};
+  const cursoID = pertenece.curso.ID_curso;
 
-export const getCursos = async () => {
-  const repository = AppDataSource.getRepository(Curso);
-  const cursos = await repository.find();
-  if (!cursos.length) {
-    throw new Error("No se encontraron cursos en la base de datos.");
-  }
-  return cursos;
-};
+  const horarios = await imparteRepository.find({
+    where: { ID_curso: cursoID },
+    relations: ["materia", "profesor"],
+  });
 
-export const getMaterias = async () => {
-  const repository = AppDataSource.getRepository(Materia);
-  const materias = await repository.find();
-  if (!materias.length) {
-    throw new Error("No se encontraron materias.");
+  if (horarios.length === 0) {
+    throw new Error("No se encontraron horarios para este curso.");
   }
-  return materias;
-};
 
-export const getProfesores = async () => {
-  const repository = AppDataSource.getRepository(User);
-  const profesores = await repository.find({ where: { rol: "profesor" } });
-  if (!profesores.length) {
-    throw new Error("No se encontraron profesores.");
-  }
-  return profesores;
+  return horarios.map((horario) => ({
+    dia: horario.dia,
+    bloque: horario.bloque,
+    nombre_materia: horario.materia?.nombre || "Sin asignar",
+    nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
+  }));
 };
 
 export const crearMateriaService = async (materiaData) => {
@@ -335,43 +336,43 @@ export const eliminarCursoService = async (ID_curso) => {
   return curso;
 };
 
-export const getHorariosByAlumnoService = async (rut) => {
-  if (!rut) {
-    throw new Error("El RUT del alumno es requerido.");
+export const eliminarHorarioCursoService = async (ID_horario) => {
+  if (!ID_horario || isNaN(ID_horario)) {
+    throw new Error("ID_horario debe ser un número válido.");
   }
 
-  const perteneceRepository = AppDataSource.getRepository(Pertenece);
-  const imparteRepository = AppDataSource.getRepository(Imparte);
+  const repository = AppDataSource.getRepository(Imparte);
+  const resultado = await repository.delete({ ID_horario: Number(ID_horario) });
 
-  const pertenece = await perteneceRepository.findOne({
-    where: { rut },
-    relations: ["curso"],
-  });
-
-  if (!pertenece) {
-    throw new Error("El alumno no pertenece a ningún curso.");
+  if (resultado.affected === 0) {
+    throw new Error("No se encontraron horarios para el ID_horario proporcionado.");
   }
 
-  const cursoID = pertenece.curso.ID_curso;
-
-  const horarios = await imparteRepository.find({
-    where: { ID_curso: cursoID },
-    relations: ["materia", "profesor"],
-  });
-
-  if (horarios.length === 0) {
-    throw new Error("No se encontraron horarios para este curso.");
-  }
-
-  return horarios.map((horario) => ({
-    dia: horario.dia,
-    bloque: horario.bloque,
-    nombre_materia: horario.materia?.nombre || "Sin asignar",
-    nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
-  }));
+  return { message: "Horario del curso eliminado correctamente." };
 };
 
-export const notifyProfessor = async (profesorEmail, horarioDetails) => {
+
+export const eliminarHorarioProfesorService = async (rut, dia, bloque) => {
+  if (!rut) {
+    throw new Error("Debe proporcionar un RUT válido.");
+  }
+
+  const repository = AppDataSource.getRepository(Imparte);
+
+  const condiciones = { rut };
+  if (dia) condiciones.dia = dia;
+  if (bloque) condiciones.bloque = bloque;
+
+  const resultado = await repository.delete(condiciones);
+
+  if (resultado.affected === 0) {
+    throw new Error("No se encontraron bloques de horario para el profesor proporcionado.");
+  }
+
+  return { message: "Bloque(s) del horario del profesor eliminado(s) correctamente." };
+};
+
+export const notificacionProfesorService = async (profesorEmail, horarioDetails) => {
     const subject = "Nuevo Horario Asignado";
     const message = `Se ha asignado un nuevo horario a usted. Los detalles son los siguientes:\n\n${horarioDetails}`;
 
@@ -383,7 +384,7 @@ export const notifyProfessor = async (profesorEmail, horarioDetails) => {
     );
 };
 
-export const notifyCourse = async (courseEmails, horarioDetails) => {
+export const notificacionCursoService = async (courseEmails, horarioDetails) => {
     const subject = "Nuevo Horario de Curso";
     const message = `Se ha asignado un nuevo horario al curso. Los detalles son:\n\n${horarioDetails}`;
 
@@ -398,7 +399,7 @@ export const notifyCourse = async (courseEmails, horarioDetails) => {
     return true;
 };
 
-export const getEmailsByCursoService = async (ID_curso) => {
+export const getEmailsCursosService = async (ID_curso) => {
   const perteneceRepository = AppDataSource.getRepository(Pertenece);
   
   const estudiantes = await perteneceRepository.find({
@@ -415,7 +416,7 @@ export const getEmailsByCursoService = async (ID_curso) => {
   return { emails };
 }; 
 
-export const getEmailByProfesorService = async (rut) => {
+export const getEmailProfesorService = async (rut) => {
   const profesorRepository = AppDataSource.getRepository(User);
 
   const profesor = await profesorRepository.findOne({
