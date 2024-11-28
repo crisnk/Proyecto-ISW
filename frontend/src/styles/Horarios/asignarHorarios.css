@@ -1,10 +1,9 @@
 .asignar-horarios {
-  padding: 25px;
-  margin: 40px auto;
+  padding: auto;
+  margin: auto;
   background-color: #ffffff; 
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
-  max-width: 900px;
   transition: margin-left 0.3s ease-in-out;
 }
 

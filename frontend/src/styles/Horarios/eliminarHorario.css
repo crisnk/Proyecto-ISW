@@ -1,11 +1,28 @@
-.btn-eliminar {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
+.tabla-horarios .empty-cell {
+  background-color: #f9f9f9;
+  color: #b0b0b0;
+  text-align: center;
+  font-style: italic;
 }
 
-.btn-eliminar:hover {
-  background-color: #d9363e;
+.mensaje-sin-horario {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ff4d4f;
+  margin-top: 20px;
+}
+
+.btn-eliminar-horario {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-eliminar-horario:hover {
+  background-color: #c82333;
 }

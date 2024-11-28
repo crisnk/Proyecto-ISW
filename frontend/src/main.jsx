@@ -14,7 +14,9 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorariosLayout from '@pages/Horarios/AsignarHorariosLayout';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor'; 
 import AsignarHorarioCurso from '@pages/Horarios/AsignarHorarioCurso';
-import VerHorarios from '@pages/Horarios/VerHorarios';
+import VerHorariosLayout from '@pages/Horarios/VerHorariosLayout';
+import VerHorariosProfesor from '@pages/Horarios/VerHorariosProfesor';
+import VerHorariosCurso from '@pages/Horarios/VerHorariosCurso';
 import EliminarHorario from '@pages/Horarios/EliminarHorario';
 import MiHorario from '@pages/Horarios/MiHorario';
 import Materias from '@pages/Horarios/Materias';
@@ -37,36 +39,53 @@ const router = createBrowserRouter([
             <Users />
           </ProtectedRoute>
         ),
-        },
-      {
-        path: '/practica',
-        element: <Practica />
       },
       {
-        path:'/atrasos',
+        path: '/practica',
+        element: <Practica />,
+      },
+      {
+        path: '/atrasos',
         element: (
           <ProtectedRoute allowedRoles={['alumno']}>
             <AtrasosAlumno />
           </ProtectedRoute>
-        )
+        ),
       },
       {
-        path:'/atrasosProfesor',
+        path: '/atrasosProfesor',
         element: (
           <ProtectedRoute allowedRoles={['profesor', 'alumno']}>
             <AtrasosProfesor />
           </ProtectedRoute>
-        )
+        ),
       },
       {
-        path: '/horarios',
+        path: '/atraso/registrar',
         element: (
-          <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor']}>
-            <VerHorarios />
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <RegistrarAtraso />
           </ProtectedRoute>
         ),
       },
-      
+      {
+        path: '/horarios/ver',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador', 'jefeUTP', 'profesor']}>
+            <VerHorariosLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            path: 'profesor',
+            element: <VerHorariosProfesor />,
+          },
+          {
+            path: 'curso',
+            element: <VerHorariosCurso />,
+          },
+        ],
+      },
       {
         path: '/horarios/ver/alumno',
         element: (
@@ -75,7 +94,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      
       {
         path: '/horarios/asignar',
         element: (
@@ -103,14 +121,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/atraso/registrar',
-        element: ( 
-        <ProtectedRoute allowedRoles={['alumno']}>
-          < RegistrarAtraso/> 
-        </ProtectedRoute>
-        ),
-      },
-      {
         path: '/horarios/materias',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
@@ -126,10 +136,10 @@ const router = createBrowserRouter([
   },
   {
     path: '/register',
-    element: <Register/>
+    element: <Register />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router}/>
-)
+  <RouterProvider router={router} />
+);

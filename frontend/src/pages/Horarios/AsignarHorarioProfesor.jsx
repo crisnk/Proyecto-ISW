@@ -5,8 +5,8 @@ import {
   getCursos,
   getHorarioProfesor,
   saveHorarioProfesor,
-  notifyProfessor,
-  getEmailByProfesor,
+  notificacionProfesor,
+  getEmailProfesor,
 } from "../../services/horario.service";
 import EditarTablaHorarioProfesor from "../../hooks/Horarios/EditarTablaHorarioProfesor";
 import Spinner from "../../hooks/Horarios/Spinner"; 
@@ -48,15 +48,15 @@ const AsignarHorarioProfesor = () => {
       existingHorario.forEach((item) => {
         if (formattedHorario[item.dia]?.[item.bloque]) {
           formattedHorario[item.dia][item.bloque] = {
-            materia: item.materia?.ID_materia.toString() || "Sin asignar",
-            curso: item.curso?.ID_curso.toString() || "Sin asignar",
+            materia: item.ID_materia.toString() || "Sin asignar",
+            curso: item.ID_curso.toString() || "Sin asignar",
           };
         }
       });
       setHorario(formattedHorario);
       setError("");
     } catch (error) {
-      setError("Error al cargar el horario.", error);
+      setError("Error al cargar el horario.");
     } finally {
       setLoading(false);
     }
@@ -113,8 +113,8 @@ const AsignarHorarioProfesor = () => {
           if (materia && curso && materia !== "Sin asignar" && curso !== "Recreo" && curso !== "Sin asignar") {
             return {
               ID_materia: parseInt(materia, 10),
-              ID_curso: curso !== "SIN_PROFESOR" ? parseInt(curso, 10) : null,
-              rut: profesor || "SIN_PROFESOR",
+              ID_curso: parseInt(curso, 10),
+              rut: profesor,
               dia,
               bloque: hora,
             };
@@ -128,7 +128,7 @@ const AsignarHorarioProfesor = () => {
         return;
       }
 
-      await saveHorarioProfesor({ rut: profesor || "SIN_PROFESOR", horario: cambios });
+      await saveHorarioProfesor({ rut: profesor, horario: cambios });
       setSuccess("Horario guardado correctamente.");
     } catch {
       setError("Error al guardar el horario.");
@@ -145,7 +145,7 @@ const AsignarHorarioProfesor = () => {
         return;
       }
 
-      const { email } = await getEmailByProfesor(profesor);
+      const { email } = await getEmailProfesor(profesor);
       if (!email) {
         setNotificationError("No se encontró el email del profesor.");
         return;
@@ -168,12 +168,12 @@ const AsignarHorarioProfesor = () => {
         .map((detalle) => `${detalle.dia} ${detalle.bloque}: ${detalle.materia}`)
         .join("\n");
 
-      await notifyProfessor(email, horarioDetails);
+      await notificacionProfesor(email, horarioDetails);
       setNotificationSuccess("Notificación enviada correctamente.");
       setNotificationError("");
-    } catch (error) {
-      console.error("Error al enviar la notificación:", error);
+    } catch {
       setNotificationError("Error al enviar la notificación.");
+      setNotificationSuccess("");
     } finally {
       setNotificationLoading(false);
     }

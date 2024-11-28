@@ -3,14 +3,16 @@ import { useState, useEffect } from "react";
 import { getCursos, getProfesores } from "../../services/horario.service";
 
 const Filters = ({ onChange }) => {
-  const [filterType, setFilterType] = useState("");
-  const [options, setOptions] = useState([]);
-  const [selectedValue, setSelectedValue] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [filterType, setFilterType] = useState(""); 
+  const [options, setOptions] = useState([]); 
+  const [selectedValue, setSelectedValue] = useState(""); 
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(""); 
 
   useEffect(() => {
     const fetchOptions = async () => {
       setLoading(true);
+      setError("");
       try {
         if (filterType === "curso") {
           const cursos = await getCursos();
@@ -21,8 +23,9 @@ const Filters = ({ onChange }) => {
         } else {
           setOptions([]);
         }
-      } catch (error) {
-        console.error("Error al cargar opciones:", error);
+      } catch (err) {
+        setError("Error al cargar opciones. Intente nuevamente.");
+        console.error("Error al cargar opciones:", err);
       } finally {
         setLoading(false);
       }
@@ -30,7 +33,7 @@ const Filters = ({ onChange }) => {
 
     if (filterType) {
       fetchOptions();
-      setSelectedValue("");
+      setSelectedValue(""); 
     }
   }, [filterType]);
 
@@ -42,6 +45,7 @@ const Filters = ({ onChange }) => {
 
   return (
     <div style={{ marginBottom: "20px" }}>
+      <label style={{ marginRight: "10px", fontWeight: "bold" }}>Filtrar por:</label>
       <select
         onChange={(e) => setFilterType(e.target.value)}
         value={filterType}
@@ -52,7 +56,7 @@ const Filters = ({ onChange }) => {
         <option value="profesor">Profesor</option>
       </select>
 
-      {filterType && !loading && (
+      {filterType && !loading && options.length > 0 && (
         <select onChange={handleFilterChange} value={selectedValue}>
           <option value="">Selecciona {filterType}</option>
           {options.map((option) => (
@@ -62,7 +66,15 @@ const Filters = ({ onChange }) => {
           ))}
         </select>
       )}
+
+      {filterType && !loading && options.length === 0 && (
+        <p style={{ color: "red", fontWeight: "bold" }}>
+          No se encontraron opciones para {filterType}.
+        </p>
+      )}
+
       {loading && <p>Cargando opciones...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };

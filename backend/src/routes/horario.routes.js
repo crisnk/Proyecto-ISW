@@ -17,7 +17,8 @@ import {
   eliminarHorarioCurso,
   eliminarCurso,
   eliminarHorarioProfesor,
-  eliminarMateria, 
+  eliminarMateria,
+  exportarHorario  
 } from "../controllers/horarios.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import isAuthorized from "../middlewares/authorization.middleware.js";
@@ -35,6 +36,7 @@ router.post("/materias/crear", isAuthorized("jefeUTP", "administrador"), crearMa
 router.post("/cursos/crear", isAuthorized("jefeUTP", "administrador"), crearCurso);
 router.post("/asignar/curso", isAuthorized("jefeUTP", "administrador"), crearHorarioCurso);
 router.post("/asignar/profesor", isAuthorized("jefeUTP", "administrador"), crearHorarioProfesor);
+router.get("/exportar/:type/:identifier", isAuthorized("jefeUTP", "administrador", "profesor", "alumno"), exportarHorario);
 router.get("/profesor/email/:rut", isAuthorized("jefeUTP", "administrador"), verEmailProfesor);
 router.get("/curso/emails/:ID_curso", isAuthorized("jefeUTP", "administrador"), verEmailsCurso);
 router.get("/alumno", isAuthorized("alumno"), verHorarioAlumno);

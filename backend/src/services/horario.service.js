@@ -5,6 +5,8 @@ import Imparte from "../entity/imparte.entity.js";
 import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
 import Pertenece from "../entity/pertenece.entity.js";
+import PDFDocument from 'pdfkit';
+import fs from 'fs';
 import { sendEmail } from "./email.service.js";
 import {
   cursoValidation,
@@ -427,4 +429,63 @@ export const getEmailProfesorService = async (rut) => {
   }
 
   return { email: profesor.email };
+};
+
+export const exportarHorarioService = async (type, identifier, user) => {
+  const { rol, rut } = user;
+  let horarios;
+  
+  if (rol === 'alumno') {
+    if (type !== 'alumno' || identifier !== rut) {
+      throw new Error('No tiene permisos para exportar este horario.');
+    }
+    horarios = await getHorarioProfesor(identifier); 
+  } else if (rol === 'profesor') {
+    if (type === 'profesor' && identifier !== rut) {
+      throw new Error('No tiene permisos para exportar el horario de otro profesor.');
+    }
+    horarios = type === 'curso' ? await getHorarioCursoService(identifier) : await getHorarioProfesor(identifier);
+  } else if (rol === 'jefeUTP' || rol === 'administrador') {
+    horarios = type === 'curso' ? await getHorarioCursoService(identifier) : await getHorarioProfesor(identifier);
+  } else {
+    throw new Error('Rol no autorizado para exportar horarios.');
+  }
+ 
+  if (!horarios || Object.keys(horarios).length === 0) {
+    throw new Error('No se encontraron horarios para exportar.');
+  }
+  
+  const doc = new PDFDocument();
+  const fileName = `horario_${type}_${identifier}.pdf`;
+  const writeStream = fs.createWriteStream(fileName);
+  doc.pipe(writeStream);
+
+  doc.fontSize(20).text(`Horario ${type === 'curso' ? `del curso ${identifier}` : `del profesor con RUT ${identifier}`}`, { align: 'center' });
+  doc.moveDown();
+
+  Object.keys(horarios).forEach((idHorario) => {
+    horarios[idHorario].forEach((horario) => {
+      doc.fontSize(14).text(`Día: ${horario.dia}`);
+      doc.text(`Bloque: ${horario.bloque}`);
+      doc.text(`Hora de Inicio: ${horario.hora_Inicio}`);
+      doc.text(`Hora de Fin: ${horario.hora_Fin}`);
+      doc.text(`Materia: ${horario.nombre_materia}`);
+      if (type === 'profesor') {
+        doc.text(`Curso: ${horario.nombre_curso}`);
+      }
+      doc.moveDown();
+    });
+    doc.addPage();
+  });
+
+  doc.end();
+
+  return new Promise((resolve, reject) => {
+    writeStream.on('finish', () => {
+      resolve(fileName);
+    });
+    writeStream.on('error', (error) => {
+      reject(new Error(`Error al generar el PDF: ${error.message}`));
+    });
+  });
 };

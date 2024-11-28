@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "@styles/Sidebar.css";
+import "@styles/sidebar.css";
 
 const Sidebar = ({ isVisible, toggleSidebar }) => {
   const user = JSON.parse(sessionStorage.getItem("usuario")) || {};
@@ -11,7 +11,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
 
   useEffect(() => {
     if (!isVisible) {
-      setIsHorariosOpen(false); 
+      setIsHorariosOpen(false);
       setIsAtrasosOpen(false);
     }
   }, [isVisible]);
@@ -30,22 +30,23 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         return (
           <>
             <li>
-              <NavLink to="/horarios/Asignar/" onClick={closeSidebar}>
-                Asignar <span className="hover-text">horario</span>
+              <NavLink to="/horarios/asignar" onClick={closeSidebar}>
+                Asignar Horario
               </NavLink>
             </li>
             <li>
-                <NavLink to="/horarios/materias/">Gestión</NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/horarios" onClick={closeSidebar}>
-                Ver <span className="hover-text">horario</span>
+              <NavLink to="/horarios/materias" onClick={closeSidebar}>
+                Gestión de Materias
               </NavLink>
             </li>
             <li>
-              <NavLink to="/horarios/eliminar" className="delete-link" onClick={closeSidebar}>
-                Eliminar <span className="hover-text">horario</span>
+              <NavLink to="/horarios/ver" onClick={closeSidebar}>
+                Ver Horarios
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/horarios/eliminar" onClick={closeSidebar}>
+                Eliminar Horario
               </NavLink>
             </li>
           </>
@@ -53,8 +54,8 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
       case "profesor":
         return (
           <li>
-            <NavLink to="/horarios" onClick={closeSidebar}>
-              Ver todos <span className="hover-text">horarios</span>
+            <NavLink to="/horarios/ver/profesor" onClick={closeSidebar}>
+              Ver Horarios
             </NavLink>
           </li>
         );
@@ -62,7 +63,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         return (
           <li>
             <NavLink to="/horarios/ver/alumno" onClick={closeSidebar}>
-              Mi Horario <span className="hover-text">horarios</span>
+              Mi Horario
             </NavLink>
           </li>
         );
@@ -70,6 +71,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         return null;
     }
   };
+
   const renderAtrasosOptions = () => {
     if (!isAtrasosOpen) return null;
     switch (userRole) {
@@ -92,7 +94,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         return (
           <li>
             <NavLink to="/atrasosProfesor" onClick={closeSidebar}>
-              Ver Atrasos Alumnos
+              Ver Atrasos de Alumnos
             </NavLink>
           </li>
         );

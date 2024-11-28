@@ -17,7 +17,8 @@ import {
   eliminarCursoService,
   eliminarMateriaService,
   eliminarHorarioCursoService,
-  eliminarHorarioProfesorService
+  eliminarHorarioProfesorService,
+  exportarHorarioService 
 } from "../services/horario.service.js";
 import { handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
@@ -192,4 +193,14 @@ try {
   console.error("Error al obtener los correos del curso:", error.message);
   res.status(400).json({ message: error.message });
 }
+};
+
+export const exportarHorario = async (req, res) => {
+  try {
+    const { type, identifier } = req.params;
+    const filePath = await exportarHorarioService(type, identifier, req.user);
+    res.download(filePath);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };

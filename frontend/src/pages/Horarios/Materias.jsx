@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import {
   getMaterias,
   getCursos,
-  crearMateriaService,
-  crearCursoService,
-  eliminarMateriaService,
-  eliminarCursoService,
+  crearMateria,
+  crearCurso,
+  eliminarMateria,
+  eliminarCurso,
 } from "../../services/horario.service";
 import "@styles/Horarios/materias.css";
 
@@ -27,6 +27,7 @@ const Materias = () => {
       const cursosData = await getCursos();
       setMaterias(materiasData);
       setCursos(cursosData);
+      setError("");
     } catch (err) {
       setError("Error al cargar datos.");
     }
@@ -42,8 +43,11 @@ const Materias = () => {
       setMaterias([...materias, response]);
       setNewMateria("");
       setSuccess("Materia creada correctamente.");
+      setError("");
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       setError("Error al crear materia.");
+      setSuccess("");
     }
   };
 
@@ -57,60 +61,81 @@ const Materias = () => {
       setCursos([...cursos, response]);
       setNewCurso({ nombre: "", aula: "" });
       setSuccess("Curso creado correctamente.");
+      setError("");
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       setError("Error al crear curso.");
+      setSuccess("");
     }
   };
 
   const handleDeleteMateria = async (ID_materia) => {
     try {
-      await eliminarMateriaService(ID_materia);
+      await eliminarMateria(ID_materia);
       setMaterias(materias.filter((materia) => materia.ID_materia !== ID_materia));
       setSuccess("Materia eliminada correctamente.");
+      setError("");
+      setTimeout(() => setSuccess(""), 3000);
     } catch {
       setError("Error al eliminar materia.");
+      setSuccess("");
     }
   };
 
   const handleDeleteCurso = async (ID_curso) => {
     try {
-      await eliminarCursoService(ID_curso);
+      await eliminarCurso(ID_curso);
       setCursos(cursos.filter((curso) => curso.ID_curso !== ID_curso));
       setSuccess("Curso eliminado correctamente.");
+      setError("");
+      setTimeout(() => setSuccess(""), 3000);
     } catch {
       setError("Error al eliminar curso.");
+      setSuccess("");
     }
   };
 
   return (
     <div className="materias-container">
       <h2>Gestión de Materias y Cursos</h2>
+      
       <div className="form-section">
         <h3>Crear Materia</h3>
         <input
           type="text"
           placeholder="Nombre de la materia"
           value={newMateria}
-          onChange={(e) => setNewMateria(e.target.value)}
+          onChange={(e) => {
+            setNewMateria(e.target.value);
+            setError("");
+          }}
         />
         <button onClick={handleCreateMateria}>Crear</button>
       </div>
+      
       <div className="form-section">
         <h3>Crear Curso</h3>
         <input
           type="text"
           placeholder="Nombre del curso"
           value={newCurso.nombre}
-          onChange={(e) => setNewCurso({ ...newCurso, nombre: e.target.value })}
+          onChange={(e) => {
+            setNewCurso({ ...newCurso, nombre: e.target.value });
+            setError("");
+          }}
         />
         <input
           type="text"
           placeholder="Aula"
           value={newCurso.aula}
-          onChange={(e) => setNewCurso({ ...newCurso, aula: e.target.value })}
+          onChange={(e) => {
+            setNewCurso({ ...newCurso, aula: e.target.value });
+            setError("");
+          }}
         />
         <button onClick={handleCreateCurso}>Crear</button>
       </div>
+
       <div className="list-section">
         <h3>Materias Existentes</h3>
         <ul>
@@ -122,6 +147,7 @@ const Materias = () => {
           ))}
         </ul>
       </div>
+
       <div className="list-section">
         <h3>Cursos Existentes</h3>
         <ul>
@@ -133,6 +159,7 @@ const Materias = () => {
           ))}
         </ul>
       </div>
+
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
     </div>

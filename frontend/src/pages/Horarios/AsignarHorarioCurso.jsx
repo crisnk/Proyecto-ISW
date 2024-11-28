@@ -2,16 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getCursos,
   getMaterias,
-  getHorariosByCurso,
+  getHorariosCurso,
   saveHorarioCurso,
-  notifyCourse,
-  getEmailsByCourse,
+  notificacionCurso,
+  getEmailsCurso,
 } from "../../services/horario.service";
 import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
 import Spinner from "../../hooks/Horarios/Spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
 import "@styles/Horarios/asignarHorarioCursos.css";
-
 
 const AsignarHorarioCurso = () => {
   const [curso, setCurso] = useState("");
@@ -41,35 +40,38 @@ const AsignarHorarioCurso = () => {
 
   const fetchHorarioCurso = useCallback(async () => {
     if (!curso) return;
-
+  
     setLoading(true);
     try {
-      const existingHorario = await getHorariosByCurso(curso);
+      
+      const response = await getHorariosCurso(curso); 
+      const existingHorario = response[curso]; 
       const formattedHorario = initializeHorario();
-
-      if (existingHorario.length === 0) {
-        setHorario(formattedHorario);
-        return;
+  
+      if (existingHorario && existingHorario.length > 0) {
+        existingHorario.forEach((item) => {
+          const { dia, bloque, ID_materia, nombre_materia } = item;
+          if (formattedHorario[dia]?.[bloque]) {
+            formattedHorario[dia][bloque] = {
+              materia: ID_materia.toString(),
+              nombre_materia: nombre_materia || "Sin asignar",
+            };
+          }
+        });
       }
-
-      existingHorario.forEach((item) => {
-        if (formattedHorario[item.dia]?.[item.bloque]) {
-          formattedHorario[item.dia][item.bloque] = {
-            materia: item.ID_materia.toString(),
-            nombre_materia: item.nombre_materia,
-          };
-        }
-      });
-
+  
       setHorario(formattedHorario);
       setError("");
     } catch (err) {
-      setError("Error al cargar el horario del curso.", err);
-      setHorario(initializeHorario());
+      console.error("Error al cargar el horario del curso:", err);
+      setError("Error al cargar el horario del curso.");
+      setHorario(initializeHorario()); 
     } finally {
       setLoading(false);
     }
   }, [curso, initializeHorario]);
+  
+  
 
   useEffect(() => {
     fetchHorarioCurso();
@@ -160,7 +162,7 @@ const AsignarHorarioCurso = () => {
   const handleSendNotification = async () => {
     setNotificationLoading(true);
     try {
-      const { emails } = await getEmailsByCourse(curso);
+      const { emails } = await getEmailsCurso(curso);
 
       if (!emails || emails.length === 0) {
         setNotificationError("No hay correos electrónicos asociados a este curso.");
@@ -168,7 +170,7 @@ const AsignarHorarioCurso = () => {
       }
 
       const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
-      await notifyCourse(emails, horarioDetails);
+      await notificacionCurso(emails, horarioDetails);
       setNotificationSuccess("Notificación enviada correctamente.");
       setNotificationError("");
     } catch {
