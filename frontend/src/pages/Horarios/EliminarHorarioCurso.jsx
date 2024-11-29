@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import EliminarTablaHorario from "../../hooks/Horarios/EliminarTablaHorario";
+import EliminarTablaHorarioCurso from "../../hooks/Horarios/EliminarTablaHorarioCurso";
 import {
   getCursos,
   getHorariosCurso,
@@ -47,42 +47,37 @@ const EliminarHorarioCurso = () => {
 
     fetchCursos();
   }, []);
-
   const fetchHorario = async () => {
     if (!selectedId) return;
-
+  
     setLoading(true);
     try {
       const data = await getHorariosCurso(selectedId);
-
-      const bloques = data[selectedId] || [];
-
-      if (!bloques || bloques.length === 0) {
+      if (!data || Object.keys(data).length === 0) {
         setNoData(true);
         setHorario({});
         return;
       }
-
+  
       const formattedHorario = {};
       diasSemana.forEach((dia) => {
         formattedHorario[dia] = {};
         horas.forEach((hora) => {
-          formattedHorario[dia][hora] = {
-            materia: "Sin asignar",
-            profesor: "",
-          };
+          formattedHorario[dia][hora] = { materia: "Sin asignar", profesor: "" };
         });
       });
-
-      bloques.forEach((bloque) => {
-        if (formattedHorario[bloque.dia]) {
-          formattedHorario[bloque.dia][bloque.bloque] = {
-            materia: bloque.nombre_materia || "Sin asignar",
-            profesor: bloque.nombre_profesor || "",
-          };
-        }
+  
+      Object.entries(data).forEach(([dia, bloques]) => {
+        bloques.forEach((bloque) => {
+          if (formattedHorario[dia]) {
+            formattedHorario[dia][bloque.bloque] = {
+              materia: bloque.nombre_materia || "Sin asignar",
+              profesor: bloque.nombre_profesor || "Sin profesor",
+            };
+          }
+        });
       });
-
+  
       setHorario(formattedHorario);
       setError("");
       setNoData(false);
@@ -93,6 +88,7 @@ const EliminarHorarioCurso = () => {
       setLoading(false);
     }
   };
+  
 
   const handleEliminarHorario = async () => {
     if (!selectedId) {
@@ -144,11 +140,11 @@ const EliminarHorarioCurso = () => {
         </label>
       </div>
       {loading && <p className="mensaje-cargando">Cargando horarios...</p>}
-      {noData && <p>No se encontraron horarios para el curso seleccionado.</p>}
+      {noData && <p className="mensaje-sin-datos">No se encontraron horarios para el curso seleccionado.</p>}
       {error && <p className="mensaje-error">{error}</p>}
       {success && <p className="mensaje-exito">{success}</p>}
       {Object.keys(horario).length > 0 && !noData && (
-        <EliminarTablaHorario horario={horario} onEliminarHorario={handleEliminarHorario} />
+        <EliminarTablaHorarioCurso horario={horario} onEliminarHorario={handleEliminarHorario} />
       )}
     </div>
   );

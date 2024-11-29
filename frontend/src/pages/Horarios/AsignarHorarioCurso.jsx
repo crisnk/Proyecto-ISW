@@ -8,9 +8,9 @@ import {
   getEmailsCurso,
 } from "../../services/horario.service";
 import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
-import Spinner from "../../hooks/Horarios/Spinner";
+import Spinner from "../../hooks/Horarios/spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
-import "@styles/Horarios/asignarHorarioCursos.css";
+import "@styles/Horarios/asignarHorario.css";
 
 const AsignarHorarioCurso = () => {
   const [curso, setCurso] = useState("");

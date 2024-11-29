@@ -9,8 +9,9 @@ import {
   getEmailProfesor,
 } from "../../services/horario.service";
 import EditarTablaHorarioProfesor from "../../hooks/Horarios/EditarTablaHorarioProfesor";
-import Spinner from "../../hooks/Horarios/Spinner";
+import Spinner from "../../hooks/Horarios/spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
+import "@styles/Horarios/asignarHorario.css";
 
 const AsignarHorarioProfesor = () => {
   const [profesor, setProfesor] = useState("");

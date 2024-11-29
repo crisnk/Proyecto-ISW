@@ -170,10 +170,8 @@ export const getHorarioCursoService = async (ID_curso) => {
 
   const horarios = await repository.find({
     where: { ID_curso: Number(ID_curso) },
-    relations: ["materia", "profesor"],
-    order: {
-      bloque: "ASC",
-    },
+    relations: ["materia", "profesor"], 
+    order: { bloque: "ASC" },
   });
 
   if (horarios.length === 0) {
@@ -182,18 +180,21 @@ export const getHorarioCursoService = async (ID_curso) => {
 
   return horarios.reduce((acc, horario) => {
     const dia = horario.dia;
+
     if (!acc[dia]) {
       acc[dia] = [];
     }
+
     acc[dia].push({
       bloque: horario.bloque,
       hora_Inicio: horario.hora_Inicio,
       hora_Fin: horario.hora_Fin,
-      ID_materia: horario.ID_materia,
+      ID_materia: horario.materia?.ID_materia || null,
       nombre_materia: horario.materia?.nombre || "Materia no disponible",
       rut_profesor: horario.profesor?.rut || null,
-      nombre_profesor: horario.profesor?.nombre || "Sin profesor",
+      nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor", 
     });
+
     return acc;
   }, {});
 };

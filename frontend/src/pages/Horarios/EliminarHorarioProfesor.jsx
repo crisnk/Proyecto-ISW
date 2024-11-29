@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import EliminarTablaHorario from "../../hooks/Horarios/EliminarTablaHorario";
+import EliminarTablaHorarioProfesor from "../../hooks/Horarios/EliminarTablaHorarioProfesor";
 import {
   getProfesores,
   getHorarioProfesor,
@@ -146,7 +146,7 @@ const EliminarHorarioProfesor = () => {
       {error && <p className="mensaje-error">{error}</p>}
       {success && <p className="mensaje-exito">{success}</p>}
       {Object.keys(horario).length > 0 && !noData && (
-        <EliminarTablaHorario horario={horario} onEliminarHorario={handleEliminarHorario} />
+        <EliminarTablaHorarioProfesor horario={horario} onEliminarHorario={handleEliminarHorario} />
       )}
     </div>
   );
