@@ -131,7 +131,7 @@ const AsignarHorarioCurso = () => {
       }
 
       await saveHorarioCurso(payload);
-      await fetchHorarioCurso(); 
+      await fetchHorarioCurso();
       Swal.fire("Éxito", "Horario guardado correctamente.", "success");
     } catch (err) {
       console.error(err);

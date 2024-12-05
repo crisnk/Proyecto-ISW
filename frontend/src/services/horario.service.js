@@ -58,12 +58,13 @@ export const getProfesores = async () => {
 export const getEmailProfesor = async (rut) => {
   try {
     const response = await axios.get(`/horarios/profesor/email/${rut}`);
-    return response.data;
+    return response.data.email; 
   } catch (error) {
     console.error("Error al obtener el email del profesor:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 export const getEmailsCurso = async (ID_curso) => {
   try {
@@ -133,15 +134,16 @@ export const getHorariosAlumno = async () => {
   }
 };
 
-export const notificacionProfesor = async (rut, horarioDetails) => {
+export const notificacionProfesor = async (email, horarioDetails) => {
   try {
-    const response = await axios.post("/horarios/notificacion/profesor", { email: rut, horarioDetails });
+    const response = await axios.post("/horarios/notificacion/profesor", { email, horarioDetails });
     return response.data;
   } catch (error) {
     console.error("Error al enviar notificación al profesor:", error.response?.data || error.message);
     throw error;
   }
 };
+
 export const notificacionCurso = async (emails, horarioDetails) => {
   try {
     const response = await axios.post("/horarios/notificacion/curso", { emails, horarioDetails });

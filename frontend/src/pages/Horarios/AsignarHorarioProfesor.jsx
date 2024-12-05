@@ -60,7 +60,8 @@ const AsignarHorarioProfesor = () => {
       }
 
       setHorario(formattedHorario);
-    } catch {
+    } catch (error) {
+      console.error("Error cargando el horario:", error.message);
       Swal.fire("Error", "No se pudo cargar el horario del profesor.", "error");
       setHorario(initializeHorario());
     } finally {
@@ -76,7 +77,8 @@ const AsignarHorarioProfesor = () => {
     const fetchMaterias = async () => {
       try {
         setMaterias(await getMaterias());
-      } catch {
+      } catch (error) {
+        console.error("Error cargando materias:", error.message);
         Swal.fire("Error", "No se pudieron cargar las materias.", "error");
       }
     };
@@ -87,7 +89,8 @@ const AsignarHorarioProfesor = () => {
     const fetchProfesores = async () => {
       try {
         setProfesores(await getProfesores());
-      } catch {
+      } catch (error) {
+        console.error("Error cargando profesores:", error.message);
         Swal.fire("Error", "No se pudieron cargar los profesores.", "error");
       }
     };
@@ -98,7 +101,8 @@ const AsignarHorarioProfesor = () => {
     const fetchCursos = async () => {
       try {
         setCursos(await getCursos());
-      } catch {
+      } catch (error) {
+        console.error("Error cargando cursos:", error.message);
         Swal.fire("Error", "No se pudieron cargar los cursos.", "error");
       }
     };
@@ -165,12 +169,61 @@ const AsignarHorarioProfesor = () => {
       await saveHorarioProfesor({ rut: profesor, horario: cambios });
       await fetchHorarioProfesor();
       Swal.fire("Éxito", "Horario guardado correctamente.", "success");
-    } catch {
+    } catch (error) {
+      console.error("Error guardando horario:", error.message);
       Swal.fire("Error", "No se pudo guardar el horario.", "error");
     } finally {
       setSaving(false);
     }
   };
+
+  const handleNotificarProfesor = async () => {
+    if (!profesor) {
+      Swal.fire("Advertencia", "Debes seleccionar un profesor para notificar.", "warning");
+      return;
+    }
+  
+    setNotificationLoading(true);
+    try {
+      const response = await getEmailProfesor(profesor);
+      console.log("Respuesta de la API para obtener email:", response); 
+  
+      let email = response;
+      if (!email) {
+        Swal.fire("Error", "El correo electrónico no está definido o no se pudo obtener.", "error");
+        return;
+      }
+  
+      const horarioDetails = diasSemana
+        .flatMap((dia) =>
+          horas
+            .map((hora) => {
+              const bloque = horario[dia]?.[hora];
+              if (
+                bloque &&
+                bloque.materia !== "Recreo" &&
+                bloque.materia !== "Sin asignar" &&
+                bloque.curso !== "Sin asignar"
+              ) {
+                return `${dia}: ${bloque.materia} (${hora})`;
+              }
+              return null;
+            })
+            .filter(Boolean)
+        )
+        .join(", ");
+  
+      await notificacionProfesor(email, horarioDetails);
+  
+      Swal.fire("Éxito", "El profesor ha sido notificado correctamente.", "success");
+    } catch (error) {
+      console.error("Error notificando al profesor:", error.message);
+      Swal.fire("Error", "No se pudo enviar la notificación al profesor.", "error");
+    } finally {
+      setNotificationLoading(false);
+    }
+  };
+  
 
   const handleMateriaCursoChange = (dia, bloque, key, value) => {
     setHorario((prev) => ({
@@ -190,10 +243,7 @@ const AsignarHorarioProfesor = () => {
       <h2>Asignar Horario a Profesores</h2>
       <div>
         <label>Profesor:</label>
-        <select
-          value={profesor}
-          onChange={(e) => setProfesor(e.target.value)}
-        >
+        <select value={profesor} onChange={(e) => setProfesor(e.target.value)}>
           <option value="">Selecciona profesor</option>
           {profesores.map((p) => (
             <option key={p.rut} value={p.rut}>
@@ -212,9 +262,15 @@ const AsignarHorarioProfesor = () => {
           onMateriaCursoChange={handleMateriaCursoChange}
         />
       )}
-      <div className="button-group" style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+      <div
+        className="button-group"
+        style={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "20px" }}
+      >
         <button onClick={handleGuardarHorario} disabled={saving}>
           {saving ? <Spinner /> : "Guardar"}
+        </button>
+        <button onClick={handleNotificarProfesor} disabled={notificationLoading}>
+          {notificationLoading ? <Spinner /> : "Notificar"}
         </button>
       </div>
     </div>

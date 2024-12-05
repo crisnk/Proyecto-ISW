@@ -13,7 +13,7 @@ const VerHorarioCurso = () => {
   const [loading, setLoading] = useState(false);
   const [noData, setNoData] = useState(false);
 
-  const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
+  const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
   const horas = [
     "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
     "10:30 - 11:15", "11:20 - 12:05", "12:10 - 12:55",

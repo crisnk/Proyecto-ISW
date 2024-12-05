@@ -1,14 +1,13 @@
 .tabla-horarios-container {
   display: flex;
+  max-width: 1900px;
   flex-direction: column;
   align-items: center;
-  margin: 20px;
   font-family: 'Arial', sans-serif;
 }
 
 .tabla-horarios {
   width: 100%;
-  max-width: 1400px;
   border-collapse: collapse;
   margin-bottom: 20px;
   background: #ffffff;

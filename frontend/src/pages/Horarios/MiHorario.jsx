@@ -10,7 +10,7 @@ const MiHorario = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
+  const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
   const horas = [
     "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
     "10:30 - 11:15", "11:20 - 12:05", "12:10 - 12:55",

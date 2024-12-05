@@ -1,6 +1,6 @@
 import "@styles/Horarios/eliminarHorario.css";
 
-const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
+const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
 const horas = [
   "08:00 - 08:45",
   "08:50 - 09:35",
