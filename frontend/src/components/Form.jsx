@@ -81,7 +81,7 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                             disabled={field.disabled}
                             onChange={(e) => {
                                 if (field.onChange) field.onChange(e);
-                                setValue(field.name, e.target.value); // Actualiza en react-hook-form
+                                setValue(field.name, e.target.value); 
                             }}
                         />
                     )}
@@ -97,7 +97,7 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                             disabled={field.disabled}
                             onChange={(e) => {
                                 if (field.onChange) field.onChange(e);
-                                setValue(field.name, e.target.value); // Actualiza en react-hook-form
+                                setValue(field.name, e.target.value);
                             }}
                         >
                             <option value="">Seleccionar opción</option>

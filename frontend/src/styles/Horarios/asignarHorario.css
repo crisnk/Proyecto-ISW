@@ -40,7 +40,7 @@ body {
   }
   
   button:disabled {
-    background-color: #aaa;
+    background-color: #ffffff;
     cursor: not-allowed;
   }
   

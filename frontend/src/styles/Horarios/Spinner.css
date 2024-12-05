@@ -1,31 +1,50 @@
-.spinner {
-    width: 40px;
-    height: 40px;
-    position: relative;
+html, body {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.spiral-spinner {
+  background: transparent;
+}
+.button-loading {
+  background: none;
+  border: none;
+}
+
+
+.spiral-spinner {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  margin: auto;
+  background: transparent; 
+}
+.contenedor-spinner {
+  background: transparent;
+  position: relative;
+}
+
+
+.spiral {
+  width: 100%;
+  height: 100%;
+  border: 4px solid transparent; 
+  border-top: 4px solid #3498db;
+  border-right: 4px solid #9b59b6; 
+  border-radius: 50%;
+  animation: spiral-spin 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.6), 0 0 20px rgba(155, 89, 182, 0.4); 
+}
+
+@keyframes spiral-spin {
+  0% {
+    transform: rotate(0deg) scale(0.9);
   }
-  
-  .double-bounce1, .double-bounce2 {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: #3498db;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: bounce 2s infinite ease-in-out;
+  50% {
+    transform: rotate(180deg) scale(1);
   }
-  
-  .double-bounce2 {
-    animation-delay: -1s;
+  100% {
+    transform: rotate(360deg) scale(0.9);
   }
-  
-  @keyframes bounce {
-    0%, 100% {
-      transform: scale(0);
-    }
-    50% {
-      transform: scale(1);
-    }
-  }
-  
+}

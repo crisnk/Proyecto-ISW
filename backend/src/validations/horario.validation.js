@@ -20,12 +20,12 @@ export const materiaValidation = Joi.object({
 export const cursoValidation = Joi.object({
   nombre: Joi.string()
     .trim() 
-    .pattern(/^(1ro|2do|3ro|4to) Medio [A-D]$/) 
+    .pattern(/^(1ro|2do|3ro|4to) Medio [A-G]$/) 
     .required()
     .messages({
       "any.required": "El nombre del curso es obligatorio.",
       "string.empty": "El nombre del curso no puede estar vacío.",
-      "string.pattern.base": "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a D. Ejemplo: '1ro medio A'.",
+      "string.pattern.base": "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a G. Ejemplo: '1ro Medio A'.",
       "string.trim": "El nombre del curso no debe tener espacios al principio o al final.",
     }),
   aula: Joi.number()

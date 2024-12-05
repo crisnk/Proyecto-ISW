@@ -6,122 +6,101 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
   const user = JSON.parse(sessionStorage.getItem("usuario")) || {};
   const userRole = user.rol;
 
-  const [isHorariosOpen, setIsHorariosOpen] = useState(false);
-  const [isAtrasosOpen, setIsAtrasosOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(null);
 
   useEffect(() => {
     if (!isVisible) {
-      setIsHorariosOpen(false);
-      setIsAtrasosOpen(false);
+      setOpenMenu(null);
     }
   }, [isVisible]);
 
   const closeSidebar = () => {
     toggleSidebar();
-    setIsHorariosOpen(false);
-    setIsAtrasosOpen(false);
+    setOpenMenu(null);
   };
 
-  const renderHorariosOptions = () => {
-    if (!isHorariosOpen) return null;
-    switch (userRole) {
-      case "administrador":
-      case "jefeUTP":
-        return (
-          <>
-            <li>
-              <NavLink to="/horarios/asignar" onClick={closeSidebar}>
-                Asignar Horario
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/horarios/materias" onClick={closeSidebar}>
-                Gestión de Materias
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/horarios/ver" onClick={closeSidebar}>
-                Ver Horarios
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/horarios/eliminar" onClick={closeSidebar}>
-                Eliminar Horario
-              </NavLink>
-            </li>
-          </>
-        );
-      case "profesor":
-        return (
-          <li>
-            <NavLink to="/horarios/ver/profesor" onClick={closeSidebar}>
-              Ver Horarios
-            </NavLink>
-          </li>
-        );
-      case "alumno":
-        return (
-          <li>
-            <NavLink to="/horarios/ver/alumno" onClick={closeSidebar}>
-              Mi Horario
-            </NavLink>
-          </li>
-        );
-      default:
-        return null;
-    }
-  };
+  const menuItems = [
+    {
+      label: "Horarios",
+      options: () => {
+        switch (userRole) {
+          case "administrador":
+          case "jefeUTP":
+            return [
+              { path: "/horarios/asignar", label: "Asignar Horario" },
+              { path: "/gestion-materias", label: "Gestión de Materias" },
+              { path: "/horarios/ver", label: "Ver Horarios" },
+              { path: "/horarios/eliminar", label: "Eliminar Horario" },
+            ];
+          case "profesor":
+            return [
+              { path: "/horarios/ver/profesor", label: "Ver Horarios" },
+            ];
+          case "alumno":
+            return [
+              { path: "/horarios/ver/alumno", label: "Mi Horario" },
+            ];
+          default:
+            return [];
+        }
+      },
+    },
+    {
+      label: "Atrasos",
+      options: () => {
+        switch (userRole) {
+          case "alumno":
+            return [
+              { path: "/atrasos", label: "Ver Atrasos" },
+              { path: "/atraso/registrar", label: "Registrar Atraso" },
+            ];
+          case "profesor":
+            return [
+              { path: "/atrasosProfesor", label: "Ver Atrasos de Alumnos" },
+            ];
+          default:
+            return [];
+        }
+      },
+    },
+  ];
 
-  const renderAtrasosOptions = () => {
-    if (!isAtrasosOpen) return null;
-    switch (userRole) {
-      case "alumno":
-        return (
-          <>
-            <li>
-              <NavLink to="/atrasos" onClick={closeSidebar}>
-                Ver Atrasos
+  const renderMenu = (menu) => {
+    const isOpen = openMenu === menu.label;
+    return (
+      <li key={menu.label}>
+        <button
+          onClick={() => setOpenMenu(isOpen ? null : menu.label)}
+          className="sidebar-button"
+          aria-expanded={isOpen}
+          aria-controls={`submenu-${menu.label}`}
+        >
+          {menu.label}
+        </button>
+        <ul
+          id={`submenu-${menu.label}`}
+          className={`submenu ${isOpen ? "open" : ""}`}
+        >
+          {menu.options().map((option) => (
+            <li key={option.path}>
+              <NavLink
+                to={option.path}
+                onClick={closeSidebar}
+                className={({ isActive }) => (isActive ? "active" : "inactive")}
+              >
+                {option.label}
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/atraso/registrar" onClick={closeSidebar}>
-                Registrar Atraso
-              </NavLink>
-            </li>
-          </>
-        );
-      case "profesor":
-        return (
-          <li>
-            <NavLink to="/atrasosProfesor" onClick={closeSidebar}>
-              Ver Atrasos de Alumnos
-            </NavLink>
-          </li>
-        );
-      default:
-        return null;
-    }
+          ))}
+        </ul>
+      </li>
+    );
   };
 
   return (
     <aside className={`sidebar ${isVisible ? "visible" : ""}`}>
       <ul>
-        <li>
-          <button onClick={() => setIsHorariosOpen((prev) => !prev)} className="sidebar-button">
-            Horarios
-          </button>
-          <ul className={`submenu ${isHorariosOpen ? "open" : ""}`}>
-            {renderHorariosOptions()}
-          </ul>
-        </li>
-        <li>
-          <button onClick={() => setIsAtrasosOpen((prev) => !prev)} className="sidebar-button">
-            Atrasos
-          </button>
-          <ul className={`submenu ${isAtrasosOpen ? "open" : ""}`}>
-            {renderAtrasosOptions()}
-          </ul>
-        </li>
+        {menuItems.map(renderMenu)}
       </ul>
     </aside>
   );

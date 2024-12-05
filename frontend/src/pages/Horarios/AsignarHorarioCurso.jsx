@@ -10,6 +10,7 @@ import {
 import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
 import Spinner from "../../hooks/Horarios/spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
+import Swal from "sweetalert2";
 import "@styles/Horarios/asignarHorario.css";
 
 const AsignarHorarioCurso = () => {
@@ -18,12 +19,8 @@ const AsignarHorarioCurso = () => {
   const [materias, setMaterias] = useState([]);
   const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
-  const [notificationSuccess, setNotificationSuccess] = useState("");
-  const [notificationError, setNotificationError] = useState("");
 
   const initializeHorario = useCallback(() => {
     const newHorario = {};
@@ -41,8 +38,6 @@ const AsignarHorarioCurso = () => {
   const fetchHorarioCurso = useCallback(async () => {
     if (!curso) {
       setHorario(initializeHorario());
-      setSuccess("");
-      setError("");
       return;
     }
 
@@ -65,10 +60,9 @@ const AsignarHorarioCurso = () => {
       }
 
       setHorario(formattedHorario);
-      setError("");
-    } catch (err) {
+    } catch {
+      Swal.fire("Error", "No se pudo cargar el horario del curso.", "error");
       setHorario(initializeHorario());
-      setError("");
     } finally {
       setLoading(false);
     }
@@ -79,7 +73,7 @@ const AsignarHorarioCurso = () => {
       const materiasData = await getMaterias();
       setMaterias(materiasData);
     } catch {
-      setError("Error al cargar materias.");
+      Swal.fire("Error", "No se pudieron cargar las materias.", "error");
     }
   }, []);
 
@@ -88,7 +82,7 @@ const AsignarHorarioCurso = () => {
       const cursosData = await getCursos();
       setCursos(cursosData);
     } catch {
-      setError("Error al cargar cursos.");
+      Swal.fire("Error", "No se pudieron cargar los cursos.", "error");
     }
   }, []);
 
@@ -106,13 +100,11 @@ const AsignarHorarioCurso = () => {
 
   const handleGuardarHorario = async () => {
     if (!curso) {
-      setError("Debes seleccionar un curso antes de guardar.");
-      setSuccess("");
+      Swal.fire("Advertencia", "Debes seleccionar un curso antes de guardar.", "warning");
       return;
     }
 
     setSaving(true);
-    setSuccess("");
     try {
       const payload = {
         ID_curso: parseInt(curso, 10),
@@ -134,23 +126,22 @@ const AsignarHorarioCurso = () => {
       };
 
       if (payload.horario.length === 0) {
-        setError("No se han asignado bloques válidos para guardar.");
+        Swal.fire("Advertencia", "No hay bloques válidos para guardar.", "warning");
         return;
       }
 
       await saveHorarioCurso(payload);
-      setSuccess("Horario guardado correctamente.");
-      setError("");
-    } catch {
-      setError("Error al guardar el horario.");
+      await fetchHorarioCurso(); 
+      Swal.fire("Éxito", "Horario guardado correctamente.", "success");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "No se pudo guardar el horario. Verifica los datos ingresados.", "error");
     } finally {
       setSaving(false);
     }
   };
 
   const handleMateriaChange = (dia, bloque, value) => {
-    const selectedMateria = materias.find((m) => m.ID_materia.toString() === value);
-
     setHorario((prev) => ({
       ...prev,
       [dia]: {
@@ -158,7 +149,6 @@ const AsignarHorarioCurso = () => {
         [bloque]: {
           ...prev[dia]?.[bloque],
           materia: value,
-          nombre_materia: selectedMateria ? selectedMateria.nombre : "Sin asignar",
         },
       },
     }));
@@ -166,8 +156,7 @@ const AsignarHorarioCurso = () => {
 
   const handleSendNotification = async () => {
     if (!curso) {
-      setNotificationError("Debes seleccionar un curso antes de enviar una notificación.");
-      setNotificationSuccess("");
+      Swal.fire("Advertencia", "Debes seleccionar un curso antes de enviar la notificación.", "warning");
       return;
     }
 
@@ -176,17 +165,15 @@ const AsignarHorarioCurso = () => {
       const { emails } = await getEmailsCurso(curso);
 
       if (!emails || emails.length === 0) {
-        setNotificationError("No hay correos electrónicos asociados a este curso.");
+        Swal.fire("Advertencia", "No hay correos electrónicos asociados al curso.", "warning");
         return;
       }
 
       const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
       await notificacionCurso(emails, horarioDetails);
-      setNotificationSuccess("Notificación enviada correctamente.");
-      setNotificationError("");
+      Swal.fire("Éxito", "Notificación enviada correctamente.", "success");
     } catch {
-      setNotificationError("Error al enviar la notificación.");
-      setNotificationSuccess("");
+      Swal.fire("Error", "No se pudo enviar la notificación.", "error");
     } finally {
       setNotificationLoading(false);
     }
@@ -199,11 +186,7 @@ const AsignarHorarioCurso = () => {
         <label>Curso:</label>
         <select
           value={curso}
-          onChange={(e) => {
-            setCurso(e.target.value);
-            setSuccess("");
-            setError("");
-          }}
+          onChange={(e) => setCurso(e.target.value)}
         >
           <option value="">Selecciona curso</option>
           {cursos.map((c) => (
@@ -222,16 +205,14 @@ const AsignarHorarioCurso = () => {
           onMateriaChange={handleMateriaChange}
         />
       )}
-      <button onClick={handleGuardarHorario} disabled={loading || saving}>
-        {saving ? "Guardando..." : "Guardar"}
-      </button>
-      <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
-        {notificationLoading ? <Spinner /> : "Enviar Notificación"}
-      </button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      {notificationError && <p style={{ color: "red" }}>{notificationError}</p>}
-      {notificationSuccess && <p style={{ color: "green" }}>{notificationSuccess}</p>}
+      <div className="button-group" style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+        <button onClick={handleGuardarHorario} disabled={saving}>
+          {saving ? <Spinner /> : "Guardar"}
+        </button>
+        <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
+          {notificationLoading ? <Spinner /> : "Enviar Notificación"}
+        </button>
+      </div>
     </div>
   );
 };

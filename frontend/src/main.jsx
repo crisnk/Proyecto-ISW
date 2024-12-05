@@ -19,7 +19,11 @@ import VerHorariosCurso from '@pages/Horarios/VerHorariosCurso';
 import EliminarHorarioProfesor from '@pages/Horarios/EliminarHorarioProfesor';
 import EliminarHorarioCurso from '@pages/Horarios/EliminarHorarioCurso';
 import MiHorario from '@pages/Horarios/MiHorario';
-import Materias from '@pages/Horarios/Materias';
+import GestionMateriasLayout from '@pages/Horarios/GestionMateriasLayout';
+import CrearMateria from '@pages/Horarios/CrearMateria';
+import CrearCurso from '@pages/Horarios/CrearCurso';
+import MateriasExistentes from '@pages/Horarios/MateriasExistentes';
+import CursosExistentes from '@pages/Horarios/CursosExistentes';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -28,10 +32,7 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <Error404 />,
     children: [
-      {
-        path: '/home',
-        element: <Home />,
-      },
+      { path: '/home', element: <Home /> },
       {
         path: '/users',
         element: (
@@ -76,14 +77,8 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          {
-            path: 'profesor',
-            element: <VerHorariosProfesor />,
-          },
-          {
-            path: 'curso',
-            element: <VerHorariosCurso />,
-          },
+          { path: 'profesor', element: <VerHorariosProfesor /> },
+          { path: 'curso', element: <VerHorariosCurso /> },
         ],
       },
       {
@@ -102,14 +97,8 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          {
-            path: 'profesor',
-            element: <AsignarHorarioProfesor />,
-          },
-          {
-            path: 'curso',
-            element: <AsignarHorarioCurso />,
-          },
+          { path: 'profesor', element: <AsignarHorarioProfesor /> },
+          { path: 'curso', element: <AsignarHorarioCurso /> },
         ],
       },
       {
@@ -120,23 +109,23 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          {
-            path: 'profesor',
-            element: <EliminarHorarioProfesor />,
-          },
-          {
-            path: 'curso',
-            element: <EliminarHorarioCurso />,
-          },
+          { path: 'profesor', element: <EliminarHorarioProfesor /> },
+          { path: 'curso', element: <EliminarHorarioCurso /> },
         ],
       },
       {
-        path: '/horarios/materias',
+        path: '/gestion-materias',
         element: (
           <ProtectedRoute allowedRoles={['administrador', 'jefeUTP']}>
-            <Materias />
+            <GestionMateriasLayout />
           </ProtectedRoute>
         ),
+        children: [
+          { path: 'crear-materia', element: <CrearMateria /> },
+          { path: 'crear-curso', element: <CrearCurso /> },
+          { path: 'materias-existentes', element: <MateriasExistentes /> },
+          { path: 'cursos-existentes', element: <CursosExistentes /> },
+        ],
       },
     ],
   },
