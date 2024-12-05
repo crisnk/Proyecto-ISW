@@ -47,11 +47,11 @@ export const horarioValidationCurso = Joi.object({
     "any.required": "El ID_materia es obligatorio.",
   }),
   dia: Joi.string()
-    .valid("lunes", "martes", "miércoles", "jueves", "viernes")
+    .valid("lunes", "martes", "miercoles", "jueves", "viernes")
     .required()
     .messages({
       "any.required": "El día es obligatorio.",
-      "any.only": "El día debe ser uno de los siguientes: lunes, martes, miércoles, jueves, viernes.",
+      "any.only": "El día debe ser uno de los siguientes: lunes, martes, miercoles, jueves, viernes.",
     }),
   bloque: Joi.string().required().messages({
     "any.required": "El bloque es obligatorio.",
@@ -89,8 +89,9 @@ export const horarioValidationProfesor = Joi.object({
           "any.required": "El ID_curso es obligatorio.",
         }),
         dia: Joi.string()
-          .valid("lunes", "martes", "miércoles", "jueves", "viernes")
+          .valid("lunes", "martes", "miercoles", "jueves", "viernes")
           .required()
+          .custom((value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "")) 
           .messages({
             "any.required": "El día es obligatorio.",
           }),
@@ -113,7 +114,6 @@ export const horarioValidationProfesor = Joi.object({
     )
     .required(),
 });
-
 
 const BLOQUES_HORARIOS = {
   "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },

@@ -15,7 +15,7 @@ import {
   materiaValidation,
 } from "../validations/horario.validation.js";
 
-
+const normalizarDia = (dia) => dia.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const BLOQUES_HORARIOS = {
   "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },
   "08:50 - 09:35": { hora_Inicio: "08:50", hora_Fin: "09:35" },
@@ -55,21 +55,26 @@ export const asignaHorarioCursoService = async (horarioData) => {
     if (!materia) {
       throw new Error(`La materia con ID ${bloque.ID_materia} no existe.`);
     }
-
+   
     let horarioExistente = await repository.findOne({
-      where: { ID_curso: ID_curso, dia: bloque.dia, bloque: bloque.bloque },
+      where: {
+        dia: bloque.dia,
+        bloque: bloque.bloque,
+        hora_Inicio,
+        hora_Fin,
+      },
     });
 
     if (horarioExistente) {
-      horarioExistente.hora_Inicio = hora_Inicio;
-      horarioExistente.hora_Fin = hora_Fin;
+      horarioExistente.ID_curso = ID_curso;
       horarioExistente.ID_materia = bloque.ID_materia;
       await repository.save(horarioExistente);
     } else {
+     
       const nuevoHorario = repository.create({
+        ID_curso,
         ID_materia: bloque.ID_materia,
-        ID_curso: ID_curso,
-        dia: bloque.dia,
+        dia: normalizarDia(bloque.dia),
         bloque: bloque.bloque,
         hora_Inicio,
         hora_Fin,
@@ -105,23 +110,29 @@ export const asignaHorarioProfesorService = async (horarioData) => {
     }
 
     validarSincronizacionBloque(bloque.bloque, hora_Inicio, hora_Fin);
-
+  
     let horarioExistente = await repository.findOne({
-      where: { ID_curso: bloque.ID_curso, dia: bloque.dia, bloque: bloque.bloque },
+      where: {
+        dia: bloque.dia,
+        bloque: bloque.bloque,
+        hora_Inicio,
+        hora_Fin,
+      },
     });
 
     if (horarioExistente) {
-      horarioExistente.hora_Inicio = hora_Inicio;
-      horarioExistente.hora_Fin = hora_Fin;
-      horarioExistente.ID_materia = bloque.ID_materia;
+     
       horarioExistente.rut = rut;
+      horarioExistente.ID_curso = bloque.ID_curso;
+      horarioExistente.ID_materia = bloque.ID_materia;
       await repository.save(horarioExistente);
     } else {
+      
       const nuevoHorario = repository.create({
-        ID_materia: bloque.ID_materia,
+        rut,
         ID_curso: bloque.ID_curso,
-        rut: rut,
-        dia: bloque.dia,
+        ID_materia: bloque.ID_materia,
+        dia: normalizarDia(bloque.dia),
         bloque: bloque.bloque,
         hora_Inicio,
         hora_Fin,
@@ -133,6 +144,7 @@ export const asignaHorarioProfesorService = async (horarioData) => {
 
   return { message: "Horario asignado correctamente para el profesor." };
 };
+
 
 export const getMateriasService = async () => {
   const repository = AppDataSource.getRepository(Materia);
