@@ -9,9 +9,9 @@ export async function getPracticas() {
     }
 }
 
-export async function updatePractica(data) {
+export async function updatePractica(ID_practica, data) {
     try {
-        const response = await axios.put(`/practica/modificar/${data.ID_practica}`, data);
+        const response = await axios.put(`/practica/modificar/${ID_practica}`, data);
         return response.data.data;
     } catch (error) {
         return error.response.data;

@@ -7,6 +7,7 @@ import useEditPractica from "@hooks/practica/useEditPractica";
 import usePractica from "@hooks/practica/useGetPracticas.jsx";
 import UpdateIcon from '../assets/updateIcon.svg';
 import UpdateIconDisable from '../assets/updateIconDisabled.svg';
+import '@styles/users.css';
 
 export default function Practica() {
     const { practicas, fetchPracticas, setPracticas } = usePractica();
@@ -24,9 +25,11 @@ export default function Practica() {
     const columns = [
         { title: "Nombre", field: "nombre", width: 350, responsive: 0 },
         { title: "Descripción", field: "descripcion", width: 300, responsive: 3 },
-        { title: "Dirección", field: "direccion", width: 150, responsive: 2 },
-        { title: "Publicado el", field: "fechaPublicacion", width: 200, responsive: 2 },
-        { title: "Cupo", field: "cupo", width: 200, responsive: 2 }
+        { title: "Especialidad", field: "nombreEspecialidad", width: 200, responsive: 2 },
+        { title: "Dirección", field: "direccion", width: 200, responsive: 2 },
+        { title: "Publicado hace", field: "fechaPublicacion", width: 150, responsive: 2 },
+        { title: "Cupo", field: "cupo", width: 80, responsive: 2 },
+        { title: "Estado", field: "estado", width: 100, responsive: 2 },
     ];
 
     const handlePracticaFilterChange = (e) => {

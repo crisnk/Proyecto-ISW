@@ -5,7 +5,9 @@ import HideIcon from '../assets/HideIcon.svg';
 import ViewIcon from '../assets/ViewIcon.svg';
 
 const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundColor }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        mode: 'onChange', // Validación y sincronización en cada cambio
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -48,7 +50,13 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                                 field.type}
                             defaultValue={field.defaultValue || ''}
                             disabled={field.disabled}
-                            onChange={field.onChange}
+                            onChange={(e) => {
+                                register(field.name).onChange(e); // Forzar la actualización en tiempo real
+                                field.onChange && field.onChange(e); // Mantener funcionalidad adicional
+                            }}
+                            onBlur={(e) => {
+                                register(field.name).onBlur(e); // Actualiza al perder foco
+                            }}
                         />
                     )}
                     {field.fieldType === 'textarea' && (
@@ -64,7 +72,13 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                             placeholder={field.placeholder}
                             defaultValue={field.defaultValue || ''}
                             disabled={field.disabled}
-                            onChange={field.onChange}
+                            onChange={(e) => {
+                                register(field.name).onChange(e);
+                                field.onChange && field.onChange(e);
+                            }}
+                            onBlur={(e) => {
+                                register(field.name).onBlur(e);
+                            }}
                         />
                     )}
                     {field.fieldType === 'select' && (
@@ -76,7 +90,13 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                             name={field.name}
                             defaultValue={field.defaultValue || ''}
                             disabled={field.disabled}
-                            onChange={field.onChange}
+                            onChange={(e) => {
+                                register(field.name).onChange(e);
+                                field.onChange && field.onChange(e);
+                            }}
+                            onBlur={(e) => {
+                                register(field.name).onBlur(e);
+                            }}
                         >
                             <option value="">Seleccionar opción</option>
                             {field.options && field.options.map((option, optIndex) => (

@@ -6,7 +6,7 @@ import { AppDataSource } from "../config/configDb.js";
 export async function crearPracticaService(data) {
   try {
     const practicaRepository = AppDataSource.getRepository(Practica);
-    
+
     const { nombre, descripcion, cupo, direccion, estado, ID_especialidad } = data;
 
     const createErrorMessage = (dataInfo, message) => ({
@@ -76,7 +76,25 @@ export async function modificarPracticaService(data) {
 export async function obtenerPracticasService() {
   try {
     const practicaRepository = AppDataSource.getRepository(Practica);
-    const practicas = await practicaRepository.find();
+    const practicas = await practicaRepository.find({
+      relations: {
+        ID_especialidad: true,
+      },
+      select: {
+        ID_practica: true,
+        nombre: true,
+        descripcion: true,
+        cupo: true,
+        direccion: true,
+        estado: true,
+        createdAt: true,
+        updatedAt: true,
+        ID_especialidad: {
+          ID_especialidad: true,
+          nombre: true,
+        },
+      },
+    });
 
     return [practicas, null];
   } catch (error) {

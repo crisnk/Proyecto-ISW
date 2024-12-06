@@ -14,16 +14,18 @@ const useEditPractica = (setPracticas) => {
 
     async function handleUpdate(updatedPracticaData) {
         if (!updatedPracticaData) return;
-        console.log(updatedPracticaData);
-        const formattedData = {
-            ID_practica: Number(updatedPracticaData.ID_practica),
-            nombre: updatedPracticaData.nombre,
-            descripcion: updatedPracticaData.descripcion,
-            cupo: Number(updatedPracticaData.cupo),
-            estado: updatedPracticaData.estado,
-        }
         try {
-            const updatedPractica = await updatePractica(updatedPracticaData);
+            const ID_practica = Number(updatedPracticaData.ID_practica);
+            const formattedData = {
+                nombre: updatedPracticaData.nombre,
+                descripcion: updatedPracticaData.descripcion,
+                direccion: updatedPracticaData.direccion,
+                cupo: Number(updatedPracticaData.cupo),
+                estado: updatedPracticaData.estado,
+                ID_especialidad: Number(updatedPracticaData.ID_especialidad),
+            }
+            const updatedPractica = await updatePractica(ID_practica, formattedData);
+
             showSuccessAlert('¡Actualizado!', 'La práctica ha sido actualizada correctamente.');
             setIsPopupOpen(false);
 
