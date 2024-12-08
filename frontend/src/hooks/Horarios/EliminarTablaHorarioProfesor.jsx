@@ -17,7 +17,7 @@ const horas = [
 
 const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
-const EliminarTablaHorario = ({ horario = {}, onEliminarHorario }) => {
+const EliminarTablaHorarioProfesor = ({ horario = {}, onEliminarHorario }) => {
   const handleEliminar = () => {
     const confirm = window.confirm("¿Está seguro de que desea eliminar este horario?");
     if (confirm) {
@@ -50,6 +50,7 @@ const EliminarTablaHorario = ({ horario = {}, onEliminarHorario }) => {
                     <div>
                       <div className="materia-display">{horario[dia][hora].materia}</div>
                       <div className="profesor-display">{horario[dia][hora].profesor}</div>
+                      <div className="curso-display">{horario[dia][hora].curso}</div>
                     </div>
                   ) : (
                     <span className="sin-asignar">Sin asignar</span>
@@ -72,4 +73,4 @@ const EliminarTablaHorario = ({ horario = {}, onEliminarHorario }) => {
   );
 };
 
-export default EliminarTablaHorario;
+export default EliminarTablaHorarioProfesor;

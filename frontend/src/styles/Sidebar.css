@@ -18,10 +18,10 @@
 
 .sidebar {
   position: fixed;
-  top: 65px; 
-  left: -300px;
-  width: 300px;
-  height: calc(100% - 60px); 
+  top: 70px; 
+  left: -300px; 
+  width: 300px; 
+  height: calc(100% - 70px); 
   background-color: #3271d154;
   color: white;
   overflow-y: auto;
@@ -50,6 +50,7 @@
   text-decoration: none;
   color: rgba(27, 25, 25, 0.562);
   padding: 10px 20px;
+  font-size: 16px; 
   font-size: 1.2rem;
   font-weight: 600;
   background-color: transparent;
@@ -78,7 +79,7 @@
 
 .sidebar-toggle-btn {
   position: fixed;
-  top: 15px;
+  top: 20px; 
   left: 15px;
   background-color: transparent;
   border: none;

@@ -1,6 +1,10 @@
-import "@styles/Horarios/tablaHorarioCursos.css";
+import "@styles/Horarios/verTablaHorario.css";
 
-const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMateriaChange }) => {
+const VerTablaHorarioProfesor = ({
+  horario = {},
+  diasSemana = [],
+  horas = [],
+}) => {
   const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
   return (
@@ -24,19 +28,17 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
                 <td key={`${dia}-${hora}`} className="contenido-col">
                   {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
+                  ) : horario[dia]?.[hora]?.materia ? (
+                    <div className="contenido-bloque">
+                      <div className="materia">
+                        {horario[dia][hora].materia || "Sin asignar"}
+                      </div>
+                      <div className="curso">
+                        {horario[dia][hora].curso || "Sin curso"}
+                      </div>
+                    </div>
                   ) : (
-                    <select
-                      value={horario[dia]?.[hora]?.materia || "Sin asignar"}
-                      onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
-                      className="materia-select"
-                    >
-                      <option value="Sin asignar">Sin asignar</option>
-                      {materias.map((materia) => (
-                        <option key={materia.ID_materia} value={materia.ID_materia}>
-                          {materia.nombre}
-                        </option>
-                      ))}
-                    </select>
+                    <span className="sin-asignar">Sin asignar</span>
                   )}
                 </td>
               ))}
@@ -48,4 +50,4 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
   );
 };
 
-export default EditarTablaHorarioCurso;
+export default VerTablaHorarioProfesor;

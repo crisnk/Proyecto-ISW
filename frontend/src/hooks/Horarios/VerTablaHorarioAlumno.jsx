@@ -1,6 +1,10 @@
-import "@styles/Horarios/tablaHorarioProfesor.css";
+import "@styles/Horarios/verTablaHorario.css";
 
-const VerTablaHorario = ({ horario, diasSemana, horas }) => {
+const VerTablaHorarioAlumno = ({
+  horario = {},
+  diasSemana = [],
+  horas = [],
+}) => {
   const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
   return (
@@ -24,18 +28,20 @@ const VerTablaHorario = ({ horario, diasSemana, horas }) => {
                 <td key={`${dia}-${hora}`} className="contenido-col">
                   {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
+                  ) : horario[dia]?.[hora] ? (
+                    <div className="contenido-bloque">
+                      <div className="materia">
+                        <strong>{horario[dia][hora].materia || "Sin asignar"}</strong>
+                      </div>
+                      <div className="profesor">
+                        {horario[dia][hora].profesor || "Sin profesor"}
+                      </div>
+                      <div className="curso">
+                        {horario[dia][hora].curso || "Sin curso"}
+                      </div>
+                    </div>
                   ) : (
-                    <>
-                      <div className="materia-display">
-                        <strong>Materia:</strong> {horario[dia]?.[hora]?.materia || "Sin asignar"}
-                      </div>
-                      <div className="profesor-display">
-                        <strong>Profesor:</strong> {horario[dia]?.[hora]?.profesor || "Sin profesor"}
-                      </div>
-                      <div className="curso-display">
-                        <strong>Curso:</strong> {horario[dia]?.[hora]?.curso || "Sin curso"}
-                      </div>
-                    </>
+                    <span className="sin-asignar">Sin asignar</span>
                   )}
                 </td>
               ))}
@@ -47,4 +53,4 @@ const VerTablaHorario = ({ horario, diasSemana, horas }) => {
   );
 };
 
-export default VerTablaHorario;
+export default VerTablaHorarioAlumno;
