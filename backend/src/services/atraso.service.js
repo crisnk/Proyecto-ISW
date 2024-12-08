@@ -1,7 +1,7 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
-import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import { MoreThanOrEqual, LessThanOrEqual, Between } from 'typeorm';
 import Atraso from "../entity/atraso.entity.js";  
 import Imparte from "../entity/imparte.entity.js";  
 import Justificativo from "../entity/justificativo.entity.js";
@@ -229,5 +229,72 @@ export async function obtenerInfoAtraso(rut) {
   } catch (error) {
     console.error('Error al buscar el atraso:', error);
     throw new Error('No se pudo buscar el atraso');
+  }
+}
+
+export async function findAtrasosJustificables(rut){
+  try{
+
+    const fechaActual = moment().tz("America/Santiago").startOf('day').toDate();
+    const fechaLimite = moment().tz("America/Santiago").startOf('day').subtract(4, 'days') //4 diás atras, el dia del atraso cuenta para justificar                  
+
+    const atrasoRepository = AppDataSource.getRepository(Atraso);
+    const atrasos = await atrasoRepository.find({
+      where: {
+        rut: rut,
+        estado: "activo",
+        fecha: Between(fechaLimite, fechaActual)  
+      },
+    });
+
+    if (!atrasos.length) {
+      throw new Error('No se encontraron atrasos para este alumno en el rango de fechas.');
+    }
+
+    const resultado = [];
+
+    const pertenece = await buscarPertenecePorRut(rut);
+    if (!pertenece) {
+      throw new Error('El alumno no pertenece a un curso.');   
+    }
+
+    for (const atraso of atrasos) {
+      try {
+        const diaSemana = moment(atraso.fecha).isoWeekday(); 
+        const diasSemana = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+        const nombreDia = diasSemana[diaSemana - 1]; // Restamos 1 porque el índice del array empieza en 0
+        console.log('nombreDia:', nombreDia);
+        const imparte = await buscarImparte(pertenece.ID_curso, nombreDia, atraso.hora);
+        if (!imparte) {
+          console.warn(`No se encontró una clase para el curso ${pertenece.ID_curso} a la hora ${atraso.hora}.`);
+          continue; // Si no hay clase, pasar al siguiente atraso
+        }
+
+        // 3️⃣ Obtener el nombre de la materia asociada
+        const materiaRepository = AppDataSource.getRepository(Materia);
+        const materia = await materiaRepository.findOne({
+          select: ["nombre"], 
+          where: {
+            ID_materia: imparte.ID_materia,   
+          }
+        });
+        const fecha = moment(atraso.fecha).format('YYYY-MM-DD');
+        resultado.push({
+          fecha: fecha,
+          hora: atraso.hora, 
+          materia: materia ? materia.nombre : 'Sin materia asignada'
+        });
+
+      } catch (error) {
+        console.error(`Error procesando el atraso con ID ${atraso.ID_atraso}:`, error);
+      }
+    }
+
+    return resultado;  
+    
+
+  }catch (error){
+    console.error('Error al buscar los atrasos:', error);
+    throw new Error('No se pudo buscar los atrasos');
   }
 }

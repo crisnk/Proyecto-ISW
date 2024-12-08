@@ -3,6 +3,7 @@ import { createAtrasoService,
          obtenerAtrasos,
          obtenerAtrasosAlumnos,
          obtenerInfoAtraso,
+         findAtrasosJustificables
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -75,6 +76,23 @@ export async function infoAtraso(req, res) {
     }
 
     handleSuccess(res, 200, "Información de atraso encontrada", infoAtraso);
+
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function infoAtrasosJustificables(req, res) {
+  try {
+
+    const rut = await extraerRut(req);
+    const infoAtrasos = await findAtrasosJustificables(rut);
+
+    if (!infoAtrasos) {
+      return handleErrorClient(res, 404, error); 
+    }
+
+    handleSuccess(res, 200, "Información de atrasos encontrada", infoAtrasos);
 
   } catch (error) {
     handleErrorServer(res, 500, error.message);
