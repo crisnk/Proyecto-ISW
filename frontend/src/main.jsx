@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Error404 from '@pages/Error404';
 import Home from '@pages/Home';
+import HomeAlumno from '@pages/HomeAlumno';
 import Login from '@pages/Login';
 import Register from '@pages/Register';
 import Root from '@pages/Root';
@@ -28,6 +29,14 @@ const router = createBrowserRouter([
       {
         path: '/home',
         element: <Home />,
+      },
+      {
+        path: '/homeAlumno',
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <HomeAlumno />
+          </ProtectedRoute>
+        ),      
       },
       {
         path: '/users',
