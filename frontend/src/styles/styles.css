@@ -56,3 +56,11 @@ body {
 	margin-top: 20px;
   }
   
+  .alumno-funciones {
+	background-image: url('../assets/fondoAlumno.webp');
+	background-size: cover;
+	background-position: center center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	min-height: 100vh; /* Asegura que cubra toda la pantalla */
+  }
