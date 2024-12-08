@@ -16,7 +16,7 @@ async function buscarPertenecePorRut(rut) {
     const perteneceRepository = AppDataSource.getRepository(Pertenece);
     const pertenece = await perteneceRepository.findOne({
       select: ["ID_curso"], 
-      where: { rut: rut } // Usar el rut proporcionado para la consulta
+      where: { rut: rut } 
     });
 
     return pertenece; 
@@ -262,15 +262,14 @@ export async function findAtrasosJustificables(rut){
       try {
         const diaSemana = moment(atraso.fecha).isoWeekday(); 
         const diasSemana = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
-        const nombreDia = diasSemana[diaSemana - 1]; // Restamos 1 porque el índice del array empieza en 0
-        console.log('nombreDia:', nombreDia);
+        const nombreDia = diasSemana[diaSemana - 1]; 
+
         const imparte = await buscarImparte(pertenece.ID_curso, nombreDia, atraso.hora);
         if (!imparte) {
           console.warn(`No se encontró una clase para el curso ${pertenece.ID_curso} a la hora ${atraso.hora}.`);
-          continue; // Si no hay clase, pasar al siguiente atraso
+          continue; 
         }
 
-        // 3️⃣ Obtener el nombre de la materia asociada
         const materiaRepository = AppDataSource.getRepository(Materia);
         const materia = await materiaRepository.findOne({
           select: ["nombre"], 
@@ -278,6 +277,7 @@ export async function findAtrasosJustificables(rut){
             ID_materia: imparte.ID_materia,   
           }
         });
+
         const fecha = moment(atraso.fecha).format('YYYY-MM-DD');
         resultado.push({
           fecha: fecha,
@@ -292,7 +292,6 @@ export async function findAtrasosJustificables(rut){
 
     return resultado;  
     
-
   }catch (error){
     console.error('Error al buscar los atrasos:', error);
     throw new Error('No se pudo buscar los atrasos');
