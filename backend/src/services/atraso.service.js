@@ -11,28 +11,70 @@ import Curso from "../entity/curso.entity.js";
 import Materia from "../entity/materia.entity.js";  
 
 moment.locale('es'); 
+async function buscarPertenecePorRut(rut) {
+  try {
+    const perteneceRepository = AppDataSource.getRepository(Pertenece);
+    const pertenece = await perteneceRepository.findOne({
+      select: ["ID_curso"], 
+      where: { rut: rut } // Usar el rut proporcionado para la consulta
+    });
+
+    return pertenece; 
+  } catch (error) {
+    console.error("Error al buscar el curso del alumno:", error);
+    throw new Error("Error al buscar el curso del alumno"); 
+  }
+}
+
+async function buscarImparte(ID_curso, diaSemana, horaActual) {
+  try {
+    const imparteRepository = AppDataSource.getRepository(Imparte);
+    const imparte = await imparteRepository.findOne({
+      where: {
+        ID_curso: ID_curso,
+        dia: diaSemana,                      
+        hora_Inicio: LessThanOrEqual(horaActual),
+        hora_Fin: MoreThanOrEqual(horaActual)     
+      }
+    });
+
+    return imparte; 
+  } catch (error) {
+    console.error("Error al buscar el clase del alumno:", error);
+    throw new Error("Error al buscar clase del alumno"); 
+  }
+}
 
 export async function createAtrasoService(rut) {
   try {
-    const atrasoRepository = AppDataSource.getRepository(Atraso);
 
     const fechaActual = moment().tz("America/Santiago").format("YYYY-MM-DD");
     const horaActual = moment().tz("America/Santiago").format("HH:mm:ss");
+    const diaSemana = moment.tz("America/Santiago").format('dddd'); // Día de la semana en español
+   
+    const pertenece = await buscarPertenecePorRut(rut);
+    if (!pertenece) {
+      throw new Error('El alumno no pertenece a un curso.');   
+    }
+    
+    const imparte = await buscarImparte(pertenece.ID_curso, diaSemana, horaActual);
+    if (!imparte) {
+      throw new Error('Alumno no tiene una clase ahora mismo.');   
+    }
 
+    const atrasoRepository = AppDataSource.getRepository(Atraso);
     const nuevoAtraso = atrasoRepository.create({
       rut: rut,  
       fecha: fechaActual,
       hora: horaActual,
       estado: 'activo',
     });
-
-   
     await atrasoRepository.save(nuevoAtraso);
 
     return [nuevoAtraso, null];
   } catch (error) {
     console.error("Error al registrar el atraso:", error);
-    return [null, "Error interno del servidor"];
+    return [null, error.message]; 
   }
 }
 
@@ -42,16 +84,15 @@ export async function findAtraso(rut, ID_atraso){
     const atraso = await atrasoRepository.findOne({
       where: {
         rut: rut,
-        ID_atraso: ID_atraso
+        ID_atraso: ID_atraso,
+        estado: "activo"
       },
     });
     return atraso;
   }catch (error){
     console.error('Error al buscar el atraso:', error);
     throw new Error('No se pudo buscar el atraso');
-
   }
-
 }
 
 export async function obtenerAtrasos(rut){
@@ -141,32 +182,17 @@ export async function obtenerAtrasosAlumnos(rut) {
 export async function obtenerInfoAtraso(rut) {
   try {
 
-    const fechaActual = moment().tz("America/Santiago").format("YYYY-MM-DD");
     const horaActual = moment().tz("America/Santiago").format("HH:mm:ss");
     const diaSemana = moment.tz("America/Santiago").format('dddd'); // Día de la semana en español
 
-    const perteneceRepository = AppDataSource.getRepository(Pertenece);
-    const pertenece = await perteneceRepository.findOne({
-      select: ["ID_curso"], 
-      where: {
-        rut: rut,  
-      }
-    });
+    const pertenece = await buscarPertenecePorRut(rut);
     if (!pertenece) {
-      throw new Error('No se encontró el curso para el RUT especificado.');   
+      throw new Error('El alumno no pertenece a un curso.');   
     }
-
-    const imparteRepository = AppDataSource.getRepository(Imparte);
-    const imparte = await imparteRepository.findOne({
-      where: {
-        ID_curso: pertenece.ID_curso,
-        dia: diaSemana,                      
-        hora_Inicio: LessThanOrEqual(horaActual),
-        hora_Fin: MoreThanOrEqual(horaActual)     
-      }
-    });
+    
+    const imparte = await buscarImparte(pertenece.ID_curso, diaSemana, horaActual);
     if (!imparte) {
-      throw new Error('No tiene una clase ahora mismo.');   
+      throw new Error('Alumno no tiene una clase ahora mismo.');   
     }
 
     const materiaRepository = AppDataSource.getRepository(Materia);

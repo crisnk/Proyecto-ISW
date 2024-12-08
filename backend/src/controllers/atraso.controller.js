@@ -18,7 +18,7 @@ export async function registrarAtraso(req, res) {
 
     const [atrasoCreado, error] = await createAtrasoService(rut);
     if (error) {
-      return handleErrorServer(res, 400, "Error al registrar el atraso", error);
+      return handleErrorClient(res, 400, error); 
     }
 
     handleSuccess(res, 201, "Atraso registrado con éxito", atrasoCreado);
@@ -71,7 +71,7 @@ export async function infoAtraso(req, res) {
     const infoAtraso = await obtenerInfoAtraso(rut);
 
     if (!infoAtraso) {
-      return handleErrorClient(res, 404, "No se encontró una coincidencia para el horario actual");
+      return handleErrorClient(res, 404, error); 
     }
 
     handleSuccess(res, 200, "Información de atraso encontrada", infoAtraso);

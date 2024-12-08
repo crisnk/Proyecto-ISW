@@ -76,3 +76,18 @@ export async function aprobarJustificativo(ID_atraso) {
     }
   }
   
+  export async function findJustificativo(rut, ID_atraso){
+    try{
+      const justificativoRepository = AppDataSource.getRepository(Justificativo);
+      const justificativo = await justificativoRepository.findOne({
+        where: {
+          rut: rut,
+          ID_atraso: ID_atraso,
+        },
+      });
+      return justificativo;
+    }catch (error){
+      console.error('Error al buscar el justificativo:', error);
+      throw new Error('No se pudo buscar el justificativo');
+    }
+  }
