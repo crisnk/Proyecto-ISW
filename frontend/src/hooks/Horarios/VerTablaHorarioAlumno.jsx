@@ -4,11 +4,21 @@ const VerTablaHorarioAlumno = ({
   horario = {},
   diasSemana = [],
   horas = [],
+  onBlockColorChange,
+  backgroundColor = "rgba(255, 255, 255, 0.8)", 
 }) => {
   const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
   return (
-    <div className="tabla-horarios-container">
+    <div
+      className="tabla-horarios-container"
+      style={{
+        backgroundColor: backgroundColor,
+        borderRadius: "12px",
+        padding: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      }}
+    >
       <table className="tabla-horarios">
         <thead>
           <tr>
@@ -25,7 +35,14 @@ const VerTablaHorarioAlumno = ({
             <tr key={hora} className={recreoHoras.includes(hora) ? "recreo-row" : ""}>
               <td className="hora-col">{hora}</td>
               {diasSemana.map((dia) => (
-                <td key={`${dia}-${hora}`} className="contenido-col">
+                <td
+                  key={`${dia}-${hora}`}
+                  className="contenido-col"
+                  style={{
+                    backgroundColor: horario[dia]?.[hora]?.color || "#ffffff",
+                  }}
+                  onClick={() => onBlockColorChange(dia, hora)}
+                >
                   {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
                   ) : horario[dia]?.[hora] ? (

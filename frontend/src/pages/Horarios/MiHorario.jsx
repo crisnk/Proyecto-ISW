@@ -5,10 +5,18 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import "@styles/Horarios/miHorario.css";
 
+const pastelColors = [
+  "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF",
+  "#FFC2E0", "#C2DFFF", "#C2FFD2", "#D1DCFF", "#FFDBE8",
+  "#FFD7C2", "#D9C2FF", "#BAE8DB", "#E8FFDB", "#FFDBFF",
+];
+
 const MiHorario = () => {
   const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedColor, setSelectedColor] = useState(pastelColors[0]);
+  const [backgroundColor, setBackgroundColor] = useState("rgba(255, 255, 255, 0.8)");
 
   const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
   const horas = [
@@ -31,6 +39,7 @@ const MiHorario = () => {
               materia: "Sin asignar",
               profesor: "Sin profesor",
               curso: "Sin curso",
+              color: "#ffffff", 
             };
           });
         });
@@ -41,6 +50,7 @@ const MiHorario = () => {
               materia: bloque.nombre_materia || "Sin asignar",
               profesor: bloque.nombre_profesor || "Sin profesor",
               curso: bloque.nombre_curso || "Sin curso",
+              color: "#ffffff", 
             };
           }
         });
@@ -56,6 +66,22 @@ const MiHorario = () => {
 
     fetchHorario();
   }, []);
+
+  const handleBlockColorChange = (dia, hora) => {
+    const updatedHorario = { ...horario };
+    if (updatedHorario[dia]?.[hora]) {
+      updatedHorario[dia][hora].color = selectedColor;
+    }
+    setHorario(updatedHorario);
+  };
+
+  const handleBackgroundColorChange = (color) => {
+    setBackgroundColor(color);
+    const horarioContainer = document.querySelector(".tabla-horarios-container");
+    if (horarioContainer) {
+      horarioContainer.style.backgroundColor = color;
+    }
+  };
 
   const handleExportToPNG = async () => {
     const horarioElement = document.querySelector(".tabla-horarios-container");
@@ -98,7 +124,45 @@ const MiHorario = () => {
         <p style={{ color: "red" }}>{error}</p>
       ) : (
         <>
-          <VerTablaHorarioAlumno horario={horario} diasSemana={diasSemana} horas={horas} />
+          <div className="paleta-colores">
+            <h3>Colores para las materias:</h3>
+            <div className="colores">
+              {pastelColors.map((color) => (
+                <div
+                  key={color}
+                  className="color-opcion"
+                  style={{
+                    backgroundColor: color,
+                    boxShadow: color === selectedColor ? "0 0 10px black" : "none",
+                  }}
+                  onClick={() => setSelectedColor(color)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="paleta-colores">
+            <h3>Fondo del horario:</h3>
+            <div className="colores">
+              {pastelColors.map((color) => (
+                <div
+                  key={color}
+                  className="color-opcion"
+                  style={{
+                    backgroundColor: color,
+                    opacity: 0.8,
+                    boxShadow: color === backgroundColor ? "0 0 10px black" : "none",
+                  }}
+                  onClick={() => handleBackgroundColorChange(color)}
+                />
+              ))}
+            </div>
+          </div>
+          <VerTablaHorarioAlumno
+            horario={horario}
+            diasSemana={diasSemana}
+            horas={horas}
+            onBlockColorChange={handleBlockColorChange}
+          />
           <div className="export-buttons">
             <button onClick={handleExportToPNG}>Exportar como PNG</button>
             <button onClick={handleExportToPDF}>Exportar como PDF</button>
