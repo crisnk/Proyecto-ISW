@@ -7,7 +7,8 @@ import {
     generarJustificativo,
     manejarAprobarJustificativo,
     manejarRechazarJustificativo,
-    verArchivoJustificativo
+    verArchivoJustificativo,
+    verJustificativo,
 } from "../controllers/justificativo.controller.js";
 
 
@@ -16,6 +17,7 @@ router.use(authenticateJwt);
 router  
     .post("/generar",  isAuthorized("alumno"), upload, handleFileSizeLimit , generarJustificativo)
     .get('/archivo/:filePath', isAuthorized("alumno"), verArchivoJustificativo)
-    .post("/aprobar/:ID_atraso", manejarAprobarJustificativo)
-    .post("/rechazar/:ID_atraso", manejarRechazarJustificativo)
+    .post("/aprobar/:ID_atraso", isAuthorized("profesor"), manejarAprobarJustificativo)
+    .post("/rechazar/:ID_atraso", isAuthorized("profesor"), manejarRechazarJustificativo)
+    .get("/ver/:ID_atraso", isAuthorized("profesor"), verJustificativo);
 export default router;

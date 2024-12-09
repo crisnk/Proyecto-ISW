@@ -1,22 +1,18 @@
 import "@styles/Horarios/verTablaHorario.css";
 
-const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
-const horas = [
-  "08:00 - 08:45", "08:50 - 09:35", "09:40 - 10:25",
-  "10:30 - 11:15", "11:20 - 12:05", "12:10 - 12:55",
-  "13:00 - 13:45", "14:30 - 15:15", "15:20 - 16:05",
-  "16:10 - 16:55", "17:00 - 17:45",
-];
+const VerTablaHorarioAlumno = ({
+  horario = {},
+  diasSemana = [],
+  horas = [],
+}) => {
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
-const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
-
-const VerTablaHorario = ({ horario }) => {
   return (
     <div className="tabla-horarios-container">
       <table className="tabla-horarios">
         <thead>
           <tr>
-            <th className="tabla-header">Hora</th>
+            <th className="tabla-header">Horas</th>
             {diasSemana.map((dia) => (
               <th key={dia} className="tabla-header">
                 {dia.charAt(0).toUpperCase() + dia.slice(1)}
@@ -32,15 +28,20 @@ const VerTablaHorario = ({ horario }) => {
                 <td key={`${dia}-${hora}`} className="contenido-col">
                   {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
+                  ) : horario[dia]?.[hora] ? (
+                    <div className="contenido-bloque">
+                      <div className="materia">
+                        <strong>{horario[dia][hora].materia || "Sin asignar"}</strong>
+                      </div>
+                      <div className="profesor">
+                        {horario[dia][hora].profesor || "Sin profesor"}
+                      </div>
+                      <div className="curso">
+                        {horario[dia][hora].curso || "Sin curso"}
+                      </div>
+                    </div>
                   ) : (
-                    <>
-                      <div className="materia-display">
-                        {horario[dia]?.[hora]?.materia || "Sin asignar"}
-                      </div>
-                      <div className="profesor-display">
-                        {horario[dia]?.[hora]?.profesor || ""}
-                      </div>
-                    </>
+                    <span className="sin-asignar">Sin asignar</span>
                   )}
                 </td>
               ))}
@@ -52,4 +53,4 @@ const VerTablaHorario = ({ horario }) => {
   );
 };
 
-export default VerTablaHorario;
+export default VerTablaHorarioAlumno;

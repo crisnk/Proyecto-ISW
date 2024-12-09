@@ -1,64 +1,142 @@
 .mi-horario {
-    padding: 25px;
-    margin: 40px auto;
-    background-color: #ffffff; 
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    max-width: 900px;
-    transition: margin-left 0.3s ease-in-out;
+  padding: 30px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  max-width: 960px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.mi-horario h1 {
+  font-size: 2.4rem;
+  color: #002f5d;
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+.mi-horario h2 {
+  font-size: 1.8rem;
+  color: #004a99;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.mi-horario .error-message {
+  color: #e63946;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.mi-horario .export-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.mi-horario .export-button {
+  background-color: #0055b3;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.mi-horario .export-button:hover {
+  background-color: #003f8c;
+  transform: translateY(-2px);
+}
+
+.mi-horario .export-button:active {
+  background-color: #002b5f;
+  transform: scale(0.97);
+}
+
+.mi-horario .table-container {
+  overflow-x: auto;
+  margin-top: 25px;
+}
+
+.mi-horario .table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mi-horario .table-container th {
+  padding: 12px;
+  background-color: #0055b3;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.mi-horario .table-container td {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  color: #333333;
+}
+
+.mi-horario .table-container tr:nth-child(even) {
+  background-color: #f2f7ff;
+}
+
+.mi-horario .table-container tr:hover {
+  background-color: #e8f1ff;
+}
+
+@media (max-width: 768px) {
+  .mi-horario {
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 100%;
   }
-  
+
   .mi-horario h1 {
-    font-size: 2.2rem;
-    color: #003366;
-    text-align: center;
-    margin-bottom: 20px;
+      font-size: 2rem;
+      margin-bottom: 20px;
   }
-  
+
   .mi-horario h2 {
-    font-size: 1.8rem;
-    color: #0066cc;
-    text-align: center;
-    margin-bottom: 15px;
+      font-size: 1.6rem;
+      margin-bottom: 15px;
   }
-  
-  .mi-horario .error-message {
-    color: #dc3545;
-    font-weight: bold;
-    text-align: center;
+
+  .mi-horario .export-buttons {
+      flex-direction: column;
+      gap: 10px;
   }
-  
+
   .mi-horario .export-button {
-    background-color: #0055b3;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    display: block;
-    margin: 20px auto;
-    text-align: center;
+      width: 100%;
+      padding: 10px;
   }
-  
-  .mi-horario .export-button:hover {
-    background-color: #00408a;
+}
+
+@media (max-width: 480px) {
+  .mi-horario h1 {
+      font-size: 1.8rem;
   }
-  
-  .mi-horario .table-container {
-    overflow-x: auto;
-    margin-top: 20px;
+
+  .mi-horario h2 {
+      font-size: 1.4rem;
   }
-  
-  .mi-horario .table-container table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-  }
-  
-  .mi-horario .table-container th, 
+
+  .mi-horario .table-container th,
   .mi-horario .table-container td {
-    padding: 10px;
-    border: 1px solid #dddddd;
+      font-size: 0.9rem;
+      padding: 8px;
   }
-  
+}

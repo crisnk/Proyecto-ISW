@@ -18,10 +18,10 @@
 
 .sidebar {
   position: fixed;
-  top: 65px; 
-  left: -300px;
-  width: 300px;
-  height: calc(100% - 60px); 
+  top: 70px; 
+  left: -300px; 
+  width: 300px; 
+  height: calc(100% - 70px); 
   background-color: #3271d154;
   color: white;
   overflow-y: auto;
@@ -42,17 +42,18 @@
 }
 
 .sidebar ul li {
-  padding: 10px 20px;
+  position: relative; 
 }
 
 .sidebar ul li a {
+  display: block;
   text-decoration: none;
   color: rgba(27, 25, 25, 0.562);
-  display: block;
-  padding: 10px;
+  padding: 10px 20px;
+  font-size: 16px; 
   font-size: 1.2rem;
   font-weight: 600;
-  position: relative;
+  background-color: transparent;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
@@ -78,7 +79,7 @@
 
 .sidebar-toggle-btn {
   position: fixed;
-  top: 15px;
+  top: 20px; 
   left: 15px;
   background-color: transparent;
   border: none;
@@ -141,7 +142,6 @@
 
 .sidebar-button:hover {
   background-color: #373bd1;
-  transform: scale(1.1); 
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
 }
 
@@ -157,13 +157,126 @@
 }
 
 .submenu {
+  position: relative;
   max-height: 0;
   overflow: hidden;
+  margin-top: 5px; 
   transition: max-height 0.3s ease, opacity 0.3s ease;
   opacity: 0;
+  padding-left: 20px; 
 }
 
 .submenu.open {
-  max-height: 500px; 
+  max-height: 300px; 
   opacity: 1;
+}
+
+
+.submenu li a {
+  font-size: 1rem;
+  padding: 5px 0;
+  display: block;
+  color: rgba(27, 25, 25, 0.8);
+}
+
+.submenu li a:hover {
+  color: white;
+  background-color: rgba(56, 56, 203, 0.7);
+  border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .main-content {
+    margin-left: 0;
+    transition: none;
+  }
+
+  .sidebar {
+    width: 240px;
+    left: -240px;
+    padding-top: 15px;
+  }
+
+  .sidebar.visible {
+    left: 0;
+  }
+
+  .sidebar ul li a {
+    font-size: 1rem;
+    padding: 8px 15px;
+  }
+
+  .sidebar-toggle-btn {
+    top: 10px;
+    left: 10px;
+    padding: 8px;
+  }
+
+  .hamburger-icon {
+    width: 25px;
+    height: 3px;
+  }
+
+  .hamburger-icon::before,
+  .hamburger-icon::after {
+    width: 25px;
+    height: 3px;
+  }
+
+  .sidebar-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+
+  .submenu li a {
+    font-size: 0.9rem;
+    padding: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 200px;
+    left: -200px;
+  }
+
+  .sidebar.visible {
+    left: 0;
+  }
+
+  .sidebar ul li a {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+
+  .sidebar-toggle-btn {
+    top: 8px;
+    left: 8px;
+    padding: 6px;
+  }
+
+  .hamburger-icon {
+    width: 20px;
+    height: 3px;
+  }
+
+  .hamburger-icon::before,
+  .hamburger-icon::after {
+    width: 20px;
+    height: 3px;
+  }
+
+  .sidebar-button {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .submenu li a {
+    font-size: 0.8rem;
+    padding: 4px;
+  }
 }

@@ -1,65 +1,93 @@
 .tabla-horarios-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-  }
-  
-  .tabla-horarios {
-    width: 90%;
-    border-collapse: collapse;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .tabla-header {
-    background-color: #f4f4f4;
-    font-weight: bold;
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  .hora-col {
-    font-weight: bold;
-    background-color: #fafafa;
-    padding: 8px;
-    border: 1px solid #ddd;
-  }
-  
-  .contenido-col {
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  .recreo-row {
-    background-color: #f0f8ff;
-  }
-  
-  .recreo-text {
-    font-weight: bold;
-    color: #007bff;
-  }
-  
-  .select-label {
-    display: block;
-    font-size: 0.9em;
-    margin-bottom: 5px;
-    color: #333;
-  }
-  
+  margin: 20px auto;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-horarios {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.tabla-header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+}
+
+.hora-col {
+  font-weight: bold;
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+.contenido-col {
+  padding: 10px;
+}
+
+.recreo-row {
+  background-color: #e9ecef;
+}
+
+.materia-select,
+.curso-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.materia-select:focus,
+.curso-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+select option {
+  font-size: 14px;
+  padding: 5px;
+  background-color: #fff;
+  color: #333;
+}
+
+select option:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.select-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+@media (max-width: 768px) {
   .materia-select,
   .curso-select {
-    width: 100%;
+    font-size: 12px;
     padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
   }
-  
-  .materia-select:focus,
-  .curso-select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+
+  .select-label {
+    font-size: 12px;
   }
-  
+}
+
+@media (max-width: 480px) {
+  .materia-select,
+  .curso-select {
+    font-size: 10px;
+    padding: 4px;
+  }
+
+  .select-label {
+    font-size: 10px;
+  }
+}

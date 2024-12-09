@@ -8,7 +8,7 @@ const EditarTablaHorarioProfesor = ({
   cursos,
   onMateriaCursoChange,
 }) => {
-  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"]; 
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
   return (
     <div className="tabla-horarios-container">
@@ -29,7 +29,7 @@ const EditarTablaHorarioProfesor = ({
               <td className="hora-col">{hora}</td>
               {diasSemana.map((dia) => (
                 <td key={`${dia}-${hora}`} className="contenido-col">
-                  {recreoHoras.includes(hora) ? ( 
+                  {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
                   ) : (
                     <div>
@@ -37,16 +37,13 @@ const EditarTablaHorarioProfesor = ({
                       <select
                         value={horario[dia]?.[hora]?.materia || "Sin asignar"}
                         onChange={(e) =>
-                          onMateriaCursoChange(
-                            dia,
-                            hora,
-                            "materia",
-                            e.target.value
-                          )
+                          onMateriaCursoChange(dia, hora, "materia", e.target.value)
                         }
                         className="materia-select"
                       >
-                        <option value="Sin asignar">Sin asignar</option>
+                        <option value="Sin asignar" disabled>
+                          Sin asignar
+                        </option>
                         {materias.map((m) => (
                           <option key={m.ID_materia} value={m.ID_materia}>
                             {m.nombre}
@@ -61,16 +58,13 @@ const EditarTablaHorarioProfesor = ({
                       <select
                         value={horario[dia]?.[hora]?.curso || "Sin asignar"}
                         onChange={(e) =>
-                          onMateriaCursoChange(
-                            dia,
-                            hora,
-                            "curso",
-                            e.target.value
-                          )
+                          onMateriaCursoChange(dia, hora, "curso", e.target.value)
                         }
                         className="curso-select"
                       >
-                        <option value="Sin asignar">Sin asignar</option>
+                        <option value="Sin asignar" disabled>
+                          Sin asignar
+                        </option>
                         {cursos.map((c) => (
                           <option key={c.ID_curso} value={c.ID_curso}>
                             {c.nombre}

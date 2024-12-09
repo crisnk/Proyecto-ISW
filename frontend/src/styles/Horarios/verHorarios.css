@@ -1,48 +1,118 @@
-.ver-horarios {
-  padding: 25px;
+.ver-horarios-layout {
+  padding: 20px;
   margin: 40px auto;
   background-color: #ffffff; 
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 900px;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  max-width: 1800px;
+  font-family: 'Arial', sans-serif;
 }
 
-.ver-horarios h1 {
-  font-size: 2.2rem;
+.ver-horarios-title {
+  font-size: 2.5rem;
   color: #003366;
   text-align: center;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+.ver-horarios-nav {
   margin-bottom: 20px;
 }
 
-.ver-horarios h2 {
-  font-size: 1.8rem;
-  color: #0055b3;
-  text-align: center;
-  margin-bottom: 15px;
+.ver-horarios-menu {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
+.ver-horarios-menu li {
+  margin: 0 15px;
+}
 
-.pagination {
+.ver-horarios-menu a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.ver-horarios-menu a.active {
+  background-color: #0055b3;
+  color: white;
+  transform: scale(1.05);
+}
+
+.ver-horarios-menu a:hover {
+  background-color: #e0e0e0;
+  color: #0055b3;
+}
+
+.outlet-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mensaje-cargando {
+  font-size: 1.2rem;
+  color: #666666;
   text-align: center;
   margin-top: 20px;
 }
 
-.pagination button {
-  background-color: #0066cc;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.mensaje-error {
+  font-size: 1.2rem;
+  color: #d9534f;
+  text-align: center;
+  margin-top: 20px;
   font-weight: bold;
-  margin: 0 5px;
 }
 
-.pagination button:disabled {
-  background-color: #cccccc;
+.mensaje-exito {
+  font-size: 1.2rem;
+  color: #5cb85c;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
 }
 
-.pagination span {
-  font-size: 1.1rem;
-  color: #333333;
+@media (max-width: 768px) {
+  .ver-horarios-layout {
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 95%;
+  }
+
+  .ver-horarios-title {
+    font-size: 2rem;
+  }
+
+  .ver-horarios-menu a {
+    font-size: 1rem;
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ver-horarios-layout {
+    padding: 10px;
+    margin: 15px auto;
+    max-width: 100%;
+  }
+
+  .ver-horarios-title {
+    font-size: 1.8rem;
+  }
+
+  .ver-horarios-menu a {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
 }

@@ -1,10 +1,18 @@
-import "@styles/Horarios/Spinner.css"; 
+import "@styles/Horarios/spinner.css";
 
 const Spinner = () => {
   return (
-    <div className="spinner">
-      <div className="double-bounce1"></div>
-      <div className="double-bounce2"></div>
+    <div
+      style={{
+        background: "transparent", 
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div className="spiral-spinner">
+        <div className="spiral"></div>
+      </div>
     </div>
   );
 };

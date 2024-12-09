@@ -26,7 +26,7 @@ export default function Popup({ show, setShow, data, action }) {
                                 label: "Nombre completo",
                                 name: "nombreCompleto",
                                 defaultValue: userData.nombreCompleto || "",
-                                placeholder: 'Diego Alexis Salazar Jara',
+                                placeholder: 'Nombre Apellido',
                                 fieldType: 'input',
                                 type: "text",
                                 required: true,

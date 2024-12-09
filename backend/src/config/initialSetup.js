@@ -485,7 +485,8 @@ export async function crearImparticiones() {
   try {
     const imparteRepository = AppDataSource.getRepository(Imparte);
     const count = await imparteRepository.count();
-    if (count > 0) return;  
+    if (count > 0) return;
+
     const imparticiones = [
       { ID_curso: 1, ID_materia: 1, rut: "12.345.678-9", dia: "lunes", bloque: "08:00 - 08:45", hora_Inicio: "08:00", hora_Fin: "08:45" },
       { ID_curso: 1, ID_materia: 2, rut: "11.234.567-8", dia: "lunes", bloque: "08:50 - 09:35", hora_Inicio: "08:50", hora_Fin: "09:35" },
@@ -495,13 +496,11 @@ export async function crearImparticiones() {
       { ID_curso: 1, ID_materia: 6, rut: "7.890.123-4", dia: "lunes", bloque: "14:30 - 15:15", hora_Inicio: "14:30", hora_Fin: "15:15" },
       { ID_curso: 1, ID_materia: 7, rut: "6.789.012-3", dia: "lunes", bloque: "15:20 - 16:05", hora_Inicio: "15:20", hora_Fin: "16:05" },
       { ID_curso: 1, ID_materia: 8, rut: "5.678.901-2", dia: "lunes", bloque: "16:10 - 16:55", hora_Inicio: "16:10", hora_Fin: "16:55" },
-      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" },
-      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "19:00 - 23:45", hora_Inicio: "19:00", hora_Fin: "23:45" },  
-  
+      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" }
     ];
-    
+
     await imparteRepository.save(imparticiones);
-  
+
   } catch (error) {
     console.error("Error al crear materias predeterminadas:", error);
   }
@@ -530,5 +529,27 @@ export async function crearAtrasos() {
   
   } catch (error) {
     console.error("Error al crear materias predeterminadas:", error);
+  }
+}
+export async function crearJustificativos() {
+  try {
+    const justificativoRepository = AppDataSource.getRepository("Justificativo");
+    const count = await justificativoRepository.count();
+    if (count > 0) return;
+
+    const justificativos = [
+      { motivo: "Problemas de salud", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 1, rut: "19.741.384-0" },
+      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 2, rut: "21.237.487-3" },
+      { motivo: "Evento familiar", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 3, rut: "11.111.111-9" },
+      { motivo: "Problemas de transporte", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 4, rut: "21.012.009-2" },
+      { motivo: "Condiciones climáticas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 5, rut: "21.025.001-1" },
+      { motivo: "Razones médicas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 6, rut: "21.025.002-2" },
+      { motivo: "Retraso en transporte público", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 7, rut: "21.025.003-3" },
+    ];
+    
+
+    await justificativoRepository.save(justificativos);
+  } catch (error) {
+    console.error("Error al crear justificativos:", error);
   }
 }

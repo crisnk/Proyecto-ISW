@@ -14,8 +14,8 @@ const router = Router();
 router.use(authenticateJwt);
 router  
     .post("/registrar", isAuthorized("alumno"), registrarAtraso)
-    .get("/atrasos", verAtrasos)
-    .get("/tablaAlumnos", tablaAtrasosAlumnos)
+    .get("/atrasos",isAuthorized("alumno"), verAtrasos)
+    .get("/tablaAlumnos", isAuthorized("alumno","profesor"),tablaAtrasosAlumnos)
     .post("/enviar", sendCustomEmail)
     .get("/infoAtraso", infoAtraso)
     .get("/infoAtrasosJustificables",isAuthorized("alumno"), infoAtrasosJustificables);
