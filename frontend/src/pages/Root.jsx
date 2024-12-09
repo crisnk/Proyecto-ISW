@@ -1,22 +1,40 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from '@components/Navbar';
-import { AuthProvider } from '@context/AuthContext';
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "@components/Navbar";
+import Sidebar from "@components/Sidebar";
+import { AuthProvider } from "@context/AuthContext";
+import "@styles/sidebar.css";
 
-function Root()  {
-return (
+function Root() {
+  return (
     <AuthProvider>
-        <PageRoot/>
+      <PageRoot />
     </AuthProvider>
-);
+  );
 }
 
 function PageRoot() {
-return (
-    <>
-        <Navbar />
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarVisible((prev) => !prev);
+  };
+
+  return (
+    <div className="app-layout">
+      <Navbar />
+      <button
+        className={`sidebar-toggle-btn ${isSidebarVisible ? "active" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <span className="hamburger-icon"></span>
+      </button>
+      <Sidebar isVisible={isSidebarVisible} toggleSidebar={toggleSidebar} />
+      <main className={`main-content ${isSidebarVisible ? "with-sidebar" : ""}`}>
         <Outlet />
-    </>
-);
+      </main>
+    </div>
+  );
 }
 
 export default Root;

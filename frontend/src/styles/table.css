@@ -12,3 +12,32 @@
 .tabulator .tabulator-footer .tabulator-page.active {
     color: #E4332C;
 }
+.filters {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.filters input {
+  padding: 5px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pagination-controls span {
+  font-weight: bold;
+}

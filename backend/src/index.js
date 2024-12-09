@@ -8,9 +8,12 @@ import passport from "passport";
 import express, { json, urlencoded } from "express";
 import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
-import { createUsers, crearEspecialidades } from "./config/initialSetup.js";
-import { createDefaultEntities } from "./config/initialSetupEntities.js";
+import { createUsers, crearEspecialidades, crearCursos, crearProfesores, crearMaterias, crearImparticiones, crearAtrasos } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function setupServer() {
   try {
@@ -58,7 +61,11 @@ async function setupServer() {
     app.use(passport.session());
 
     passportJwtSetup();
-
+    
+    //const uploadsPath = path.join(__dirname, 'uploads');  // Sin el prefijo 'src'
+    //app.locals.uploadsPath = uploadsPath;
+    app.use("api/src/uploads", express.static("src/uploads"));
+    app.use("/api", indexRoutes);
     app.use("/api", indexRoutes);
 
     app.listen(PORT, () => {
@@ -72,9 +79,13 @@ async function setupServer() {
 async function setupAPI() {
   try {
     await connectDB();
-    await createUsers();
+    await crearProfesores();
+    await crearCursos();
+    await createUsers(); 
     await crearEspecialidades();
-    await createDefaultEntities(); 
+    await crearMaterias();
+    await crearImparticiones();
+    await crearAtrasos();
     await setupServer();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);

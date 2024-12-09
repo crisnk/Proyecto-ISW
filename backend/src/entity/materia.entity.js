@@ -28,13 +28,15 @@ const MateriaSchema = new EntitySchema({
       nullable: false,
     },
   },
-  indices: [
-    {
-      name: "IDX_MATERIA",
-      columns: ["ID_materia"],
-      unique: false,
+  relations: {
+    imparten: {
+      type: "one-to-many",
+      target: "Imparte",
+      inverseSide: "materia",
+      onDelete: "CASCADE",
     },
-  ]
-});
+  },
+  
+  });
 
 export default MateriaSchema;

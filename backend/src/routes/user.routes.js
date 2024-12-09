@@ -16,9 +16,9 @@ router
   
 
 router
-  .get("/", isAuthorized("administrador"), getUsers)
-  .get("/detail", isAuthorized("administrador"), getUser)
-  .patch("/detail", isAuthorized("administrador"), updateUser)
-  .delete("/detail", isAuthorized("administrador"), deleteUser);
+  .get("/getusers", isAuthorized("administrador"), getUsers)
+  .get("/getuser", isAuthorized("administrador"), getUser)
+  .patch("/update", isAuthorized("administrador"), updateUser)
+  .delete("/delete", isAuthorized("administrador"), deleteUser);
 
 export default router;

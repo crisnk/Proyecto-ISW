@@ -1,0 +1,281 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow: auto;
+  transition: margin-left 0.5s ease; 
+}
+
+.main-content.with-sidebar {
+  margin-left: 300px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 65px; 
+  left: -300px;
+  width: 300px;
+  height: calc(100% - 60px); 
+  background-color: #3271d154;
+  color: white;
+  overflow-y: auto;
+  transition: left 0.5s ease;
+  z-index: 1000;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+  padding-top: 20px;
+}
+
+.sidebar.visible {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  position: relative; 
+}
+
+.sidebar ul li a {
+  display: block;
+  text-decoration: none;
+  color: rgba(27, 25, 25, 0.562);
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: transparent;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+  background-color: #3838cb7c;
+  border-radius: 8px;
+  transform: scale(1.1);
+}
+
+.hover-text {
+  visibility: hidden;
+  opacity: 0;
+  margin-left: 5px;
+  font-size: 0.9rem;
+  color: white;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar ul li a:hover .hover-text {
+  visibility: visible;
+  opacity: 0.8;
+}
+
+.sidebar-toggle-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  transform: scale(1.1); 
+}
+
+.hamburger-icon {
+  width: 30px; 
+  height: 4px; 
+  background-color: white;
+  border-radius: 2px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.hamburger-icon::before,
+.hamburger-icon::after {
+  content: "";
+  width: 30px;
+  height: 4px; 
+  background-color: white;
+  border-radius: 2px;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.hamburger-icon::before {
+  top: -10px; 
+  left: 0px;
+}
+
+.hamburger-icon::after {
+  top: 10px; 
+  left: 0px;
+}
+
+.sidebar-button {
+  background-color: #4a4deb; 
+  color: white;
+  padding: 15px 25px; 
+  font-size: 1.2rem; 
+  font-weight: bold; 
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+  border-radius: 10px; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar-button:hover {
+  background-color: #373bd1;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
+}
+
+.sidebar-button:active {
+  background-color: #2e32a8; 
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) inset; 
+}
+
+.sidebar-button:focus {
+  outline: none; 
+  box-shadow: 0 0 10px #4a4deb;
+}
+
+.submenu {
+  position: relative;
+  max-height: 0;
+  overflow: hidden;
+  margin-top: 5px; 
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  padding-left: 20px; 
+}
+
+.submenu.open {
+  max-height: 300px; 
+  opacity: 1;
+}
+
+
+.submenu li a {
+  font-size: 1rem;
+  padding: 5px 0;
+  display: block;
+  color: rgba(27, 25, 25, 0.8);
+}
+
+.submenu li a:hover {
+  color: white;
+  background-color: rgba(56, 56, 203, 0.7);
+  border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .main-content {
+    margin-left: 0;
+    transition: none;
+  }
+
+  .sidebar {
+    width: 240px;
+    left: -240px;
+    padding-top: 15px;
+  }
+
+  .sidebar.visible {
+    left: 0;
+  }
+
+  .sidebar ul li a {
+    font-size: 1rem;
+    padding: 8px 15px;
+  }
+
+  .sidebar-toggle-btn {
+    top: 10px;
+    left: 10px;
+    padding: 8px;
+  }
+
+  .hamburger-icon {
+    width: 25px;
+    height: 3px;
+  }
+
+  .hamburger-icon::before,
+  .hamburger-icon::after {
+    width: 25px;
+    height: 3px;
+  }
+
+  .sidebar-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+
+  .submenu li a {
+    font-size: 0.9rem;
+    padding: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 200px;
+    left: -200px;
+  }
+
+  .sidebar.visible {
+    left: 0;
+  }
+
+  .sidebar ul li a {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+
+  .sidebar-toggle-btn {
+    top: 8px;
+    left: 8px;
+    padding: 6px;
+  }
+
+  .hamburger-icon {
+    width: 20px;
+    height: 3px;
+  }
+
+  .hamburger-icon::before,
+  .hamburger-icon::after {
+    width: 20px;
+    height: 3px;
+  }
+
+  .sidebar-button {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .submenu li a {
+    font-size: 0.8rem;
+    padding: 4px;
+  }
+}

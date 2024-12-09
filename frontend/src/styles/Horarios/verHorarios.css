@@ -1,0 +1,103 @@
+.ver-horarios {
+  padding: 25px;
+  margin: 40px auto;
+  background-color: #ffffff; 
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 900px;
+}
+
+.ver-horarios h1 {
+  font-size: 2.2rem;
+  color: #003366;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ver-horarios h2 {
+  font-size: 1.8rem;
+  color: #0055b3;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #0066cc;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+}
+
+.pagination span {
+  font-size: 1.1rem;
+  color: #333333;
+}
+@media (max-width: 768px) {
+  .ver-horarios {
+    padding: 20px;
+    margin: 30px auto;
+    max-width: 95%;
+  }
+
+  .ver-horarios h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  .ver-horarios h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .pagination button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    margin: 0 4px;
+  }
+
+  .pagination span {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ver-horarios {
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 100%;
+  }
+
+  .ver-horarios h1 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .ver-horarios h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .pagination button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    margin: 0 3px;
+  }
+
+  .pagination span {
+    font-size: 0.9rem;
+  }
+}
