@@ -20,7 +20,6 @@ import VerHorariosCurso from '@pages/Horarios/VerHorariosCurso';
 import EliminarHorarioProfesor from '@pages/Horarios/EliminarHorarioProfesor';
 import EliminarHorarioCurso from '@pages/Horarios/EliminarHorarioCurso';
 import MiHorario from '@pages/Horarios/MiHorario';
-import Materias from '@pages/Horarios/Materias';
 import IngresarJustificativo from '@pages/IngresarJustificativo';
 import GestionMateriasLayout from '@pages/Horarios/GestionMateriasLayout';
 import CrearMateria from '@pages/Horarios/CrearMateria';
