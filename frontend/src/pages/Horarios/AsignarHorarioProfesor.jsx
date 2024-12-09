@@ -61,8 +61,6 @@ const AsignarHorarioProfesor = () => {
 
       setHorario(formattedHorario);
     } catch (error) {
-      console.error("Error cargando el horario:", error.message);
-      Swal.fire("Error", "No se pudo cargar el horario del profesor.", "error");
       setHorario(initializeHorario());
     } finally {
       setLoading(false);
@@ -240,18 +238,35 @@ const AsignarHorarioProfesor = () => {
 
   return (
     <div>
-      <h2>Asignar Horario a Profesores</h2>
+      <h2 style={{ fontSize: "2rem", textAlign: "center" }}>Asignar Horario a Profesores</h2>
       <div>
-        <label>Profesor:</label>
-        <select value={profesor} onChange={(e) => setProfesor(e.target.value)}>
-          <option value="">Selecciona profesor</option>
-          {profesores.map((p) => (
-            <option key={p.rut} value={p.rut}>
-              {p.nombreCompleto}
-            </option>
-          ))}
-        </select>
-      </div>
+        <label
+          style={{
+            fontSize: "1.5rem",
+            display: "block",  
+            marginBottom: "8px"
+          }}
+        >
+          Profesor:</label>
+  <select
+    value={profesor}
+    onChange={(e) => setProfesor(e.target.value)}
+    style={{
+      fontSize: "1.5rem",
+      padding: "10px",    
+      width: "100%",      
+      maxWidth: "400px",  
+    }}
+  >
+    <option value="" style={{ fontSize: "1.5rem" }}>Selecciona profesor</option>
+    {profesores.map((p) => (
+      <option key={p.rut} value={p.rut} style={{ fontSize: "1.5rem" }}>
+        {p.nombreCompleto}
+      </option>
+    ))}
+  </select>
+</div>
+
       {profesor && (
         <EditarTablaHorarioProfesor
           horario={horario}

@@ -5,10 +5,20 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import "@styles/Horarios/miHorario.css";
 
+const pastelColors = [
+  "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF",
+  "#FFC2E0", "#C2DFFF", "#C2FFD2", "#D1DCFF", "#FFDBE8",
+  "#FFD7C2", "#D9C2FF", "#BAE8DB", "#E8FFDB", "#FFDBFF",
+];
+
 const MiHorario = () => {
   const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedColor, setSelectedColor] = useState(pastelColors[0]);
+  const [backgroundColor, setBackgroundColor] = useState("rgba(255, 255, 255, 0.8)");
+  const [curso, setCurso] = useState("Sin curso");
+  const [cursorURL, setCursorURL] = useState("");
 
   const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
   const horas = [
@@ -22,8 +32,8 @@ const MiHorario = () => {
     const fetchHorario = async () => {
       try {
         const data = await getHorariosAlumno();
-
         const formattedHorario = {};
+
         diasSemana.forEach((dia) => {
           formattedHorario[dia] = {};
           horas.forEach((hora) => {
@@ -31,6 +41,7 @@ const MiHorario = () => {
               materia: "Sin asignar",
               profesor: "Sin profesor",
               curso: "Sin curso",
+              color: "#ffffff",
             };
           });
         });
@@ -41,14 +52,16 @@ const MiHorario = () => {
               materia: bloque.nombre_materia || "Sin asignar",
               profesor: bloque.nombre_profesor || "Sin profesor",
               curso: bloque.nombre_curso || "Sin curso",
+              color: "#ffffff",
             };
           }
         });
 
+        setCurso(data[0]?.nombre_curso || "Sin curso");
         setHorario(formattedHorario);
         setError("");
-      } catch (err) {
-        setError(err.response?.data?.message || "Error al cargar el horario.");
+      } catch {
+        setError("Error al cargar el horario.");
       } finally {
         setLoading(false);
       }
@@ -56,6 +69,14 @@ const MiHorario = () => {
 
     fetchHorario();
   }, []);
+
+  const handleBlockColorChange = (dia, hora) => {
+    const updatedHorario = { ...horario };
+    if (updatedHorario[dia]?.[hora]) {
+      updatedHorario[dia][hora].color = selectedColor;
+    }
+    setHorario(updatedHorario);
+  };
 
   const handleExportToPNG = async () => {
     const horarioElement = document.querySelector(".tabla-horarios-container");
@@ -67,7 +88,7 @@ const MiHorario = () => {
       link.download = `Mi_Horario.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-    } catch (err) {
+    } catch {
       setError("Error al exportar el horario como PNG.");
     }
   };
@@ -84,21 +105,67 @@ const MiHorario = () => {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Mi_Horario.pdf`);
-    } catch (err) {
+    } catch {
       setError("Error al exportar el horario como PDF.");
     }
   };
 
   return (
     <div className="mi-horario">
-      <h1>Mi Horario</h1>
+      <h1>Personaliza y descarga tu Horario</h1>
       {loading ? (
         <p>Cargando...</p>
       ) : error ? (
         <p style={{ color: "red" }}>{error}</p>
       ) : (
         <>
-          <VerTablaHorarioAlumno horario={horario} diasSemana={diasSemana} horas={horas} />
+          <div className="paleta-colores">
+            <h3>Colores para las materias:</h3>
+            <div className="colores">
+              {pastelColors.map((color) => (
+                <div
+                  key={color}
+                  className="color-opcion"
+                  style={{
+                    backgroundColor: color,
+                    boxShadow: color === selectedColor ? "0 0 10px black" : "none",
+                  }}
+                  onClick={() => setSelectedColor(color)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <VerTablaHorarioAlumno
+            horario={horario}
+            diasSemana={diasSemana}
+            horas={horas}
+            onBlockColorChange={handleBlockColorChange}
+            backgroundColor={backgroundColor}
+            curso={curso}
+            setCursorURL={setCursorURL}
+            selectedColor={selectedColor}
+            cursorURL={cursorURL}
+          />
+
+          <div className="paleta-colores fondo-horario">
+            <h3>Fondo del horario:</h3>
+            <div className="colores">
+              {pastelColors.map((color) => (
+                <div
+                  key={color}
+                  className="color-opcion"
+                  style={{
+                    backgroundColor: color,
+                    opacity: 0.8,
+                    boxShadow: color === backgroundColor ? "0 0 10px black" : "none",
+                  }}
+                  onClick={() => setBackgroundColor(color)} 
+                />
+              ))}
+            </div>
+          </div>
+
           <div className="export-buttons">
             <button onClick={handleExportToPNG}>Exportar como PNG</button>
             <button onClick={handleExportToPDF}>Exportar como PDF</button>

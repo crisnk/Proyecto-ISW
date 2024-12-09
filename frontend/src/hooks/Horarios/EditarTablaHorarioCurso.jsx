@@ -21,7 +21,17 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
             <tr key={hora} className={recreoHoras.includes(hora) ? "recreo-row" : ""}>
               <td className="hora-col">{hora}</td>
               {diasSemana.map((dia) => (
-                <td key={`${dia}-${hora}`} className="contenido-col">
+                <td
+                  key={`${dia}-${hora}`}
+                  className="contenido-col"
+                  style={{
+                    backgroundColor: recreoHoras.includes(hora)
+                      ? "#D0F0FF" // Celeste para recreos
+                      : horario[dia]?.[hora]?.materia && horario[dia][hora].materia !== "Sin asignar"
+                      ? "#CFFFD0" // Verde pastel para asignados
+                      : "#FFFFFF", // Blanco para no asignados
+                  }}
+                >
                   {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
                   ) : (
