@@ -61,7 +61,6 @@ const AsignarHorarioCurso = () => {
 
       setHorario(formattedHorario);
     } catch {
-      Swal.fire("Error", "No se pudo cargar el horario del curso.", "error");
       setHorario(initializeHorario());
     } finally {
       setLoading(false);
@@ -181,21 +180,36 @@ const AsignarHorarioCurso = () => {
 
   return (
     <div>
-      <h2>Asignar Horario a Cursos</h2>
+      <h2 style={{ fontSize: "2rem", textAlign: "center" }}>Asignar Horario a Cursos</h2>
       <div>
-        <label>Curso:</label>
+        <label
+          style={{
+            fontSize: "1.5rem",
+            display: "block",
+            marginBottom: "8px"
+          }}
+        >
+          Curso:
+        </label>
         <select
           value={curso}
           onChange={(e) => setCurso(e.target.value)}
+          style={{
+            fontSize: "1.5rem",
+            padding: "10px",
+            width: "100%",
+            maxWidth: "400px"
+          }}
         >
-          <option value="">Selecciona curso</option>
-          {cursos.map((c) => (
-            <option key={c.ID_curso} value={c.ID_curso}>
-              {c.nombre}
-            </option>
-          ))}
-        </select>
-      </div>
+    <option value="" style={{ fontSize: "1.5rem" }}>Selecciona curso</option>
+    {cursos.map((c) => (
+      <option key={c.ID_curso} value={c.ID_curso} style={{ fontSize: "1.5rem" }}>
+        {c.nombre}
+      </option>
+    ))}
+  </select>
+</div>
+
       {curso && (
         <EditarTablaHorarioCurso
           horario={horario}
