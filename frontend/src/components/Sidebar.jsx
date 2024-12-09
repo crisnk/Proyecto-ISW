@@ -8,11 +8,13 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
 
   const [isHorariosOpen, setIsHorariosOpen] = useState(false);
   const [isAtrasosOpen, setIsAtrasosOpen] = useState(false);
+  const [isJustificativosOpen, setIsJustificativosOpen] = useState(false);
 
   useEffect(() => {
     if (!isVisible) {
       setIsHorariosOpen(false); 
       setIsAtrasosOpen(false);
+      setIsJustificativosOpen(false);
     }
   }, [isVisible]);
 
@@ -20,6 +22,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
     toggleSidebar();
     setIsHorariosOpen(false);
     setIsAtrasosOpen(false);
+    setIsJustificativosOpen(false);
   };
 
   const renderHorariosOptions = () => {
@@ -100,6 +103,24 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         return null;
     }
   };
+  const renderJustificativosOptions = () => {
+    if (!isJustificativosOpen) return null;
+    switch (userRole) {
+      case "alumno":
+        return (
+          <>
+            <li>
+              <NavLink to="/ingresarJustificativo" onClick={closeSidebar}>
+                Ingresar Justificativo
+              </NavLink>
+            </li>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  }; 
 
   return (
     <aside className={`sidebar ${isVisible ? "visible" : ""}`}>
@@ -118,6 +139,14 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
           </button>
           <ul className={`submenu ${isAtrasosOpen ? "open" : ""}`}>
             {renderAtrasosOptions()}
+          </ul>
+        </li>
+        <li>
+          <button onClick={() => setIsJustificativosOpen((prev) => !prev)} className="sidebar-button">
+            Justificativos
+          </button>
+          <ul className={`submenu ${isJustificativosOpen ? "open" : ""}`}>
+            {renderJustificativosOptions()}
           </ul>
         </li>
       </ul>

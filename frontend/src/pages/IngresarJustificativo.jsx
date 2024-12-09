@@ -57,23 +57,9 @@ const IngresarJustificativo = () => {
 
         const data = new FormData();
         data.append('motivo', formData.motivo);
-
-        if (formData.documento && formData.documento.length > 0) {
-            data.append('documento', formData.documento[0]); // Obtener el primer archivo
-        }
-        for (let pair of data.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
-
-        // Añadir el ID_atraso (debe ser el ID único del atraso, no la fecha+hora)
-        const atrasoSeleccionado = atrasosDisponibles.find(atraso => `${atraso.fecha} ${atraso.hora}` === formData.atraso);
-        if (atrasoSeleccionado) {
-            data.append('ID_atraso', atrasoSeleccionado.ID_atraso); // Suponiendo que "id" es el identificador único
-        } else {
-            console.error("No se encontró el atraso seleccionado.");
-            return;
-        }
-
+        data.append('documento', formData.documento); // `formData.documento` debe ser un archivo
+        data.append('ID_atraso', formData.atraso);
+        console.log('Dataa:', data);
         // Llamar al servicio para justificar el atraso
         const response = await justificarAtraso(data);  
     } catch (error) {
