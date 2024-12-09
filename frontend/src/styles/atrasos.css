@@ -1,14 +1,100 @@
-.justificar-button{
-    padding: 10px 20px;
-    margin-left: 10px;
-    margin-right: 70px;
-    margin-top: 0.1px;
-    background-color: #4CAF50  !important; 
+/* Contenedor principal */
+.main-container {
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.revisar-button{
+
+/* Contenedor del encabezado (alineación horizontal) */
+.top-table {
+    display: flex;
+    align-items: center; /* Alinea los elementos verticalmente */
+    justify-content: space-between; /* Espacia los elementos horizontalmente */
+    gap: 20px; /* Espaciado entre elementos */
+    flex-wrap: wrap; /* Permite que los elementos se ajusten en caso de poco espacio */
+    margin-bottom: 20px;
+}
+
+/* Título */
+.title-table {
+    font-size: 24px;
+    margin: 0;
+    flex: 2; /* Ocupa más espacio horizontal */
+    text-align: left; /* Alinea el título a la izquierda */
+}
+
+/* Contenedor de filtros */
+.filters {
+    display: flex;
+    gap: 15px;
+    flex: 1; /* Los filtros ocupan un espacio equilibrado */
+    align-items: center;
+}
+
+/* Estilo de los filtros */
+.filters label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: bold;
+    align-items: flex-start;
+}
+
+.filters input,
+.filters select {
+    margin-top: 5px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Botón "Revisar" */
+.revisar-button {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
     padding: 10px 20px;
-    margin-right: 70px;
-    margin-left: 10px;
-    margin-top: 0.1px;
-    background-color: #4CAF50  !important; 
+    transition: background-color 0.3s;
+    flex-shrink: 0; /* Evita que el botón cambie de tamaño */
+}
+
+/* Hover en el botón */
+.revisar-button:hover {
+    background-color: #45a049;
+}
+
+/* Botón deshabilitado */
+.revisar-button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .top-table {
+        flex-direction: column; /* Cambia a columna en pantallas pequeñas */
+        align-items: flex-start;
+    }
+
+    .title-table {
+        font-size: 20px;
+        margin-bottom: 10px;
+        flex: unset;
+        text-align: center;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .revisar-button {
+        width: 100%; /* El botón ocupa todo el ancho disponible */
+        text-align: center;
+    }
 }

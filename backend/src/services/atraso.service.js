@@ -1,4 +1,4 @@
-"use strict";
+ "use strict";
 import { AppDataSource } from "../config/configDb.js";
 import moment from "moment-timezone";
 import { MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
@@ -115,6 +115,7 @@ export async function obtenerAtrasosAlumnos(rut) {
 
         return {
           nombre: user.nombreCompleto,
+          email: user.email,
           rut: alumno.rut,
           curso: nombreCurso.nombre,
           ID_atraso: atraso.ID_atraso,

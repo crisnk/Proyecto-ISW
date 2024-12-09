@@ -531,3 +531,25 @@ export async function crearAtrasos() {
     console.error("Error al crear materias predeterminadas:", error);
   }
 }
+export async function crearJustificativos() {
+  try {
+    const justificativoRepository = AppDataSource.getRepository("Justificativo");
+    const count = await justificativoRepository.count();
+    if (count > 0) return;
+
+    const justificativos = [
+      { motivo: "Problemas de salud", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 1, rut: "19.741.384-0" },
+      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 2, rut: "21.237.487-3" },
+      { motivo: "Evento familiar", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 3, rut: "11.111.111-9" },
+      { motivo: "Problemas de transporte", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 4, rut: "21.012.009-2" },
+      { motivo: "Condiciones climáticas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 5, rut: "21.025.001-1" },
+      { motivo: "Razones médicas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 6, rut: "21.025.002-2" },
+      { motivo: "Retraso en transporte público", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 7, rut: "21.025.003-3" },
+    ];
+    
+
+    await justificativoRepository.save(justificativos);
+  } catch (error) {
+    console.error("Error al crear justificativos:", error);
+  }
+}
