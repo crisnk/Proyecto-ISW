@@ -37,7 +37,7 @@ const RegistrarAtraso = () => {
   }, []);
 
   // Registrar el atraso
-  const registrarAtraso = async () => {
+  const registrarAtraso = async () => {                                                 
     setLoading(true);
     setError("");
     setSuccessMessage("");
@@ -81,7 +81,7 @@ const RegistrarAtraso = () => {
           Registrar Atraso
         </button>
       )}
-    </div>
+    </div>      
   );
 };
 

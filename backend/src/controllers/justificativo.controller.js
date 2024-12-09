@@ -10,6 +10,7 @@ import moment from "moment-timezone";
 
 export async function generarJustificativo(req, res){
   try{
+    console.log("llega de front a controller " + req.body);
     const { error } = justificativoValidation.validate(req.body);
     if (error) {
       return handleErrorClient(res, 400, "Error de validación", error.message);
@@ -17,7 +18,8 @@ export async function generarJustificativo(req, res){
     const rut = await extraerRut(req);
     const estado = 'pendiente';
     const { motivo, ID_atraso} = req.body;
-
+    console.log(motivo);
+    console.log(ID_atraso);
     const atraso = await findAtraso(rut, ID_atraso);    
     if (!atraso) {
       return handleErrorClient(res, 404, 'Atraso no encontrado');

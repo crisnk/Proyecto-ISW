@@ -51,6 +51,19 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
                             onChange={field.onChange}
                         />
                     )}
+                    {field.fieldType === 'file' && (
+                        <input
+                            {...register(field.name, {
+                                required: field.required ? 'Este campo es obligatorio' : false,
+                                validate: field.validate || {},
+                            })}
+                            name={field.name}
+                            type="file"
+                            accept={field.accept || "image/*,application/pdf"} // Puedes definir los tipos de archivos permitidos
+                            disabled={field.disabled}
+                            onChange={field.onChange}
+                        />
+                    )}
                     {field.fieldType === 'textarea' && (
                         <textarea
                             {...register(field.name, {

@@ -282,7 +282,8 @@ export async function findAtrasosJustificables(rut){
         resultado.push({
           fecha: fecha,
           hora: atraso.hora, 
-          materia: materia ? materia.nombre : 'Sin materia asignada'
+          materia: materia ? materia.nombre : 'Sin materia asignada',
+          ID_atraso: atraso.ID_atraso
         });
 
       } catch (error) {

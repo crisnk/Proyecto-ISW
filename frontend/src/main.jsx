@@ -18,6 +18,7 @@ import VerHorarios from '@pages/Horarios/VerHorarios';
 import EliminarHorario from '@pages/Horarios/EliminarHorario';
 import MiHorario from '@pages/Horarios/MiHorario';
 import Materias from '@pages/Horarios/Materias';
+import IngresarJustificativo from '@pages/IngresarJustificativo';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['alumno']}>
             <AtrasosAlumno />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path:'/ingresarJustificativo',
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <IngresarJustificativo />
           </ProtectedRoute>
         )
       },
