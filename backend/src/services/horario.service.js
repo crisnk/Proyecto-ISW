@@ -261,7 +261,8 @@ export const getHorarioAlumnoService = async (rut) => {
   }
 
   const cursoID = pertenece.curso.ID_curso;
-
+  const nombreCurso = pertenece.curso.nombre; 
+ 
   const horarios = await imparteRepository.find({
     where: { ID_curso: cursoID },
     relations: ["materia", "profesor"],
@@ -276,8 +277,10 @@ export const getHorarioAlumnoService = async (rut) => {
     bloque: horario.bloque,
     nombre_materia: horario.materia?.nombre || "Sin asignar",
     nombre_profesor: horario.profesor?.nombreCompleto || "Sin profesor",
+    nombre_curso: nombreCurso, 
   }));
 };
+
 
 export const crearMateriaService = async (materiaData) => {
   const { error } = materiaValidation.validate(materiaData, { abortEarly: false });
