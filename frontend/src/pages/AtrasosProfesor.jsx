@@ -122,16 +122,9 @@ const AtrasosAlumnos = () => {
     return (
         <div className="main-container">
             <div className="top-table">
-                <h1 className="title-table">
+                <h1 className="title-table-curso">
                     Atrasos del curso {atrasos.length > 0 ? atrasos[0].curso : 'Curso no disponible'}
                 </h1>
-                <button
-                    className="revisar-button"
-                    onClick={handleJustificar}
-                    disabled={!selectedRow}
-                >
-                    Revisar
-                </button>
             </div>
 
             <div className="filters">
@@ -156,6 +149,13 @@ const AtrasosAlumnos = () => {
                         <option value="No Justificado">No Justificado</option>
                     </select>
                 </label>
+                <button
+                    className="revisar-button2"
+                    onClick={handleJustificar}
+                    disabled={!selectedRow}
+                >
+                    Revisar
+                </button>
             </div>
 
             <TablaAlumnos
