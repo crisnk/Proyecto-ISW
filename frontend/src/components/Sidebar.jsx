@@ -63,6 +63,19 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         }
       },
     },
+    {
+      label: "Justificativos",
+      options: () => {
+        switch (userRole) {
+          case "alumno":
+            return [
+              { path: "/ingresarJustificativo", label: "Ingresar Justificativo" },
+            ];
+          default:
+            return [];
+        }
+      },
+    },
   ];
 
   const renderMenu = (menu) => {
