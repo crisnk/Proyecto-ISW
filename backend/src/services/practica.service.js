@@ -33,6 +33,7 @@ export async function crearPracticaService(data) {
 
     await practicaRepository.save(nuevaPractica);
 
+    console.log(nuevaPractica);
     return [nuevaPractica, null];
   } catch (error) {
     console.error("Error al crear la práctica:", error);

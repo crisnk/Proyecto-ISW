@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "@styles/sidebar.css";
 
@@ -8,6 +8,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
 
   const [isHorariosOpen, setIsHorariosOpen] = useState(false);
   const [isAtrasosOpen, setIsAtrasosOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isVisible) {
@@ -21,6 +22,13 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
     setIsHorariosOpen(false);
     setIsAtrasosOpen(false);
   };
+
+  function navigateTo(path) {
+    return function () {      
+      navigate(path);
+      closeSidebar();
+    }
+  }
 
   const renderHorariosOptions = () => {
     if (!isHorariosOpen) return null;
@@ -119,6 +127,11 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
           <ul className={`submenu ${isAtrasosOpen ? "open" : ""}`}>
             {renderAtrasosOptions()}
           </ul>
+        </li>
+        <li>
+          <button onClick={navigateTo("/practica")} className="sidebar-button">
+            Practicas
+          </button>
         </li>
       </ul>
     </aside>

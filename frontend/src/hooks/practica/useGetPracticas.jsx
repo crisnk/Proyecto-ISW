@@ -36,7 +36,7 @@ export default function usePractica() {
     const fetchPracticas = async () => {
         try {
             const response = await getPracticas();
-            console.log(response);
+
             const formattedData = response.map(practica => ({
                 ID: practica.ID_practica,
                 nombre: practica.nombre,

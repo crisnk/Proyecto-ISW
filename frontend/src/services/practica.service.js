@@ -17,3 +17,13 @@ export async function updatePractica(ID_practica, data) {
         return error.response.data;
     }
 }
+
+export async function createPractica(data) {
+    try {
+        const response = await axios.post("/practica/crear", data);
+        console.log(response);
+        return response.data.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}

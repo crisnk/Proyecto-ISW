@@ -26,12 +26,12 @@ export const practicaValidation = Joi.object({
     }),
   cupo: Joi.number()
     .integer()
-    .min(1)
+    .min(0)
     .required()
     .messages({
       "number.base": "El cupo debe ser un número.",
       "number.integer": "El cupo debe ser un número entero.",
-      "number.min": "El cupo debe ser al menos 1.",
+      "number.min": "El cupo no puede ser negativo.",
       "any.required": "El cupo es obligatorio.",
     }),
   direccion: Joi.string()

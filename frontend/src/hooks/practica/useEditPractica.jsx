@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { updatePractica } from '@services/practica.service.js';
+import { updatePractica, getPracticas } from '@services/practica.service.js';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 
 const useEditPractica = (setPracticas) => {
@@ -31,7 +31,7 @@ const useEditPractica = (setPracticas) => {
 
             setPracticas(prevPracticas => prevPracticas.map(practica => {
                 console.log("Práctica actual:", practica);
-                if (practica.ID === updatedPractica.ID) {
+                if (practica.ID === updatedPractica.ID_practica) {
                     return updatedPractica;
                 }
                 return practica;

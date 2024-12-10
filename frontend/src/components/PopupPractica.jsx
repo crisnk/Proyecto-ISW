@@ -5,17 +5,6 @@ import QuestionIcon from '@assets/QuestionCircleIcon.svg';
 
 export default function Popup({ show, setShow, data, action }) {
     const practicaData = data[0];
-    console.log(practicaData);
-    const convertToDate = (fechaString) => {
-        // Separar la fecha y la hora
-        const [datePart, timePart] = fechaString.split(', ');
-
-        const [day, month, year] = datePart.split('/');
-    
-        const date = new Date(`${year}-${month}-${day}T${timePart}`);
-        
-        return date.toISOString().slice(0, 16);
-    };
 
     const handleSubmit = (formData) => {
         action(formData);
@@ -102,9 +91,9 @@ export default function Popup({ show, setShow, data, action }) {
                                 fieldType: "select",
                                 options: [
                                     { value: '1', label: 'Mecánica Automotriz' },
-                                    { value: '2', label: 'Electricidad' },
-                                    { value: '3', label: 'Electrónica' },
-                                    { value: '4', label: 'Mecánica Industrial' },
+                                    { value: '2', label: 'Mecánica Industrial' },
+                                    { value: '3', label: 'Electricidad' },
+                                    { value: '4', label: 'Electrónica' },
                                     { value: '5', label: 'Telecomunicación' },
                                 ],
                                 required: true,
