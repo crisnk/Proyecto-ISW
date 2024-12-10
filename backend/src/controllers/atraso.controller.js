@@ -11,12 +11,10 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 import { extraerRut } from "../helpers/rut.helper.js";
-import { extraerRut } from "../helpers/rut.helper.js";
 
 
 export async function registrarAtraso(req, res) {
   try {
-    const rut = await extraerRut(req);
     const rut = await extraerRut(req);
 
     const [atrasoCreado, error] = await createAtrasoService(rut);
@@ -38,9 +36,7 @@ export async function verAtrasos(req,res) {
     const rut = await extraerRut(req);
 
     const [atrasos, errorAtrasos] = await obtenerAtrasos(rut);
-    const rut = await extraerRut(req);
 
-    const [atrasos, errorAtrasos] = await obtenerAtrasos(rut);
 
     if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
     

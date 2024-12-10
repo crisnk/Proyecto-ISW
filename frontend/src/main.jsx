@@ -10,10 +10,6 @@ import Users from '@pages/Users';
 import AtrasosAlumno from '@pages/AtrasosAlumno';
 import AtrasosProfesor from '@pages/AtrasosProfesor';
 import RegistrarAtraso from '@pages/RegistrarAtraso';
-import Users from '@pages/Users';
-import AtrasosAlumno from '@pages/AtrasosAlumno';
-import AtrasosProfesor from '@pages/AtrasosProfesor';
-import RegistrarAtraso from '@pages/RegistrarAtraso';
 import Practica from '@pages/Practica';
 import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor';
@@ -35,8 +31,6 @@ import '@styles/styles.css';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
-    errorElement: <Error404 />,
     element: <Root />,
     errorElement: <Error404 />,
     children: [
@@ -160,7 +154,6 @@ const router = createBrowserRouter([
   },
   {
     path: '/auth',
-    element: <Login />,
     element: <Login />,
   },
   {
