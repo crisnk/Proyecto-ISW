@@ -55,14 +55,16 @@ const router = createBrowserRouter([
           <ProtectedRoute allowedRoles={['administrador']}>
             <Users />
           </ProtectedRoute>
-          <ProtectedRoute allowedRoles={['administrador']}>
-            <Users />
-          </ProtectedRoute>
         ),
         },
       {
         path: '/practica',
-        element: <Practica />,
+        element: (
+          <ProtectedRoute allowedRoles={['EDP', 'administrador', 'alumno', 'jefeUTP', 'profesor']}>
+            <Practica />
+          </ProtectedRoute>
+        ),
+
       },
       {
         path: '/atrasos',

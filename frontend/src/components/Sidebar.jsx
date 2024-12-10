@@ -76,6 +76,19 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
         }
       },
     },
+    {
+      label: "Practicas",
+      options: () => {
+        switch (userRole) {
+          case "profesor":
+            return [
+              { path: "/practica", label: "Publicar practica" },
+            ];
+          default:
+            return [];
+        }
+      },
+    },
   ];
 
   const renderMenu = (menu) => {
