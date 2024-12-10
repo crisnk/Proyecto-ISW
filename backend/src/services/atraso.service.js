@@ -97,6 +97,9 @@ export async function findAtraso(rut, ID_atraso){
 
 export async function obtenerAtrasos(rut){
   try {
+    const userRepository = AppDataSource.getRepository(User);
+    const perteneceRepository = AppDataSource.getRepository(Pertenece);
+    const cursoRepository = AppDataSource.getRepository(Curso);
     const atrasoRepository = AppDataSource.getRepository(Atraso);
     const justificativoRepository = AppDataSource.getRepository(Justificativo);
 

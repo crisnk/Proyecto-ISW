@@ -45,7 +45,7 @@ export async function modificarPractica(req, res) {
     if (error) return handleErrorClient(res, 400, "Error de validación", error.message);
 
     const data = { ID_practica, ...body };
-    const { practicaModificada, errorPracticaModificada } = await modificarPracticaService(data);
+    const [practicaModificada, errorPracticaModificada] = await modificarPracticaService(data);
 
     if (errorPracticaModificada) {
       return handleErrorClient(res, 400, "Error modificando la práctica", errorPracticaModificada);

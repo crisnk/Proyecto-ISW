@@ -10,6 +10,10 @@ import Users from '@pages/Users';
 import AtrasosAlumno from '@pages/AtrasosAlumno';
 import AtrasosProfesor from '@pages/AtrasosProfesor';
 import RegistrarAtraso from '@pages/RegistrarAtraso';
+import Users from '@pages/Users';
+import AtrasosAlumno from '@pages/AtrasosAlumno';
+import AtrasosProfesor from '@pages/AtrasosProfesor';
+import RegistrarAtraso from '@pages/RegistrarAtraso';
 import Practica from '@pages/Practica';
 import ProtectedRoute from '@components/ProtectedRoute';
 import AsignarHorarioProfesor from '@pages/Horarios/AsignarHorarioProfesor';
@@ -33,6 +37,8 @@ const router = createBrowserRouter([
     path: '/',
     element: <Root />,
     errorElement: <Error404 />,
+    element: <Root />,
+    errorElement: <Error404 />,
     children: [
       { path: '/home', element: <Home /> },
       {
@@ -49,8 +55,11 @@ const router = createBrowserRouter([
           <ProtectedRoute allowedRoles={['administrador']}>
             <Users />
           </ProtectedRoute>
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Users />
+          </ProtectedRoute>
         ),
-      },
+        },
       {
         path: '/practica',
         element: <Practica />,
@@ -149,6 +158,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/auth',
+    element: <Login />,
     element: <Login />,
   },
   {

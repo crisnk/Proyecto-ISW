@@ -1,4 +1,3 @@
-// PopupPractica.jsx
 import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
@@ -6,16 +5,6 @@ import QuestionIcon from '@assets/QuestionCircleIcon.svg';
 
 export default function Popup({ show, setShow, data, action }) {
     const practicaData = data[0];
-    const convertToDate = (fechaString) => {
-        // Separar la fecha y la hora
-        const [datePart, timePart] = fechaString.split(', ');
-
-        const [day, month, year] = datePart.split('/');
-    
-        const date = new Date(`${year}-${month}-${day}T${timePart}`);
-        
-        return date.toISOString().slice(0, 16);
-    };
 
     const handleSubmit = (formData) => {
         action(formData);
@@ -31,7 +20,14 @@ export default function Popup({ show, setShow, data, action }) {
                     </button>
                     <Form
                         title="Editar práctica"
-                        fields={[
+                            fields={[
+                            {
+                                label: "",
+                                name: "ID_practica",
+                                defaultValue: practicaData.ID || "",
+                                fieldType: 'input',
+                                type: "hidden",
+                            },
                             {
                                 label: "Nombre de la práctica",
                                 name: "nombre",
@@ -75,13 +71,31 @@ export default function Popup({ show, setShow, data, action }) {
                                 min: 1,
                                 max: 100,
                             },
-                            {
-                                label: "Fecha de publicación",
-                                name: "fechaPublicacion",
-                                defaultValue: convertToDate(practicaData.fechaPublicacion) || "",
-                                placeholder: 'Fecha de publicación',
-                                fieldType: 'input',
-                                type: "datetime-local",
+                            {   
+                                label: "Estado",
+                                name: "estado",
+                                defaultValue: practicaData.estado || "activo",
+                                placeholder: "activo/inactivo",
+                                fieldType: "select",
+                                options: [
+                                    { value: 'activo', label: 'activo' },
+                                    { value: 'inactivo', label: 'inactivo' },
+                                ],
+                                required: true,
+                            },
+                            {   
+                                label: "Especialidad",
+                                name: "ID_especialidad",
+                                defaultValue: practicaData.ID_especialidad || "",
+                                placeholder: "Especialidad",
+                                fieldType: "select",
+                                options: [
+                                    { value: '1', label: 'Mecánica Automotriz' },
+                                    { value: '2', label: 'Mecánica Industrial' },
+                                    { value: '3', label: 'Electricidad' },
+                                    { value: '4', label: 'Electrónica' },
+                                    { value: '5', label: 'Telecomunicación' },
+                                ],
                                 required: true,
                             },
                         ]}
