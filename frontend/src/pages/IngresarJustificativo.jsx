@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import Form from '../components/Form'; // Importa tu Form
 import { obtenerInfoAtrasosJustificables } from '@services/atrasos.service.js';
-import { justificarAtraso } from '@services/justificativo.service.js';
+import { justificarAtraso } from '@services/justificativos.service.js';
 
 const IngresarJustificativo = () => {
     const [atrasosDisponibles, setAtrasosDisponibles] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Función para obtener atrasos disponibles
     const fetchAtrasos = async () => {
         try {
             const response = await obtenerInfoAtrasosJustificables(); 
@@ -33,21 +32,27 @@ const IngresarJustificativo = () => {
             placeholder: 'Ingrese el motivo del justificativo'
         },
         {
-            name: 'documento',
+            name: 'file',
             label: 'Documento',
             type: 'file',
-            fieldType: 'input',
-            required: true,
+            fieldType: 'file',
+            required: false,
             placeholder: 'Seleccione un documento'
         },
         {
             name: 'atraso',
             label: 'Atraso',
             fieldType: 'select',
-            options: atrasosDisponibles.map((atraso, index) => ({
-                value: `${atraso.fecha} ${atraso.hora}`, 
-                label: `Fecha: ${atraso.fecha} | Hora: ${atraso.hora} | Materia: ${atraso.materia}` 
-            })),
+            options: atrasosDisponibles.length > 0 
+                ? atrasosDisponibles.map((atraso) => ({
+                    value: atraso.ID_atraso, 
+                    label: `Fecha: ${atraso.fecha} | Hora: ${atraso.hora} | Materia: ${atraso.materia}` 
+                  }))
+                : [{ 
+                    value: '', 
+                    label: 'Ningún atraso cumple con las condiciones para justificar', 
+                    disabled: true 
+                  }],
             required: true
         }
     ];
@@ -57,11 +62,14 @@ const IngresarJustificativo = () => {
 
         const data = new FormData();
         data.append('motivo', formData.motivo);
-        data.append('documento', formData.documento); // `formData.documento` debe ser un archivo
+        data.append('file', formData.file[0]); 
         data.append('ID_atraso', formData.atraso);
-        console.log('Dataa:', data);
-        // Llamar al servicio para justificar el atraso
-        const response = await justificarAtraso(data);  
+        
+        for (let [key, value] of data.entries()) {
+          console.log(`${key}:`, value); 
+        } 
+
+        await justificarAtraso(data);
     } catch (error) {
         console.error('Error al registrar justificativo:', error);
         alert('Hubo un problema al registrar el justificativo. Por favor, inténtalo de nuevo.');

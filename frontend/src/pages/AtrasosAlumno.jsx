@@ -5,7 +5,7 @@ import '@styles/atrasos.css';
 import '@styles/modal.css';
 
 import { getAtrasos } from '@services/atrasos.service.js'; // Nueva función de servicio
-import { justificarAtraso } from '@services/justificativo.service.js'; // Nueva función de servicio
+import { justificarAtraso } from '@services/justificativos.service.js'; // Nueva función de servicio
 
 const Atrasos = () => {
     const [atrasos, setAtrasos] = useState([]);

@@ -1,4 +1,4 @@
-import { createJustificativo, aprobarJustificativo, rechazarJustificativo, obtenerDocumentoJustificante, obtenerJustificativo } from "../services/justificativo.service.js";
+import { createJustificativo, aprobarJustificativo, rechazarJustificativo, obtenerDocumentoJustificante, obtenerJustificativo, findJustificativo } from "../services/justificativo.service.js";
 import { findAtraso  } from "../services/atraso.service.js";
 import { sendEmailDefault } from "../controllers/email.controller.js";
 import { handleErrorClient, handleSuccess, handleErrorServer } from "../handlers/responseHandlers.js";
@@ -6,37 +6,77 @@ import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET, HOST, PORT } from "../config/configEnv.js";
 import { extraerRut } from "../helpers/rut.helper.js";
 import { justificativoValidation } from "../validations/justificativo.validation.js";
+import moment from "moment-timezone";
+import { drive } from '../config/googleService.js'; // Asegúrate de que esta importación sea correcta
+import { Readable } from 'stream';
 
-export async function generarJustificativo(req, res){
-  try{
-    const rut = await extraerRut(req);
-    const estado = 'pendiente';
-    const { motivo, ID_atraso} = req.body;
+  export async function generarJustificativo(req, res){
+    try{
+      const { error } = justificativoValidation.validate(req.body);
+      if (error) {
+        return handleErrorClient(res, 400, "Error de validación", error.message);
+      }    
+      const rut = await extraerRut(req);
+      const estado = 'pendiente';
+      const { motivo, ID_atraso} = req.body;
 
-    const { error } = justificativoValidation.validate(req.body);
-    if (error) {
-      return handleErrorClient(res, 400, "Error de validación", error.message);
-    }
-    
-    const atraso = await findAtraso(rut, ID_atraso);
-    
-    if (!atraso) {
-      return handleErrorClient(res, 404, 'Atraso no encontrado');
-    }
-      const documento = req.file ? `http://${HOST}:${PORT}/api/src/uploads/${req.file.filename}` : null;
-      // Crear el justificativo
+      const atraso = await findAtraso(rut, ID_atraso);    
+      if (!atraso) {
+        return handleErrorClient(res, 404, 'Atraso no encontrado');
+      }
+  
+      const justificativo = await findJustificativo(rut, ID_atraso);    
+      if (justificativo) {
+        return handleErrorClient(res, 404, 'Atraso ya tiene asociado un justificativo');
+      }    
+      
+      const fechaAtraso = moment(atraso.fecha, "YYYY-MM-DD"); // Formato de la fecha del atraso
+      const fechaLimite = fechaAtraso.add(5, 'days'); // Se suman 5 días a la fecha del atraso
+      const fechaActual = moment().tz("America/Santiago").startOf('day');
+      if (fechaActual.isAfter(fechaLimite)) {
+        return handleErrorClient(res, 400, `El justificativo ya no puede ser subido. La fecha límite fue ${fechaLimite.format("DD-MM-YYYY")}`);
+      }
+
+      let documento = null;
+      const archivo = req.file;
+      if (archivo) {
+        try {
+          const archivoStream = Readable.from(archivo.buffer);
+          const fileMetadata = { name: archivo.originalname, mimeType: archivo.mimetype };
+          const media = { body: archivoStream };
+          
+          const driveResponse = await drive.files.create({
+            resource: fileMetadata,
+            media: media,
+            fields: 'id, webViewLink'
+          });
+      
+          const fileId = driveResponse.data.id;
+      
+          await drive.permissions.create({
+            fileId: fileId,
+            requestBody: { role: 'reader', type: 'anyone' }
+          });
+      
+          documento = driveResponse.data.webViewLink;
+        } catch (error) {
+          console.error('Error subiendo archivo a Google Drive:', error);
+          return handleErrorServer(res, 500, 'Error al subir el archivo a Google Drive');
+        }
+      }
+
       const nuevoJustificativo = await createJustificativo({
-          rut,
-          motivo,
-          estado,
-          documento,
-          ID_atraso
+            rut,
+            motivo,
+            estado,
+            documento,
+            ID_atraso
       });
-      handleSuccess(res, 200, "Justificativo Creado", nuevoJustificativo);
-  }catch (error){
-    handleErrorServer(res, 500, error.message);
+        handleSuccess(res, 200, "Justificativo Creado", nuevoJustificativo);
+    }catch (error){
+      handleErrorServer(res, 500, error.message);
+    }
   }
-}
 
 export async function verArchivoJustificativo(req, res) {
   try {

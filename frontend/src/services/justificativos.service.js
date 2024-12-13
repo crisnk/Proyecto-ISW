@@ -25,3 +25,18 @@ export async function verJustificativo(ID_atraso) {
         return error.response.data;
     }
 }
+
+
+export async function justificarAtraso(formData) { 
+    try { 
+      const response = await axios.post('/justificativo/generar', formData, { 
+        headers: { 
+          'Content-Type': 'multipart/form-data', 
+        }, 
+      }); 
+      return response; 
+    } catch (error) { 
+      console.error('Error al enviar justificativo:', error); 
+      return error.response?.data || 'Error desconocido'; 
+    } 
+  }

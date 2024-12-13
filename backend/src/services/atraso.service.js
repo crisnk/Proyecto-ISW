@@ -9,6 +9,7 @@ import Pertenece from "../entity/pertenece.entity.js";
 import User from "../entity/user.entity.js";
 import Curso from "../entity/curso.entity.js";
 import Materia from "../entity/materia.entity.js";  
+import { findJustificativo } from "../services/justificativo.service.js";
 
 moment.locale('es'); 
 async function buscarPertenecePorRut(rut) {
@@ -241,7 +242,7 @@ export async function findAtrasosJustificables(rut){
 
     const fechaActual = moment().tz("America/Santiago").startOf('day').toDate();
     const fechaLimite = moment().tz("America/Santiago").startOf('day').subtract(4, 'days') //4 diás atras, el dia del atraso cuenta para justificar                  
-
+   
     const atrasoRepository = AppDataSource.getRepository(Atraso);
     const atrasos = await atrasoRepository.find({
       where: {
@@ -267,7 +268,12 @@ export async function findAtrasosJustificables(rut){
         const diaSemana = moment(atraso.fecha).isoWeekday(); 
         const diasSemana = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
         const nombreDia = diasSemana[diaSemana - 1]; 
-
+        
+        const justificativo = await findJustificativo(rut, atraso.ID_atraso);    
+        if (justificativo) {
+          console.warn(`atraso ya registra un justificativo asociado.`);
+          continue;         
+        }  
         const imparte = await buscarImparte(pertenece.ID_curso, nombreDia, atraso.hora);
         if (!imparte) {
           console.warn(`No se encontró una clase para el curso ${pertenece.ID_curso} a la hora ${atraso.hora}.`);
