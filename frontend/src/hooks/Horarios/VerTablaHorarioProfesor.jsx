@@ -24,24 +24,40 @@ const VerTablaHorarioProfesor = ({
           {horas.map((hora) => (
             <tr key={hora} className={recreoHoras.includes(hora) ? "recreo-row" : ""}>
               <td className="hora-col">{hora}</td>
-              {diasSemana.map((dia) => (
-                <td key={`${dia}-${hora}`} className="contenido-col">
-                  {recreoHoras.includes(hora) ? (
-                    <span className="recreo-text">Recreo</span>
-                  ) : horario[dia]?.[hora]?.materia ? (
-                    <div className="contenido-bloque">
-                      <div className="materia">
-                        {horario[dia][hora].materia || "Sin asignar"}
+              {diasSemana.map((dia) => {
+                const bloque = horario[dia]?.[hora];
+                const isRecreo = recreoHoras.includes(hora);
+                const isAsignado = bloque?.materia && bloque.materia !== "Sin asignar";
+
+                return (
+                  <td
+                    key={`${dia}-${hora}`}
+                    className="contenido-col"
+                    style={{
+                      backgroundColor: isRecreo
+                        ? "#D0F0FF"
+                        : isAsignado
+                        ? "#CFFFD0" 
+                        : "#FFFFFF", 
+                    }}
+                  >
+                    {isRecreo ? (
+                      <span className="recreo-text">Recreo</span>
+                    ) : isAsignado ? (
+                      <div className="contenido-bloque">
+                        <div className="materia">
+                          {bloque.materia}
+                        </div>
+                        <div className="curso">
+                          {bloque.curso || "Sin curso"}
+                        </div>
                       </div>
-                      <div className="curso">
-                        {horario[dia][hora].curso || "Sin curso"}
-                      </div>
-                    </div>
-                  ) : (
-                    <span className="sin-asignar">Sin asignar</span>
-                  )}
-                </td>
-              ))}
+                    ) : (
+                      <span className="sin-asignar">Sin asignar</span>
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

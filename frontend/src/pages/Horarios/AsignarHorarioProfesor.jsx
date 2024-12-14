@@ -108,6 +108,7 @@ const AsignarHorarioProfesor = () => {
   }, []);
 
   const handleGuardarHorario = async () => {
+    console.log("Ejecutando handleGuardarHorario"); 
     if (!profesor) {
       Swal.fire("Advertencia", "Debes seleccionar un profesor antes de guardar.", "warning");
       return;
@@ -149,7 +150,6 @@ const AsignarHorarioProfesor = () => {
               return {
                 ID_materia: parseInt(bloque.materia, 10),
                 ID_curso: parseInt(bloque.curso, 10),
-                rut: profesor,
                 dia,
                 bloque: hora,
               };
@@ -158,12 +158,12 @@ const AsignarHorarioProfesor = () => {
           })
           .filter(Boolean)
       );
-
+      
       if (cambios.length === 0) {
         Swal.fire("Advertencia", "No hay bloques válidos para guardar.", "warning");
         return;
       }
-
+      console.log("Payload enviado al backend:", { rut: profesor, horario: cambios });
       await saveHorarioProfesor({ rut: profesor, horario: cambios });
       await fetchHorarioProfesor();
       Swal.fire("Éxito", "Horario guardado correctamente.", "success");

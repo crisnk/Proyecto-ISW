@@ -46,21 +46,19 @@ const AsignarHorarioCurso = () => {
       const response = await getHorariosCurso(curso);
       const formattedHorario = initializeHorario();
 
-      if (response && typeof response === "object" && Object.keys(response).length > 0) {
-        Object.entries(response).forEach(([dia, bloques]) => {
-          bloques.forEach(({ bloque, ID_materia, nombre_materia }) => {
-            if (formattedHorario[dia]?.[bloque]) {
-              formattedHorario[dia][bloque] = {
-                materia: ID_materia?.toString() || "Sin asignar",
-                nombre_materia: nombre_materia || "Sin asignar",
-              };
-            }
-          });
+      if (response && Array.isArray(response)) {
+        response.forEach(({ dia, bloque, ID_materia }) => {
+          if (formattedHorario[dia]?.[bloque]) {
+            formattedHorario[dia][bloque] = {
+              materia: ID_materia?.toString() || "Sin asignar",
+            };
+          }
         });
       }
 
       setHorario(formattedHorario);
-    } catch {
+    } catch (error) {
+      console.error("Error al cargar el horario del curso:", error);
       setHorario(initializeHorario());
     } finally {
       setLoading(false);
@@ -71,7 +69,8 @@ const AsignarHorarioCurso = () => {
     try {
       const materiasData = await getMaterias();
       setMaterias(materiasData);
-    } catch {
+    } catch (error) {
+      console.error("Error al cargar las materias:", error);
       Swal.fire("Error", "No se pudieron cargar las materias.", "error");
     }
   }, []);
@@ -80,7 +79,8 @@ const AsignarHorarioCurso = () => {
     try {
       const cursosData = await getCursos();
       setCursos(cursosData);
-    } catch {
+    } catch (error) {
+      console.error("Error al cargar los cursos:", error);
       Swal.fire("Error", "No se pudieron cargar los cursos.", "error");
     }
   }, []);
@@ -129,11 +129,12 @@ const AsignarHorarioCurso = () => {
         return;
       }
 
+      console.log("Payload enviado al backend:", payload);
       await saveHorarioCurso(payload);
       await fetchHorarioCurso();
       Swal.fire("Éxito", "Horario guardado correctamente.", "success");
     } catch (err) {
-      console.error(err);
+      console.error("Error guardando horario:", err);
       Swal.fire("Error", "No se pudo guardar el horario. Verifica los datos ingresados.", "error");
     } finally {
       setSaving(false);
@@ -171,7 +172,8 @@ const AsignarHorarioCurso = () => {
       const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
       await notificacionCurso(emails, horarioDetails);
       Swal.fire("Éxito", "Notificación enviada correctamente.", "success");
-    } catch {
+    } catch (error) {
+      console.error("Error enviando notificación:", error);
       Swal.fire("Error", "No se pudo enviar la notificación.", "error");
     } finally {
       setNotificationLoading(false);
@@ -186,7 +188,7 @@ const AsignarHorarioCurso = () => {
           style={{
             fontSize: "1.5rem",
             display: "block",
-            marginBottom: "8px"
+            marginBottom: "8px",
           }}
         >
           Curso:
@@ -198,17 +200,19 @@ const AsignarHorarioCurso = () => {
             fontSize: "1.5rem",
             padding: "10px",
             width: "100%",
-            maxWidth: "400px"
+            maxWidth: "400px",
           }}
         >
-    <option value="" style={{ fontSize: "1.5rem" }}>Selecciona curso</option>
-    {cursos.map((c) => (
-      <option key={c.ID_curso} value={c.ID_curso} style={{ fontSize: "1.5rem" }}>
-        {c.nombre}
-      </option>
-    ))}
-  </select>
-</div>
+          <option value="" style={{ fontSize: "1.5rem" }}>
+            Selecciona curso
+          </option>
+          {cursos.map((c) => (
+            <option key={c.ID_curso} value={c.ID_curso} style={{ fontSize: "1.5rem" }}>
+              {c.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {curso && (
         <EditarTablaHorarioCurso

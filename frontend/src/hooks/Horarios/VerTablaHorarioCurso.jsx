@@ -1,10 +1,6 @@
 import "@styles/Horarios/verTablaHorario.css";
 
-const VerTablaHorarioCurso = ({
-  horario = {},
-  diasSemana = [],
-  horas = [],
-}) => {
+const VerTablaHorarioCurso = ({ horario = {}, diasSemana = [], horas = [] }) => {
   const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
 
   return (
@@ -27,17 +23,22 @@ const VerTablaHorarioCurso = ({
               {diasSemana.map((dia) => {
                 const bloque = horario[dia]?.[hora];
                 return (
-                  <td key={`${dia}-${hora}`} className="contenido-col">
+                  <td
+                    key={`${dia}-${hora}`}
+                    className="contenido-col"
+                    style={{
+                      backgroundColor:
+                        bloque?.materia !== "Sin asignar" && bloque?.materia
+                          ? "#CFFFD0" 
+                          : "#FFFFFF", 
+                    }}
+                  >
                     {recreoHoras.includes(hora) ? (
                       <span className="recreo-text">Recreo</span>
                     ) : bloque ? (
                       <div className="contenido-bloque">
-                        <div className="materia">
-                          {bloque.materia || "Sin asignar"}
-                        </div>
-                        <div className="profesor">
-                          {bloque.profesor || "Sin profesor"}
-                        </div>
+                        <div className="materia">{bloque.materia || "Sin asignar"}</div>
+                        <div className="profesor">{bloque.profesor || "Sin profesor"}</div>
                       </div>
                     ) : (
                       <span className="sin-asignar">Sin asignar</span>

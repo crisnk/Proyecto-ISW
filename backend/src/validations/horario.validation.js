@@ -47,12 +47,20 @@ export const horarioValidationCurso = Joi.object({
     "any.required": "El ID_materia es obligatorio.",
   }),
   dia: Joi.string()
-    .valid("lunes", "martes", "miercoles", "jueves", "viernes")
-    .required()
-    .messages({
-      "any.required": "El día es obligatorio.",
-      "any.only": "El día debe ser uno de los siguientes: lunes, martes, miercoles, jueves, viernes.",
-    }),
+  .custom((value, helpers) => {
+    const normalizado = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const diasValidos = ["lunes", "martes", "miercoles", "jueves", "viernes"];
+    if (!diasValidos.includes(normalizado)) {
+      return helpers.error("any.only", { value });
+    }
+    return normalizado; 
+  })
+  .required()
+  .messages({
+    "any.required": "El día es obligatorio.",
+    "any.only": "El día debe ser uno de los siguientes: lunes, martes, miercoles, jueves, viernes.",
+  }),
+
   bloque: Joi.string().required().messages({
     "any.required": "El bloque es obligatorio.",
   }),
@@ -110,12 +118,16 @@ export const horarioValidationProfesor = Joi.object({
           .messages({
             "string.pattern.base": "La hora de fin debe estar en formato HH:mm.",
           }),
-      }).unknown(true)
+      })
     )
-    .required(),
+    .required()
+    .messages({
+      "any.required": "El arreglo de horario es obligatorio.",
+    }),
 });
 
-const BLOQUES_HORARIOS = {
+
+export const bloquesHorarios = {
   "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },
   "08:50 - 09:35": { hora_Inicio: "08:50", hora_Fin: "09:35" },
   "09:40 - 10:25": { hora_Inicio: "09:40", hora_Fin: "10:25" },
@@ -129,7 +141,7 @@ const BLOQUES_HORARIOS = {
 
 
 export const validarSincronizacionBloque = (bloque, hora_Inicio, hora_Fin) => {
-  const rango = BLOQUES_HORARIOS[bloque];
+  const rango = bloquesHorarios[bloque];
   if (!rango) {
     throw new Error(`El bloque "${bloque}" no es válido.`);
   }

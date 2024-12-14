@@ -10,6 +10,7 @@ const VerHorarioProfesor = () => {
   const [horario, setHorario] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [noData, setNoData] = useState(false);
 
   const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
   const horas = [
@@ -38,6 +39,7 @@ const VerHorarioProfesor = () => {
   const fetchHorario = async () => {
     if (!profesor) {
       setHorario({});
+      setNoData(false);
       return;
     }
 
@@ -67,11 +69,21 @@ const VerHorarioProfesor = () => {
         });
       }
 
+      const hasAssignments = data && data.some((bloque) => bloque.nombre_materia || bloque.nombre_curso);
+
+      if (!hasAssignments) {
+        setNoData(true);
+        setHorario({});
+        return;
+      }
+
       setHorario(formattedHorario);
       setError("");
+      setNoData(false);
     } catch {
       setHorario({});
-      setError("");
+      setNoData(false);
+      setError("No hay materias, ni cursos asignados para este horario.");
     } finally {
       setLoading(false);
     }
@@ -121,6 +133,7 @@ const VerHorarioProfesor = () => {
         onChange={(e) => {
           setProfesor(e.target.value);
           setError("");
+          setNoData(false);
         }}
       >
         <option value="">Seleccione un profesor</option>
@@ -132,10 +145,11 @@ const VerHorarioProfesor = () => {
       </select>
       {loading && <p>Cargando horario...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {profesor && !loading && (
+      {noData && <p>No hay materias o cursos asignados para este profesor.</p>}
+      {profesor && !loading && !noData && (
         <>
           <VerTablaHorarioProfesor horario={horario} diasSemana={diasSemana} horas={horas} />
-          <div className="export-buttons">
+          <div className="export-buttons" style={{ textAlign: "center", marginTop: "20px" }}>
             <button onClick={handleExportToPNG}>Exportar como PNG</button>
             <button onClick={handleExportToPDF}>Exportar como PDF</button>
           </div>
