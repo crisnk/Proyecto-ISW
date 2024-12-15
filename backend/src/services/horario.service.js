@@ -333,53 +333,46 @@ export const eliminarCursoService = async (ID_curso) => {
   await cursoRepository.remove(curso);
   return curso;
 };
-
-export const eliminarHorarioCursoService = async (ID_curso, dia, bloque) => {
-  if (!ID_curso || isNaN(ID_curso)) {
+export const eliminarHorarioCursoService = async (ID_curso) => {
+  if (!ID_curso || isNaN(ID_curso) || ID_curso <= 0) {
     throw new Error("ID_curso debe ser un número válido.");
-  }
-  if (!dia || typeof dia !== "string") {
-    throw new Error("Debe proporcionar un día válido.");
-  }
-  if (!bloque || typeof bloque !== "string") {
-    throw new Error("Debe proporcionar un bloque válido.");
   }
 
   const repository = AppDataSource.getRepository(Imparte);
-  const resultado = await repository.delete({
-    ID_curso: Number(ID_curso),
-    dia: dia.trim(),
-    bloque: bloque.trim(),
-  });
 
-  if (resultado.affected === 0) {
-    throw new Error("No se encontró un horario con los criterios proporcionados.");
+  try {
+    const resultado = await repository.delete({ ID_curso: Number(ID_curso) });
+
+    if (resultado.affected === 0) {
+      throw new Error("No se encontraron horarios asociados al curso proporcionado.");
+    }
+
+    return { message: "Todos los bloques del horario del curso se eliminaron correctamente." };
+  } catch (error) {
+    console.error("Error al eliminar el horario del curso:", error);
+    throw new Error("Ocurrió un error al intentar eliminar el horario del curso.");
   }
-
-  return { message: "Horario del curso eliminado correctamente." };
 };
-
-
-export const eliminarHorarioProfesorService = async (rut, dia, bloque) => {
-  if (!rut) {
+export const eliminarHorarioProfesorService = async (rut) => {
+  if (!rut || typeof rut !== "string" || rut.trim() === "") {
     throw new Error("Debe proporcionar un RUT válido.");
   }
 
   const repository = AppDataSource.getRepository(Imparte);
 
-  const condiciones = { rut };
-  if (dia) condiciones.dia = dia;
-  if (bloque) condiciones.bloque = bloque;
+  try {
+    const resultado = await repository.delete({ rut: rut.trim() });
 
-  const resultado = await repository.delete(condiciones);
+    if (resultado.affected === 0) {
+      throw new Error("No se encontraron horarios asociados al profesor proporcionado.");
+    }
 
-  if (resultado.affected === 0) {
-    throw new Error("No se encontraron bloques de horario para el profesor proporcionado.");
+    return { message: "Todos los bloques del horario del profesor se eliminaron correctamente." };
+  } catch (error) {
+    console.error("Error al eliminar el horario del profesor:", error);
+    throw new Error("Ocurrió un error al intentar eliminar el horario del profesor.");
   }
-
-  return { message: "Bloque(s) del horario del profesor eliminado(s) correctamente." };
 };
-
 export const notificacionProfesorService = async (profesorEmail, horarioDetails) => {
     const subject = "Nuevo Horario Asignado";
     const message = `Se ha asignado un nuevo horario a usted. Los detalles son los siguientes:\n\n${horarioDetails}`;

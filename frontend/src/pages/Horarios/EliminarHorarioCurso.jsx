@@ -1,123 +1,101 @@
 import { useState, useEffect } from "react";
 import EliminarTablaHorarioCurso from "../../hooks/Horarios/EliminarTablaHorarioCurso";
-import {
-  getCursos,
-  getHorariosCurso,
-  eliminarHorarioCurso,
-} from "../../services/horario.service";
+import { getCursos, getHorariosCurso, eliminarHorarioCurso } from "../../services/horario.service";
+import Swal from "sweetalert2";
 import "@styles/Horarios/eliminarHorario.css";
 
 const EliminarHorarioCurso = () => {
   const [selectedId, setSelectedId] = useState("");
   const [cursos, setCursos] = useState([]);
   const [horario, setHorario] = useState({});
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [noData, setNoData] = useState(false);
 
-  const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
-  const horas = [
-    "08:00 - 08:45",
-    "08:50 - 09:35",
-    "09:40 - 10:25",
-    "10:30 - 11:15",
-    "11:20 - 12:05",
-    "12:10 - 12:55",
-    "13:00 - 13:45",
-    "14:30 - 15:15",
-    "15:20 - 16:05",
-    "16:10 - 16:55",
-    "17:00 - 17:45",
-  ];
-
+  // Cargar lista de cursos
   useEffect(() => {
     const fetchCursos = async () => {
       try {
         setLoading(true);
         const data = await getCursos();
         setCursos(data.map((curso) => ({ value: curso.ID_curso, label: curso.nombre })));
-        setError("");
       } catch {
-        setError("Error al cargar los cursos. Intente nuevamente.");
+        Swal.fire("Error", "No se pudieron cargar los cursos.", "error");
       } finally {
         setLoading(false);
       }
     };
-
     fetchCursos();
   }, []);
+
+  // Cargar horario del curso seleccionado
   const fetchHorario = async () => {
-    if (!selectedId) return;
-  
+    if (!selectedId) {
+      setHorario({});
+      setNoData(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const data = await getHorariosCurso(selectedId);
-      if (!data || Object.keys(data).length === 0) {
+      if (!data || data.length === 0) {
         setNoData(true);
         setHorario({});
         return;
       }
-  
+
       const formattedHorario = {};
-      diasSemana.forEach((dia) => {
-        formattedHorario[dia] = {};
-        horas.forEach((hora) => {
-          formattedHorario[dia][hora] = { materia: "Sin asignar", profesor: "" };
-        });
+      data.forEach(({ dia, bloque, nombre_materia, nombre_profesor }) => {
+        if (!formattedHorario[dia]) formattedHorario[dia] = {};
+        formattedHorario[dia][bloque] = {
+          materia: nombre_materia || "Sin asignar",
+          profesor: nombre_profesor || "Sin profesor",
+        };
       });
-  
-      Object.entries(data).forEach(([dia, bloques]) => {
-        bloques.forEach((bloque) => {
-          if (formattedHorario[dia]) {
-            formattedHorario[dia][bloque.bloque] = {
-              materia: bloque.nombre_materia || "Sin asignar",
-              profesor: bloque.nombre_profesor || "Sin profesor",
-            };
-          }
-        });
-      });
-  
+
       setHorario(formattedHorario);
-      setError("");
       setNoData(false);
     } catch {
+      Swal.fire("Error", "No hay horario asignado para este curso.", "error");
+      setNoData(true);
       setHorario({});
-      setError("Error al cargar el horario. Intente nuevamente.");
     } finally {
       setLoading(false);
     }
   };
-  
 
+  // Manejar eliminación del horario
   const handleEliminarHorario = async () => {
     if (!selectedId) {
-      setError("Debe seleccionar un curso para eliminar el horario.");
+      Swal.fire("Advertencia", "Seleccione un curso antes de eliminar el horario.", "warning");
       return;
     }
 
-    if (!window.confirm("¿Está seguro de que desea eliminar el horario completo de este curso?")) {
-      return;
-    }
+    const confirmation = await Swal.fire({
+      title: "¿Está seguro?",
+      text: "Esto eliminará todo el horario del curso seleccionado.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+    });
+
+    if (!confirmation.isConfirmed) return;
 
     try {
-      await eliminarHorarioCurso(selectedId);
-      setSuccess("Horario eliminado correctamente.");
-      fetchHorario();
+      const response = await eliminarHorarioCurso(selectedId);
+      Swal.fire("Éxito", response.message, "success");
+      fetchHorario(); // Actualiza el horario después de eliminar
     } catch {
-      setError("Error al eliminar el horario. Intente nuevamente.");
-    } finally {
-      setTimeout(() => {
-        setSuccess("");
-        setError("");
-      }, 3000);
+      Swal.fire("Error", "No se pudo eliminar el horario. Intente nuevamente.", "error");
     }
   };
 
+  // Actualizar horario cuando se selecciona un curso
   useEffect(() => {
-    if (selectedId) {
-      fetchHorario();
-    }
+    if (selectedId) fetchHorario();
   }, [selectedId]);
 
   return (
@@ -140,10 +118,10 @@ const EliminarHorarioCurso = () => {
         </label>
       </div>
       {loading && <p className="mensaje-cargando">Cargando horarios...</p>}
-      {noData && <p className="mensaje-sin-datos">No se encontraron horarios para el curso seleccionado.</p>}
-      {error && <p className="mensaje-error">{error}</p>}
-      {success && <p className="mensaje-exito">{success}</p>}
-      {Object.keys(horario).length > 0 && !noData && (
+      {noData && !loading && (
+        <p className="mensaje-sin-datos">No hay horarios disponibles para este curso.</p>
+      )}
+      {Object.keys(horario).length > 0 && !noData && !loading && (
         <EliminarTablaHorarioCurso horario={horario} onEliminarHorario={handleEliminarHorario} />
       )}
     </div>

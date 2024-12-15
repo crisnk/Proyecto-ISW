@@ -44,8 +44,8 @@ router.get("/cursos", isAuthorized("jefeUTP", "administrador", "profesor"), verC
 router.get("/profesores", isAuthorized("jefeUTP", "administrador", "profesor"), verProfesores);
 router.get("/ver/curso/:ID_curso", isAuthorized("profesor", "jefeUTP", "administrador"), verHorarioCurso);
 router.get("/ver/profesor", isAuthorized("profesor", "jefeUTP", "administrador"), verHorarioProfesor);
-router.delete("/eliminar/curso/:ID_curso/:dia/:bloque", isAuthorized("jefeUTP", "administrador"), eliminarHorarioCurso);
-router.delete("/eliminar/profesor/:rut", isAuthorized("jefeUTP", "administrador"), eliminarHorarioProfesor);
+router.delete("/eliminar/curso/:ID_curso", isAuthorized("jefeUTP", "administrador"), eliminarHorarioCurso);
+router.delete("/eliminar/profesor/:rut", isAuthorized("jefeUTP", "administrador"),eliminarHorarioProfesor);
 router.delete("/materias/eliminar/:ID_materia", isAuthorized("jefeUTP", "administrador"), eliminarMateria);
 router.delete("/cursos/eliminar/:ID_curso", isAuthorized("jefeUTP", "administrador"), eliminarCurso);
 

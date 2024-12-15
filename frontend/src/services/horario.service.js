@@ -86,23 +86,28 @@ export const saveHorarioCurso = async (payload) => {
   return response.data;
 };
 
-export const eliminarHorarioCurso = async (ID_curso, dia, bloque) => {
+export const eliminarHorarioCurso = async (ID_curso) => {
   try {
-    const response = await axios.delete(`/horarios/eliminar/curso/${ID_curso}/${dia}/${bloque}`);
+    const response = await axios.delete(`/horarios/eliminar/curso/${ID_curso}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Error al eliminar el horario del curso.");
+    throw new Error(
+      error.response?.data?.message || "Error al eliminar el horario del curso."
+    );
   }
 };
 
-export const eliminarHorarioProfesor = async (rut, dia, bloque) => {
+export const eliminarHorarioProfesor = async (rut) => {
   try {
-    const response = await axios.delete(`/horarios/eliminar/profesor/${rut}`, { params: { dia, bloque } });
+    const response = await axios.delete(`/horarios/eliminar/profesor/${rut}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Error al eliminar el horario del profesor.");
+    throw new Error(
+      error.response?.data?.message || "Error al eliminar el horario del profesor."
+    );
   }
 };
+
 
 export const getHorariosCurso = async (ID_curso) => {
   try {

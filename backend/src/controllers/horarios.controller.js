@@ -138,8 +138,8 @@ export const eliminarCurso = async (req, res) => {
 
 export const eliminarHorarioCurso = async (req, res) => {
   try {
-    const { ID_curso, dia, bloque } = req.params;
-    const resultado = await eliminarHorarioCursoService(ID_curso, dia, bloque);
+    const { ID_curso } = req.params;
+    const resultado = await eliminarHorarioCursoService(ID_curso);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -149,13 +149,13 @@ export const eliminarHorarioCurso = async (req, res) => {
 export const eliminarHorarioProfesor = async (req, res) => {
   try {
     const { rut } = req.params;
-    const { dia, bloque } = req.query;
-    const resultado = await eliminarHorarioProfesorService(rut, dia, bloque);
+    const resultado = await eliminarHorarioProfesorService(rut);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const NotificationProfesor = async (req, res) => {
   try {

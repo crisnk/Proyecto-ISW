@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import "@styles/Horarios/eliminarHorario.css";
 
 const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
@@ -15,60 +16,68 @@ const horas = [
   "17:00 - 17:45",
 ];
 
-const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
-
 const EliminarTablaHorarioProfesor = ({ horario = {}, onEliminarHorario }) => {
-  const handleEliminar = () => {
-    const confirm = window.confirm("¿Está seguro de que desea eliminar este horario?");
-    if (confirm) {
+  const handleEliminar = async () => {
+    const result = await Swal.fire({
+      title: "¿Está seguro?",
+      text: "Esto eliminará el horario completo del profesor seleccionado.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
       onEliminarHorario();
     }
   };
 
   return (
     <div className="tabla-horarios-container">
-      <table className="tabla-horarios">
-        <thead>
-          <tr>
-            <th className="tabla-header">Hora</th>
-            {diasSemana.map((dia) => (
-              <th key={dia} className="tabla-header">
-                {dia.charAt(0).toUpperCase() + dia.slice(1)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {horas.map((hora) => (
-            <tr key={hora} className={recreoHoras.includes(hora) ? "recreo-row" : ""}>
-              <td className="hora-col">{hora}</td>
-              {diasSemana.map((dia) => (
-                <td key={`${dia}-${hora}`} className={`contenido-col ${!horario[dia]?.[hora]?.materia ? "empty-cell" : ""}`}>
-                  {recreoHoras.includes(hora) ? (
-                    <span className="recreo-text">Recreo</span>
-                  ) : horario[dia]?.[hora]?.materia ? (
-                    <div>
-                      <div className="materia-display">{horario[dia][hora].materia}</div>
-                      <div className="profesor-display">{horario[dia][hora].profesor}</div>
-                      <div className="curso-display">{horario[dia][hora].curso}</div>
-                    </div>
-                  ) : (
-                    <span className="sin-asignar">Sin asignar</span>
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {Object.keys(horario).length === 0 && (
+      {Object.keys(horario).length === 0 ? (
         <p className="mensaje-sin-horario">No hay horarios disponibles para mostrar.</p>
+      ) : (
+        <>
+          <table className="tabla-horarios">
+            <thead>
+              <tr>
+                <th className="tabla-header">Hora</th>
+                {diasSemana.map((dia) => (
+                  <th key={dia} className="tabla-header">
+                    {dia.charAt(0).toUpperCase() + dia.slice(1)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {horas.map((hora) => (
+                <tr key={hora}>
+                  <td className="hora-col">{hora}</td>
+                  {diasSemana.map((dia) => (
+                    <td key={`${dia}-${hora}`} className="contenido-col">
+                      {horario[dia]?.[hora]?.materia && horario[dia]?.[hora]?.curso ? (
+                        <>
+                          <div>{horario[dia][hora].materia}</div>
+                          <div>{horario[dia][hora].curso}</div>
+                        </>
+                      ) : (
+                        <span className="sin-asignar">Sin asignar</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="eliminar-horario-actions">
+            <button className="btn-eliminar-horario" onClick={handleEliminar}>
+              Eliminar Horario
+            </button>
+          </div>
+        </>
       )}
-      <div className="eliminar-horario-actions">
-        <button className="btn-eliminar-horario" onClick={handleEliminar}>
-          Eliminar Horario
-        </button>
-      </div>
     </div>
   );
 };
