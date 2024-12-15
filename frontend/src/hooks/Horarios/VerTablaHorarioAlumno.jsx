@@ -33,7 +33,7 @@ const VerTablaHorarioAlumno = ({
 
     diasSemana.forEach((dia) => {
       recreoHoras.forEach((recreo) => {
-        if (updatedHorario[dia]?.[recreo]) {
+        if (updatedHorario[dia]?.[recreo]?.isRecreo) {
           updatedHorario[dia][recreo].color = selectedColor;
         }
       });
@@ -47,8 +47,9 @@ const VerTablaHorarioAlumno = ({
 
     diasSemana.forEach((dia) => {
       horas.forEach((hora) => {
-        if (updatedHorario[dia]?.[hora]?.materia === materia) {
-          updatedHorario[dia][hora].color = selectedColor;
+        const block = updatedHorario[dia]?.[hora];
+        if (block?.materia === materia && !block.isRecreo) {
+          block.color = selectedColor;
         }
       });
     });
@@ -95,12 +96,12 @@ const VerTablaHorarioAlumno = ({
                     backgroundColor: horario[dia]?.[hora]?.color || "#ffffff",
                   }}
                   onClick={
-                    recreoHoras.includes(hora)
+                    horario[dia]?.[hora]?.isRecreo
                       ? handleRecreoClick
                       : () => handleMateriaClick(horario[dia][hora]?.materia)
                   }
                 >
-                  {recreoHoras.includes(hora) ? (
+                  {horario[dia]?.[hora]?.isRecreo ? (
                     <span className="recreo-text">Recreo</span>
                   ) : horario[dia]?.[hora] ? (
                     <div className="contenido-bloque">

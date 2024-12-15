@@ -28,6 +28,8 @@ const MiHorario = () => {
     "16:10 - 16:55", "17:00 - 17:45",
   ];
 
+  const recreoHoras = ["10:30 - 11:15", "13:00 - 13:45"];
+
   useEffect(() => {
     const fetchHorario = async () => {
       try {
@@ -38,10 +40,10 @@ const MiHorario = () => {
           formattedHorario[dia] = {};
           horas.forEach((hora) => {
             formattedHorario[dia][hora] = {
-              materia: "Sin asignar",
-              profesor: "Sin profesor",
-              curso: "Sin curso",
-              color: "#ffffff",
+              materia: recreoHoras.includes(hora) ? "Recreo" : "Sin asignar",
+              profesor: "",
+              curso: "",
+              color: recreoHoras.includes(hora) ? "#d3d3d3" : "#ffffff", // Color inicial distinto para recreo
             };
           });
         });
@@ -50,9 +52,9 @@ const MiHorario = () => {
           if (formattedHorario[bloque.dia]?.[bloque.bloque]) {
             formattedHorario[bloque.dia][bloque.bloque] = {
               materia: bloque.nombre_materia || "Sin asignar",
-              profesor: bloque.nombre_profesor || "Sin profesor",
-              curso: bloque.nombre_curso || "Sin curso",
-              color: "#ffffff",
+              profesor: bloque.nombre_profesor || "",
+              curso: bloque.nombre_curso || "",
+              color: pastelColors[Math.floor(Math.random() * pastelColors.length)],
             };
           }
         });
@@ -70,11 +72,17 @@ const MiHorario = () => {
     fetchHorario();
   }, []);
 
-  const handleBlockColorChange = (dia, hora) => {
+  const handleBlockColorChange = (materia) => {
     const updatedHorario = { ...horario };
-    if (updatedHorario[dia]?.[hora]) {
-      updatedHorario[dia][hora].color = selectedColor;
-    }
+
+    diasSemana.forEach((dia) => {
+      horas.forEach((hora) => {
+        if (updatedHorario[dia]?.[hora]?.materia === materia) {
+          updatedHorario[dia][hora].color = selectedColor;
+        }
+      });
+    });
+
     setHorario(updatedHorario);
   };
 
