@@ -113,7 +113,7 @@ const AsignarHorarioProfesor = () => {
       Swal.fire("Advertencia", "Debes seleccionar un profesor antes de guardar.", "warning");
       return;
     }
-
+  
     const bloquesInvalidos = diasSemana.flatMap((dia) =>
       horas.filter((hora) => {
         const bloque = horario[dia]?.[hora];
@@ -125,7 +125,7 @@ const AsignarHorarioProfesor = () => {
         );
       })
     );
-
+  
     if (bloquesInvalidos.length > 0) {
       Swal.fire(
         "Error",
@@ -134,7 +134,7 @@ const AsignarHorarioProfesor = () => {
       );
       return;
     }
-
+  
     setSaving(true);
     try {
       const cambios = diasSemana.flatMap((dia) =>
@@ -168,12 +168,16 @@ const AsignarHorarioProfesor = () => {
       await fetchHorarioProfesor();
       Swal.fire("Éxito", "Horario guardado correctamente.", "success");
     } catch (error) {
-      console.error("Error guardando horario:", error.message);
-      Swal.fire("Error", "No se pudo guardar el horario.", "error");
+      if (error.response?.data?.message) {
+        Swal.fire("Error", error.response.data.message, "error");
+      } else {
+        Swal.fire("Error", "No se pudo guardar el horario.", "error");
+      }
     } finally {
       setSaving(false);
     }
   };
+  
 
   const handleNotificarProfesor = async () => {
     if (!profesor) {
@@ -215,8 +219,11 @@ const AsignarHorarioProfesor = () => {
   
       Swal.fire("Éxito", "El profesor ha sido notificado correctamente.", "success");
     } catch (error) {
-      console.error("Error notificando al profesor:", error.message);
-      Swal.fire("Error", "No se pudo enviar la notificación al profesor.", "error");
+      if (error.response?.data?.message) {
+        Swal.fire("Error", error.response.data.message, "error");
+      } else {
+        Swal.fire("Error", "No se pudo enviar la notificación al profesor.", "error");
+      }
     } finally {
       setNotificationLoading(false);
     }
