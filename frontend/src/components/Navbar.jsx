@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "@services/auth.service.js";
 import { useState } from "react";
 import "@styles/navbar.css";
+import { disconnectSocket } from '@services/socket.service.js';	
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Navbar = () => {
     const logoutSubmit = () => {
         try {
             logout();
+            disconnectSocket();
             navigate("/auth");
         } catch (error) {
             console.error("Error al cerrar sesión:", error);

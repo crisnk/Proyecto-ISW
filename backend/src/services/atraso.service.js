@@ -12,7 +12,7 @@ import Materia from "../entity/materia.entity.js";
 import { findJustificativo } from "../services/justificativo.service.js";
 
 moment.locale('es'); 
-async function buscarPertenecePorRut(rut) {
+export async function buscarPertenecePorRut(rut) {
   try {
     const perteneceRepository = AppDataSource.getRepository(Pertenece);
     const pertenece = await perteneceRepository.findOne({
@@ -27,7 +27,7 @@ async function buscarPertenecePorRut(rut) {
   }
 }
 
-async function buscarImparte(ID_curso, diaSemana, horaActual) {
+export async function buscarImparte(ID_curso, diaSemana, horaActual) {
   try {
     const imparteRepository = AppDataSource.getRepository(Imparte);
     const imparte = await imparteRepository.findOne({
@@ -72,7 +72,14 @@ export async function createAtrasoService(rut) {
     });
     await atrasoRepository.save(nuevoAtraso);
 
-    return [nuevoAtraso, null];
+    const profesorID = imparte.rut;
+
+    return {
+      atraso: nuevoAtraso,
+      profesor: {
+        rut: profesorID
+      },
+    };
   } catch (error) {
     console.error("Error al registrar el atraso:", error);
     return [null, error.message]; 

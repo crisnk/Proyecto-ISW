@@ -3,7 +3,8 @@ import { createAtrasoService,
          obtenerAtrasos,
          obtenerAtrasosAlumnos,
          obtenerInfoAtraso,
-         findAtrasosJustificables
+         findAtrasosJustificables,
+
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -11,18 +12,36 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 import { extraerRut } from "../helpers/rut.helper.js";
+import { getUserSocketId } from '../services/socket.service.js';
 
 
 export async function registrarAtraso(req, res) {
   try {
     const rut = await extraerRut(req);
 
-    const [atrasoCreado, error] = await createAtrasoService(rut);
-    if (error) {
-      return handleErrorClient(res, 400, error); 
-    }
+    const response = await createAtrasoService(rut);
+    console.log('response:', response.profesor.rut);
+    const rutProfesor = response.profesor.rut;
+    if(res.status(201)) {
+    
+      const io = req.app.get('socketio'); 
 
-    handleSuccess(res, 201, "Atraso registrado con éxito", atrasoCreado);
+      // Verificamos si el profesor está conectado
+      const socketId = getUserSocketId(rutProfesor);
+
+      console.log('socketIdProfesor:', socketId);
+        if (socketId) {
+          io.to(socketId).emit('marca-atraso', {
+            mensaje: `El estudiante ${rutProfesor} ha registrado un atraso`,
+          });
+          console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
+        } else {
+          console.log(`El profesor con RUT ${rutProfesor} no está conectado.`);
+        }
+
+      handleSuccess(res, 201, "Atraso registrado con éxito", response);
+
+    }
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return handleErrorClient(res, 401, "Token inválido o expirado");

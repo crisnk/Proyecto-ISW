@@ -14,6 +14,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+import { addUser, removeUser } from './services/socket.service.js';
 
 async function setupServer() {
   try {
@@ -61,14 +64,33 @@ async function setupServer() {
     app.use(passport.session());
 
     passportJwtSetup();
-    
-    //const uploadsPath = path.join(__dirname, 'uploads');  // Sin el prefijo 'src'
-    //app.locals.uploadsPath = uploadsPath;
-    app.use("api/src/uploads", express.static("src/uploads"));
-    app.use("/api", indexRoutes);
     app.use("/api", indexRoutes);
 
-    app.listen(PORT, () => {
+    const httpServer = createServer(app);
+
+    const io = new Server(httpServer, {
+      cors: {
+        origin: true,
+        methods: ["GET", "POST"]
+      }
+    });
+
+    io.on('connection', (socket) => {
+      console.log("Usuario conectado:", socket.id);
+      
+      socket.on('register-user', (rut) => {
+        addUser(rut, socket.id);
+      });
+    
+      socket.on('disconnect', (reason) => {
+        console.log("Usuario desconectado:", reason);
+        removeUser(socket.id);
+      });
+    });
+ 
+    app.set('socketio', io);
+
+    httpServer.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
     });
   } catch (error) {

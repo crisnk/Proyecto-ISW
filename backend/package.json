@@ -34,8 +34,10 @@
     "pdfkit": "^0.15.1",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.8.1",
     "streamifier": "^0.1.1",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "eslint": "^9.13.0",
