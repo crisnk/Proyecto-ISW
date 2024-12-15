@@ -27,7 +27,9 @@ const Login = () => {
                 const rol = decodedToken.rol;      
                 if (rol === 'alumno') {
                     navigate('/homeAlumno'); 
-                } else {
+                } else if (rol === 'profesor') {
+                    navigate('/homeProfesor'); 
+                }else {
                     navigate('/home'); 
                 }
 

@@ -23,20 +23,11 @@ const Navbar = () => {
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
-
+    
     return (
         <nav className="navbar">
             <div className={`nav-menu ${menuOpen ? "activado" : ""}`}>
                 <ul>
-                    <li>
-                        <NavLink
-                            to="/home"
-                            className={({ isActive }) => (isActive ? "active" : "")}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            Inicio
-                        </NavLink>
-                    </li>
                     {userRole === "administrador" && (
                         <li>
                             <NavLink
@@ -45,6 +36,39 @@ const Navbar = () => {
                                 onClick={() => setMenuOpen(false)}
                             >
                                 Usuarios
+                            </NavLink>
+                        </li>
+                    )}
+                    {userRole === "profesor" && (
+                        <li>
+                            <NavLink
+                                to="/homeProfesor"
+                                className={({ isActive }) => (isActive ? "active" : "")}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Inicio
+                            </NavLink>
+                        </li>
+                    )}
+                    {userRole === "alumno" && (
+                        <li>
+                            <NavLink
+                                to="/homeAlumno"
+                                className={({ isActive }) => (isActive ? "active" : "")}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Inicio
+                            </NavLink>
+                        </li>
+                    )}
+                    {userRole === "EDP" || userRole === "jefeUTP" || userRole === "administrador" && (
+                        <li>
+                            <NavLink
+                                to="/home"
+                                className={({ isActive }) => (isActive ? "active" : "")}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Inicio
                             </NavLink>
                         </li>
                     )}

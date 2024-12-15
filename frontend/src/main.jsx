@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Error404 from '@pages/Error404';
 import Home from '@pages/Home';
 import HomeAlumno from '@pages/HomeAlumno';
+import HomeProfesor from '@pages/HomeProfesor';
 import Login from '@pages/Login';
 import Register from '@pages/Register';
 import Root from '@pages/Root';
@@ -40,6 +41,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['alumno']}>
             <HomeAlumno />
+          </ProtectedRoute>
+        ),      
+      },
+      {
+        path: '/homeProfesor',
+        element: (
+          <ProtectedRoute allowedRoles={['profesor']}>
+            <HomeProfesor />
           </ProtectedRoute>
         ),      
       },
