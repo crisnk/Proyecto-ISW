@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "@styles/sidebar.css";
 
@@ -57,6 +57,32 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
           case "profesor":
             return [
               { path: "/atrasosProfesor", label: "Ver Atrasos de Alumnos" },
+            ];
+          default:
+            return [];
+        }
+      },
+    },
+    {
+      label: "Justificativos",
+      options: () => {
+        switch (userRole) {
+          case "alumno":
+            return [
+              { path: "/ingresarJustificativo", label: "Ingresar Justificativo" },
+            ];
+          default:
+            return [];
+        }
+      },
+    },
+    {
+      label: "Practicas",
+      options: () => {
+        switch (userRole) {
+          case "profesor":
+            return [
+              { path: "/practica", label: "Publicar practica" },
             ];
           default:
             return [];

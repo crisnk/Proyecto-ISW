@@ -1,0 +1,11 @@
+.search-input-container{
+    display:flex;
+    align-items: center;
+}
+.search-input-table{
+    height:20px;
+}
+.practica-register-button{
+    margin-right:70px;
+    background-color:#28a745 !important;
+}

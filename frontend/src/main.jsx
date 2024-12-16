@@ -2,6 +2,8 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Error404 from '@pages/Error404';
 import Home from '@pages/Home';
+import HomeAlumno from '@pages/HomeAlumno';
+import HomeProfesor from '@pages/HomeProfesor';
 import Login from '@pages/Login';
 import Register from '@pages/Register';
 import Root from '@pages/Root';
@@ -19,6 +21,7 @@ import VerHorariosCurso from '@pages/Horarios/VerHorariosCurso';
 import EliminarHorarioProfesor from '@pages/Horarios/EliminarHorarioProfesor';
 import EliminarHorarioCurso from '@pages/Horarios/EliminarHorarioCurso';
 import MiHorario from '@pages/Horarios/MiHorario';
+import IngresarJustificativo from '@pages/IngresarJustificativo';
 import GestionMateriasLayout from '@pages/Horarios/GestionMateriasLayout';
 import CrearMateria from '@pages/Horarios/CrearMateria';
 import CrearCurso from '@pages/Horarios/CrearCurso';
@@ -34,16 +37,37 @@ const router = createBrowserRouter([
     children: [
       { path: '/home', element: <Home /> },
       {
+        path: '/homeAlumno',
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <HomeAlumno />
+          </ProtectedRoute>
+        ),      
+      },
+      {
+        path: '/homeProfesor',
+        element: (
+          <ProtectedRoute allowedRoles={['profesor']}>
+            <HomeProfesor />
+          </ProtectedRoute>
+        ),      
+      },
+      {
         path: '/users',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Users />
           </ProtectedRoute>
         ),
-      },
+        },
       {
         path: '/practica',
-        element: <Practica />,
+        element: (
+          <ProtectedRoute allowedRoles={['EDP', 'administrador', 'alumno', 'jefeUTP', 'profesor']}>
+            <Practica />
+          </ProtectedRoute>
+        ),
+
       },
       {
         path: '/atrasos',
@@ -54,7 +78,15 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/atrasosProfesor',
+        path:'/ingresarJustificativo',
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <IngresarJustificativo />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path:'/atrasosProfesor',
         element: (
           <ProtectedRoute allowedRoles={['profesor', 'alumno']}>
             <AtrasosProfesor />

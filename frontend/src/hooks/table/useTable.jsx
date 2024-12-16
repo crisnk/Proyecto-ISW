@@ -3,7 +3,7 @@ import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import "tabulator-tables/dist/css/tabulator.min.css";
 import '@styles/table.css';
 
-function useTable({ data, columns, filter, dataToFilter, initialSortName, onSelectionChange }) {
+function useTable({ data, columns, filter, initialSortName, onSelectionChange }) {
     const tableRef = useRef(null);
     const [table, setTable] = useState(null);
     const [isTableBuilt, setIsTableBuilt] = useState(false);
@@ -71,13 +71,21 @@ function useTable({ data, columns, filter, dataToFilter, initialSortName, onSele
     useEffect(() => {
         if (table && isTableBuilt) {
             if (filter) {
-                table.setFilter(dataToFilter, "like", filter);
+                // Filtrar por cualquier columna
+                table.setFilter(function(data) {
+                    return columns.some(column => {
+                        if (data[column.field]) {
+                            return data[column.field].toString().toLowerCase().includes(filter.toLowerCase());
+                        }
+                        return false;
+                    });
+                });
             } else {
                 table.clearFilter();
             }
             table.redraw();
         }
-    }, [filter, table, dataToFilter, isTableBuilt]);
+    }, [filter, table, columns, isTableBuilt]);
 
     return { tableRef };
 }

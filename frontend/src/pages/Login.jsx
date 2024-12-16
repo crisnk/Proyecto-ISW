@@ -3,6 +3,8 @@ import { login } from '@services/auth.service.js';
 import Form from '@components/Form';
 import useLogin from '@hooks/auth/useLogin.jsx';
 import '@styles/form.css';
+import { jwtDecode } from 'jwt-decode';
+import { initSocket } from '@services/socket.service.js';	
 
 const Login = () => {
     const navigate = useNavigate();
@@ -17,7 +19,20 @@ const Login = () => {
         try {
             const response = await login(data);
             if (response.status === 'Success') {
-                navigate('/home');
+                const token = response.data.token; 
+                const decodedToken = jwtDecode(token);
+                const socket = initSocket();
+                const rut = decodedToken.rut; 
+                socket.emit('register-user', rut); 
+                const rol = decodedToken.rol;      
+                if (rol === 'alumno') {
+                    navigate('/homeAlumno'); 
+                } else if (rol === 'profesor') {
+                    navigate('/homeProfesor'); 
+                }else {
+                    navigate('/home'); 
+                }
+
             } else if (response.status === 'Client error') {
                 errorData(response.details);
             }

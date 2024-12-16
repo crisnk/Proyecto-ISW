@@ -119,68 +119,70 @@ const MiHorario = () => {
   };
 
   return (
-    <div className="mi-horario">
-      <h1>Personaliza y descarga tu Horario</h1>
-      {loading ? (
-        <p>Cargando...</p>
-      ) : error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (
-        <>
-          <div className="paleta-colores">
-            <h3>Colores para las materias:</h3>
-            <div className="colores">
-              {pastelColors.map((color) => (
-                <div
-                  key={color}
-                  className="color-opcion"
-                  style={{
-                    backgroundColor: color,
-                    boxShadow: color === selectedColor ? "0 0 10px black" : "none",
-                  }}
-                  onClick={() => setSelectedColor(color)}
-                />
-              ))}
+    <div className='alumno-funciones'>
+      <div className="mi-horario">
+        <h1>Personaliza y descarga tu Horario</h1>
+        {loading ? (
+          <p>Cargando...</p>
+        ) : error ? (
+          <p style={{ color: "red" }}>{error}</p>
+        ) : (
+          <>
+            <div className="paleta-colores">
+              <h3>Colores para las materias:</h3>
+              <div className="colores">
+                {pastelColors.map((color) => (
+                  <div
+                    key={color}
+                    className="color-opcion"
+                    style={{
+                      backgroundColor: color,
+                      boxShadow: color === selectedColor ? "0 0 10px black" : "none",
+                    }}
+                    onClick={() => setSelectedColor(color)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
 
-          <VerTablaHorarioAlumno
-            horario={horario}
-            diasSemana={diasSemana}
-            horas={horas}
-            onBlockColorChange={handleBlockColorChange}
-            backgroundColor={backgroundColor}
-            curso={curso}
-            setCursorURL={setCursorURL}
-            selectedColor={selectedColor}
-            cursorURL={cursorURL}
-          />
+            <VerTablaHorarioAlumno
+              horario={horario}
+              diasSemana={diasSemana}
+              horas={horas}
+              onBlockColorChange={handleBlockColorChange}
+              backgroundColor={backgroundColor}
+              curso={curso}
+              setCursorURL={setCursorURL}
+              selectedColor={selectedColor}
+              cursorURL={cursorURL}
+            />
 
-          <div className="paleta-colores fondo-horario">
-            <h3>Fondo del horario:</h3>
-            <div className="colores">
-              {pastelColors.map((color) => (
-                <div
-                  key={color}
-                  className="color-opcion"
-                  style={{
-                    backgroundColor: color,
-                    opacity: 0.8,
-                    boxShadow: color === backgroundColor ? "0 0 10px black" : "none",
-                  }}
-                  onClick={() => setBackgroundColor(color)} 
-                />
-              ))}
+            <div className="paleta-colores fondo-horario">
+              <h3>Fondo del horario:</h3>
+              <div className="colores">
+                {pastelColors.map((color) => (
+                  <div
+                    key={color}
+                    className="color-opcion"
+                    style={{
+                      backgroundColor: color,
+                      opacity: 0.8,
+                      boxShadow: color === backgroundColor ? "0 0 10px black" : "none",
+                    }}
+                    onClick={() => setBackgroundColor(color)} 
+                  />
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="export-buttons">
-            <button onClick={handleExportToPNG}>Exportar como PNG</button>
-            <button onClick={handleExportToPDF}>Exportar como PDF</button>
-          </div>
-        </>
-      )}
-    </div>
+            <div className="export-buttons">
+              <button onClick={handleExportToPNG}>Exportar como PNG</button>
+              <button onClick={handleExportToPDF}>Exportar como PDF</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div> 
   );
 };
 

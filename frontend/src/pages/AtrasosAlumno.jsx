@@ -5,7 +5,7 @@ import '@styles/atrasos.css';
 import '@styles/modal.css';
 
 import { getAtrasos } from '@services/atrasos.service.js'; // Nueva función de servicio
-import { justificarAtraso } from '@services/justificativo.service.js'; // Nueva función de servicio
+import { justificarAtraso } from '@services/justificativos.service.js'; // Nueva función de servicio
 
 const Atrasos = () => {
     const [atrasos, setAtrasos] = useState([]);
@@ -88,49 +88,51 @@ const Atrasos = () => {
     ];
 
     return (
-        <div className='main-container'>
-            <div className='table-container'>
-                <div className='top-table'>
-                    <h1 className='title-table'>Atrasos</h1>
-                    <div className='filter-actions'>
-                        <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado'} />
-                        <button className='justificar-button' onClick={handleJustificar}>
-                            Justificar
-                        </button>
+        <div className='alumno-funciones'>
+            <div className='main-container'>
+                <div className='table-container'>
+                    <div className='top-table'>
+                        <h1 className='title-table'>Atrasos</h1>
+                        <div className='filter-actions'>
+                            <Search value={filterText} onChange={handleFilterChange} placeholder={'Filtrar estado'} />
+                            <button className='justificar-button' onClick={handleJustificar}>
+                                Justificar
+                            </button>
+                        </div>
                     </div>
+                    <Table
+                        data={atrasos}
+                        columns={columns}
+                        filter={filterText}
+                        dataToFilter={['fecha', 'hora', 'estado']}
+                        initialSortName={'fecha'}
+                        onRowClick={handleJustificar} // Añade la función al hacer clic en una fila
+                    />
                 </div>
-                <Table
-                    data={atrasos}
-                    columns={columns}
-                    filter={filterText}
-                    dataToFilter={['fecha', 'hora', 'estado']}
-                    initialSortName={'fecha'}
-                    onRowClick={handleJustificar} // Añade la función al hacer clic en una fila
-                />
-            </div>
 
-            {/* Modal para justificar */}
-            {isModalOpen && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>Justificar Atraso</h2>
-                        <form onSubmit={handleSubmit}>
-                            <label>
-                                Motivo:
-                                <textarea value={motivo} onChange={(e) => setMotivo(e.target.value)} required />
-                            </label>
-                            <label>
-                                Adjuntar Archivo:
-                                <input type="file" accept=".pdf, .png" onChange={handleFileChange} required />
-                            </label>
-                            <div className="modal-actions">
-                                <button type="submit">Enviar</button>
-                                <button type="button" onClick={closeModal}>Cancelar</button>
-                            </div>
-                        </form>
+                {/* Modal para justificar */}
+                {isModalOpen && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <h2>Justificar Atraso</h2>
+                            <form onSubmit={handleSubmit}>
+                                <label>
+                                    Motivo:
+                                    <textarea value={motivo} onChange={(e) => setMotivo(e.target.value)} required />
+                                </label>
+                                <label>
+                                    Adjuntar Archivo:
+                                    <input type="file" accept=".pdf, .png" onChange={handleFileChange} required />
+                                </label>
+                                <div className="modal-actions">
+                                    <button type="submit">Enviar</button>
+                                    <button type="button" onClick={closeModal}>Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };

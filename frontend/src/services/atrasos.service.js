@@ -34,3 +34,12 @@ export async function registrarAtrasos() {
         return error.response.data;
     }
 }
+
+export async function obtenerInfoAtrasosJustificables() {
+    try {
+        const { data } = await axios.get('/atraso/infoAtrasosJustificables');
+        return data;
+    } catch (error) {
+        return error.response.data;
+    }
+}

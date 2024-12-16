@@ -3,6 +3,8 @@ import { createAtrasoService,
          obtenerAtrasos,
          obtenerAtrasosAlumnos,
          obtenerInfoAtraso,
+         findAtrasosJustificables,
+
       } from "../services/atraso.service.js";
 import {
   handleErrorClient,
@@ -10,18 +12,37 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 import { extraerRut } from "../helpers/rut.helper.js";
+import { getUserSocketId } from '../services/socket.service.js';
 
 
 export async function registrarAtraso(req, res) {
   try {
     const rut = await extraerRut(req);
 
-    const [atrasoCreado, error] = await createAtrasoService(rut);
-    if (error) {
-      return handleErrorServer(res, 400, "Error al registrar el atraso", error);
-    }
+    const response = await createAtrasoService(rut);
+    console.log('response:', response.profesor.rut);
+    const rutProfesor = response.profesor.rut;
+    const nombreAlumno = response.alumno.nombre;
+    if(res.status(201)) {
+    
+      const io = req.app.get('socketio'); 
 
-    handleSuccess(res, 201, "Atraso registrado con éxito", atrasoCreado);
+      // Verificamos si el profesor está conectado
+      const socketId = getUserSocketId(rutProfesor);
+
+      console.log('socketIdProfesor:', socketId);
+        if (socketId) {
+          io.to(socketId).emit('recibo-notificacion', {
+            mensaje: `El alumno ${nombreAlumno} ha registrado un atraso`,
+          });
+          console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
+        } else {
+          console.log(`El profesor con RUT ${rutProfesor} no está conectado.`);
+        }
+
+      handleSuccess(res, 201, "Atraso registrado con éxito", response);
+
+    }
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return handleErrorClient(res, 401, "Token inválido o expirado");
@@ -35,6 +56,7 @@ export async function verAtrasos(req,res) {
     const rut = await extraerRut(req);
 
     const [atrasos, errorAtrasos] = await obtenerAtrasos(rut);
+
 
     if (errorAtrasos) return handleErrorClient(res, 404, errorAtrasos);
     
@@ -71,10 +93,27 @@ export async function infoAtraso(req, res) {
     const infoAtraso = await obtenerInfoAtraso(rut);
 
     if (!infoAtraso) {
-      return handleErrorClient(res, 404, "No se encontró una coincidencia para el horario actual");
+      return handleErrorClient(res, 404, error); 
     }
 
     handleSuccess(res, 200, "Información de atraso encontrada", infoAtraso);
+
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function infoAtrasosJustificables(req, res) {
+  try {
+
+    const rut = await extraerRut(req);
+    const infoAtrasos = await findAtrasosJustificables(rut);
+
+    if (!infoAtrasos) {
+      return handleErrorClient(res, 404, error); 
+    }
+
+    handleSuccess(res, 200, "Información de atrasos encontrada", infoAtrasos);
 
   } catch (error) {
     handleErrorServer(res, 500, error.message);

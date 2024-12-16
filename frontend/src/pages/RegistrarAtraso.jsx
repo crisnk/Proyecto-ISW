@@ -37,7 +37,7 @@ const RegistrarAtraso = () => {
   }, []);
 
   // Registrar el atraso
-  const registrarAtraso = async () => {
+  const registrarAtraso = async () => {                                                 
     setLoading(true);
     setError("");
     setSuccessMessage("");
@@ -58,30 +58,32 @@ const RegistrarAtraso = () => {
   };
 
   return (
-    <div className="page-container">
-      <h1>Registrar Atraso</h1>
+    <div className='alumno-funciones'>
+        <div className="page-container">
+          <h1>Registrar Atraso</h1>
 
-      {/* Mensajes de error o éxito */}
-      {error && <p className="error-message">{error}</p>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
+          {/* Mensajes de error o éxito */}
+          {error && <p className="error-message">{error}</p>}
+          {successMessage && <p className="success-message">{successMessage}</p>}
 
-      {/* Información del atraso */}
-      {infoAtraso && (
-        <InfoAtrasoCard
-          materia={infoAtraso.materia}
-          curso={infoAtraso.curso}
-          aula={infoAtraso.aula}
-          profesor={infoAtraso.profesor}
-        />
-      )}
+          {/* Información del atraso */}
+          {infoAtraso && (
+            <InfoAtrasoCard
+              materia={infoAtraso.materia}
+              curso={infoAtraso.curso}
+              aula={infoAtraso.aula}
+              profesor={infoAtraso.profesor}
+            />
+          )}
 
-      {/* Botón para registrar el atraso */}
-      {infoAtraso && (
-        <button className="register-button" onClick={registrarAtraso} disabled={loading}>
-          Registrar Atraso
-        </button>
-      )}
-    </div>
+          {/* Botón para registrar el atraso */}
+          {infoAtraso && (
+            <button className="register-button" onClick={registrarAtraso} disabled={loading}>
+              Registrar Atraso
+            </button>
+          )}
+        </div> 
+    </div>     
   );
 };
 
