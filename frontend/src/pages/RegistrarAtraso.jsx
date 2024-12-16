@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { obtenerInfoAtraso, registrarAtrasos } from '@services/atrasos.service.js';
-//import InfoAtrasoCard from "@styles/InfoAtrasoCard.css";
 import '@styles/InfoAtrasoCard.css';
 import "@styles/styles.css";
 import InfoAtrasoCard from "../components/InfoAtrasoCard";
@@ -60,27 +59,23 @@ const RegistrarAtraso = () => {
   return (
     <div className='alumno-funciones'>
         <div className="page-container">
-          <h1>Registrar Atraso</h1>
-
-          {/* Mensajes de error o éxito */}
           {error && <p className="error-message">{error}</p>}
           {successMessage && <p className="success-message">{successMessage}</p>}
-
-          {/* Información del atraso */}
           {infoAtraso && (
             <InfoAtrasoCard
               materia={infoAtraso.materia}
               curso={infoAtraso.curso}
               aula={infoAtraso.aula}
               profesor={infoAtraso.profesor}
-            />
-          )}
-
-          {/* Botón para registrar el atraso */}
-          {infoAtraso && (
-            <button className="register-button" onClick={registrarAtraso} disabled={loading}>
-              Registrar Atraso
-            </button>
+            >
+              <button
+                className="register-button"
+                onClick={registrarAtraso}
+                disabled={loading}
+              >
+                Registrar Atraso
+              </button>
+            </InfoAtrasoCard>
           )}
         </div> 
     </div>     
