@@ -9,6 +9,8 @@ import { justificativoValidation } from "../validations/justificativo.validation
 import moment from "moment-timezone";
 import { drive } from '../config/googleService.js'; // Asegúrate de que esta importación sea correcta
 import { Readable } from 'stream';
+import { getUserSocketId } from '../services/socket.service.js';
+
 
   export async function generarJustificativo(req, res){
     try{
@@ -65,14 +67,35 @@ import { Readable } from 'stream';
         }
       }
 
-      const nuevoJustificativo = await createJustificativo({
+      const response = await createJustificativo({
             rut,
             motivo,
             estado,
             documento,
             ID_atraso
       });
-        handleSuccess(res, 200, "Justificativo Creado", nuevoJustificativo);
+      const rutProfesor = response.profesor.rut;
+      const nombreAlumno = response.alumno.nombre;
+      console.log(rutProfesor);
+      console.log(nombreAlumno);
+
+      const io = req.app.get('socketio'); 
+
+      // Verificamos si el profesor está conectado
+      const socketId = getUserSocketId(rutProfesor);
+
+      console.log('socketIdProfesor:', socketId);
+        if (socketId) {
+          io.to(socketId).emit('recibo-notificacion', {
+            mensaje: `El alumno ${nombreAlumno} ha subido un justificativo`,
+          });
+          console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
+        } else {
+          console.log(`El profesor con RUT ${rutProfesor} no está conectado.`);
+        }
+
+
+        handleSuccess(res, 200, "Justificativo Creado", response);
     }catch (error){
       handleErrorServer(res, 500, error.message);
     }
