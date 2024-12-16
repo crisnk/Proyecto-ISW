@@ -4,15 +4,15 @@ import '@styles/modal.css';
 import { getAtrasosAlumnos } from '@services/atrasos.service.js';
 import { verJustificativo, aprobarJustificativo, rechazarJustificativo } from '@services/justificativos.service.js';
 import TablaAlumnos from '../components/TablaAlumnos';
-
+import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert';
+import Swal from "sweetalert2";
 const AtrasosAlumnos = () => {
     const [atrasos, setAtrasos] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
     const [justificativoData, setJustificativoData] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
-    const [filterFecha, setFilterFecha] = useState(''); // Filtro por fecha
-    const [filterEstado, setFilterEstado] = useState(''); // Filtro por estado
-
+    const [filterFecha, setFilterFecha] = useState(''); 
+    const [filterEstado, setFilterEstado] = useState(''); 
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -26,10 +26,8 @@ const AtrasosAlumnos = () => {
                 console.error('Error al obtener los datos:', error);
             }
         };
-
         fetchData();
     }, []);
-
     const filtrarAtrasos = () => {
         return atrasos.filter((atraso) => {
             const cumpleFecha = filterFecha ? atraso.fecha === filterFecha : true;
@@ -37,79 +35,123 @@ const AtrasosAlumnos = () => {
             return cumpleFecha && cumpleEstado;
         });
     };
-
     const handleJustificar = async () => {
         if (!selectedRow) {
             console.log('No hay fila seleccionada');
             return;
         }
-    
         try {
             const data = await verJustificativo(selectedRow.ID_atraso);
-            setJustificativoData(data);
-            setModalOpen(true); 
+            if (!data || !data.data) {
+                showErrorAlert("Error", "No se encontró un justificativo para este atraso.");
+                return;
+            }
+            const { motivo, documento, estado } = data.data;
+            await Swal.fire({
+                title: 'Revisar Justificativo',
+                html: `
+                    <p><strong>Motivo:</strong> ${motivo || "No especificado"}</p>
+                    <p><strong>Documento:</strong> ${
+                        documento
+                            ? `<a href="${documento}" target="_blank" rel="noopener noreferrer">Ver documento</a>`
+                            : "No disponible"
+                    }</p>
+                    <p><strong>Estado:</strong> ${estado || "No especificado"}</p>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cerrar',
+                denyButtonText: 'Rechazar',
+                showDenyButton: true,
+                buttonsStyling: false, 
+                customClass: {
+                    confirmButton: 'btn btn-success', 
+                    cancelButton: 'btn btn-secondary', 
+                    denyButton: 'btn btn-danger',
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log("Justificativo aceptado");
+                    handleAprobar();
+                } else if (result.isDenied) {
+                    console.log("Justificativo rechazado");
+                    handleRechazar();
+                }
+            });
         } catch (error) {
             console.error('Error al obtener el justificativo:', error);
+            showErrorAlert("Error", "Hubo un problema al intentar obtener el justificativo.");
         }
     };
-
     const handleAprobar = async () => {
-        if (!selectedRow) return;
-    
+        if (!selectedRow) {
+            showErrorAlert("Error", "Debe seleccionar una fila antes de aprobar un justificativo.");
+            return;
+        }
         try {
             const email = atrasos.find((atraso) => atraso.ID_atraso === selectedRow.ID_atraso)?.email || null;
-            console.log(email);
-            const response = await aprobarJustificativo(selectedRow.ID_atraso, {
-                email: email, 
-            });
-    
+            if (!email) {
+                showErrorAlert("Error", "No se pudo obtener el email del alumno. Por favor, inténtelo de nuevo.");
+                return;
+            }
+            const response = await aprobarJustificativo(selectedRow.ID_atraso, { email: email });
             if (response.status === 'Success') {
-                alert('Justificativo aprobado con éxito.');
+                showSuccessAlert('Justificativo aprobado con éxito.');
+                setAtrasos(atrasos.filter(atraso => atraso.ID_atraso !== selectedRow.ID_atraso)); // Actualizar lista
                 setJustificativoData(null);
+                setSelectedRow(null);
                 setModalOpen(false);
             } else {
-                console.error('Error en la respuesta del servidor:', response);
+                showErrorAlert("Error", response.message || "No se pudo aprobar el justificativo.");
             }
         } catch (error) {
-            console.error('Error al aprobar el justificativo:', error);
+            console.error("Error al aprobar el justificativo:", error);
+            showErrorAlert("Error", "Ocurrió un problema al intentar aprobar el justificativo.");
         }
     };
-
     const handleRechazar = async () => {
-        if (!selectedRow) return;
-    
         try {
-            const motivo = prompt("Ingrese el motivo del rechazo:");
+            const { value: motivo } = await Swal.fire({
+                title: "Motivo de rechazo",
+                input: "textarea",
+                inputPlaceholder: "Ingrese el motivo del rechazo aquí...",
+                inputAttributes: {
+                    "aria-label": "Motivo de rechazo"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Enviar",
+                cancelButtonText: "Cancelar",
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-secondary',
+                },
+            });
             if (!motivo) {
-                alert("Debe ingresar un motivo para rechazar el justificativo.");
+                showErrorAlert("Cancelado", "Debe ingresar un motivo para rechazar el justificativo.");
                 return;
             }
-    
             const email = atrasos.find((atraso) => atraso.ID_atraso === selectedRow.ID_atraso)?.email || null;
-    
             if (!email) {
-                console.error("El email del alumno no fue encontrado en los datos originales.");
-                alert("No se pudo obtener el email del alumno. Por favor, intenta de nuevo.");
+                showErrorAlert("Error", "No se pudo obtener el email del alumno. Por favor, intenta de nuevo.");
                 return;
             }
-    
             const response = await rechazarJustificativo(selectedRow.ID_atraso, {
                 email: email,
                 motivo: motivo,
             });
-    
-            if (response.status === 'Success') {
-                alert('Justificativo rechazado con éxito.');
-                setJustificativoData(null);
-                setModalOpen(false); 
+            if (response.status === "Success") {
+                Swal.fire("Éxito", "Justificativo rechazado con éxito.", "success");
+                setAtrasos(atrasos.filter(atraso => atraso.ID_atraso !== selectedRow.ID_atraso));
+                setSelectedRow(null); 
+                setModalOpen(false);
             } else {
-                console.error('Error en la respuesta del servidor:', response);
+                showErrorAlert("Error", response.message || "Error en la respuesta del servidor.");
             }
         } catch (error) {
-            console.error('Error al rechazar el justificativo:', error);
+            showErrorAlert("Error", error.message || "Error al rechazar el justificativo.");
         }
     };
-
     const columns = [
         { title: 'Nombre', field: 'nombre' },
         { title: 'RUT', field: 'rut' },
@@ -118,7 +160,6 @@ const AtrasosAlumnos = () => {
         { title: 'Estado', field: 'estado' },
         { title: 'Justificativo', field: 'estadoJustificativo' },
     ];
-
     return (
         <div className="main-container">
             <div className="top-table">
@@ -126,7 +167,6 @@ const AtrasosAlumnos = () => {
                     Atrasos del curso {atrasos.length > 0 ? atrasos[0].curso : 'Curso no disponible'}
                 </h1>
             </div>
-
             <div className="filters">
                 <label>
                     Fecha:
@@ -157,34 +197,36 @@ const AtrasosAlumnos = () => {
                     Revisar
                 </button>
             </div>
-
             <TablaAlumnos
-                data={filtrarAtrasos()} // Aplicar filtros a los datos
+                data={filtrarAtrasos()} 
                 columns={columns}
                 onRowSelect={(row) => { setSelectedRow(row); }}
             />
-
             {isModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
                         <h2>Revisar Justificativo</h2>
-                        {justificativoData ? (
+                        {justificativoData && justificativoData.data ? (
                             <>
                                 <p>
                                     <strong>Motivo:</strong> {justificativoData.data.motivo}
                                 </p>
                                 <p>
                                     <strong>Documento:</strong>{' '}
-                                    <a
-                                        href={justificativoData.data.documento}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Ver documento
-                                    </a>
+                                    {justificativoData.data.documento ? (
+                                        <a
+                                            href={justificativoData.data.documento}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Ver documento
+                                        </a>
+                                    ) : (
+                                        "No disponible"
+                                    )}
                                 </p>
                                 <p>
-                                    <strong>Estado:</strong> {justificativoData.data.estado}
+                                    <strong>Estado:</strong> {justificativoData.data.estado || "No especificado"}
                                 </p>
                             </>
                         ) : (
@@ -207,5 +249,4 @@ const AtrasosAlumnos = () => {
         </div>
     );
 };
-
 export default AtrasosAlumnos;

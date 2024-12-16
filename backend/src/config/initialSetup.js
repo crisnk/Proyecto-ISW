@@ -448,6 +448,59 @@ export async function crearEspecialidades() {
   }
 }
 
+export async function crearAtrasos() {
+  try {
+    const atrasoRepository = AppDataSource.getRepository(Atraso);
+    const count = await atrasoRepository.count();
+    if (count > 0) return;  
+
+    const atrasos = [
+      { fecha: "2023-10-01", hora: "08:30:00", estado: "activo", rut: "19.741.384-0" }, // Dilan Alejandro Aranguiz Vejar
+      { fecha: "2023-10-01", hora: "09:00:00", estado: "activo", rut: "21.237.487-3" }, // Esteban Patricio Bravo Suárez
+      { fecha: "2023-10-02", hora: "08:45:00", estado: "activo", rut: "11.111.111-9" }, // Cristobal Alarcon
+      { fecha: "2023-10-02", hora: "09:15:00", estado: "activo", rut: "21.012.009-2" }, // Diego Antonio Vargas Gómez
+      { fecha: "2023-10-03", hora: "08:50:00", estado: "activo", rut: "21.025.001-1" }, // Juan Carlos Silva Pérez
+      { fecha: "2023-10-03", hora: "09:05:00", estado: "activo", rut: "21.025.002-2" }, // Ana María Gómez Torres
+      { fecha: "2023-10-04", hora: "08:40:00", estado: "activo", rut: "21.025.003-3" }, // Pedro Luis Morales Díaz
+      { fecha: "2023-10-04", hora: "09:10:00", estado: "activo", rut: "21.025.004-4" }, // María Isabel López Fuentes
+      { fecha: "2023-10-05", hora: "08:55:00", estado: "activo", rut: "21.025.005-5" }, // Luis Eduardo Fernández Soto
+      { fecha: "2023-10-05", hora: "09:20:00", estado: "activo", rut: "21.025.006-6" },  // Sofía Alejandra Ramírez Gómez
+      { fecha: "2023-10-11", hora: "09:20:00", estado: "activo", rut: "21.237.487-3" }
+    ];
+    
+    await atrasoRepository.save(atrasos);
+  
+  } catch (error) {
+    console.error("Error al crear materias predeterminadas:", error);
+  }
+}
+export async function crearJustificativos() {
+  try {
+    const justificativoRepository = AppDataSource.getRepository("Justificativo");
+    const count = await justificativoRepository.count();
+    if (count > 0) return;
+
+    const justificativos = [
+      { motivo: "Problemas de salud", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 1, rut: "19.741.384-0" },
+      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 2, rut: "21.237.487-3" },
+      { motivo: "Evento familiar", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 3, rut: "11.111.111-9" },
+      { motivo: "Problemas de transporte", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 4, rut: "21.012.009-2" },
+      { motivo: "Condiciones climáticas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 5, rut: "21.025.001-1" },
+      { motivo: "Razones médicas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 6, rut: "21.025.002-2" },
+      { motivo: "Retraso en transporte público", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 7, rut: "21.025.003-3" },
+      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 8, rut: "21.025.004-4" },
+      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 9, rut: "21.025.005-5" },
+      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 10, rut: "21.237.487-3" },
+
+    ];
+    
+
+    await justificativoRepository.save(justificativos);
+  } catch (error) {
+    console.error("Error al crear justificativos:", error);
+  }
+}
+
 export async function crearMaterias() {
   try {
     const materiaRepository = AppDataSource.getRepository(Materia);
@@ -480,7 +533,6 @@ export async function crearMaterias() {
     console.error("Error al crear materias predeterminadas:", error);
   }
 }
-
 export async function crearImparticiones() {
   try {
     const imparteRepository = AppDataSource.getRepository(Imparte);
@@ -503,53 +555,5 @@ export async function crearImparticiones() {
 
   } catch (error) {
     console.error("Error al crear materias predeterminadas:", error);
-  }
-}
-
-export async function crearAtrasos() {
-  try {
-    const atrasoRepository = AppDataSource.getRepository(Atraso);
-    const count = await atrasoRepository.count();
-    if (count > 0) return;  
-
-    const atrasos = [
-      { fecha: "2023-10-01", hora: "08:30:00", estado: "activo", rut: "19.741.384-0" }, // Dilan Alejandro Aranguiz Vejar
-      { fecha: "2023-10-01", hora: "09:00:00", estado: "activo", rut: "21.237.487-3" }, // Esteban Patricio Bravo Suárez
-      { fecha: "2023-10-02", hora: "08:45:00", estado: "activo", rut: "11.111.111-9" }, // Cristobal Alarcon
-      { fecha: "2023-10-02", hora: "09:15:00", estado: "activo", rut: "21.012.009-2" }, // Diego Antonio Vargas Gómez
-      { fecha: "2023-10-03", hora: "08:50:00", estado: "activo", rut: "21.025.001-1" }, // Juan Carlos Silva Pérez
-      { fecha: "2023-10-03", hora: "09:05:00", estado: "activo", rut: "21.025.002-2" }, // Ana María Gómez Torres
-      { fecha: "2023-10-04", hora: "08:40:00", estado: "activo", rut: "21.025.003-3" }, // Pedro Luis Morales Díaz
-      { fecha: "2023-10-04", hora: "09:10:00", estado: "activo", rut: "21.025.004-4" }, // María Isabel López Fuentes
-      { fecha: "2023-10-05", hora: "08:55:00", estado: "activo", rut: "21.025.005-5" }, // Luis Eduardo Fernández Soto
-      { fecha: "2023-10-05", hora: "09:20:00", estado: "activo", rut: "21.025.006-6" }  // Sofía Alejandra Ramírez Gómez
-    ];
-    
-    await atrasoRepository.save(atrasos);
-  
-  } catch (error) {
-    console.error("Error al crear materias predeterminadas:", error);
-  }
-}
-export async function crearJustificativos() {
-  try {
-    const justificativoRepository = AppDataSource.getRepository("Justificativo");
-    const count = await justificativoRepository.count();
-    if (count > 0) return;
-
-    const justificativos = [
-      { motivo: "Problemas de salud", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 1, rut: "19.741.384-0" },
-      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 2, rut: "21.237.487-3" },
-      { motivo: "Evento familiar", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 3, rut: "11.111.111-9" },
-      { motivo: "Problemas de transporte", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 4, rut: "21.012.009-2" },
-      { motivo: "Condiciones climáticas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 5, rut: "21.025.001-1" },
-      { motivo: "Razones médicas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 6, rut: "21.025.002-2" },
-      { motivo: "Retraso en transporte público", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 7, rut: "21.025.003-3" },
-    ];
-    
-
-    await justificativoRepository.save(justificativos);
-  } catch (error) {
-    console.error("Error al crear justificativos:", error);
   }
 }
