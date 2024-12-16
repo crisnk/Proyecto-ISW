@@ -73,12 +73,22 @@ export async function createAtrasoService(rut) {
     await atrasoRepository.save(nuevoAtraso);
 
     const profesorID = imparte.rut;
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: {
+        rut: rut
+      }
+    });
+    const nombreAlumno = user.nombreCompleto;
 
     return {
       atraso: nuevoAtraso,
       profesor: {
         rut: profesorID
       },
+      alumno: {
+        nombre: nombreAlumno
+      }
     };
   } catch (error) {
     console.error("Error al registrar el atraso:", error);

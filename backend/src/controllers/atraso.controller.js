@@ -22,6 +22,7 @@ export async function registrarAtraso(req, res) {
     const response = await createAtrasoService(rut);
     console.log('response:', response.profesor.rut);
     const rutProfesor = response.profesor.rut;
+    const nombreAlumno = response.alumno.nombre;
     if(res.status(201)) {
     
       const io = req.app.get('socketio'); 
@@ -32,7 +33,7 @@ export async function registrarAtraso(req, res) {
       console.log('socketIdProfesor:', socketId);
         if (socketId) {
           io.to(socketId).emit('marca-atraso', {
-            mensaje: `El estudiante ${rutProfesor} ha registrado un atraso`,
+            mensaje: `El alumno ${nombreAlumno} ha registrado un atraso`,
           });
           console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
         } else {

@@ -101,6 +101,110 @@
     border-radius: 2px;
 }
 
+.icono-campana {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.icono-campana .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.notificaciones {
+    position: relative;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+  
+  .notificaciones .badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .hamburger {
+    cursor: pointer;
+  }
+  
+  .bar {
+    background-color: #333;
+    height: 4px;
+    width: 25px;
+    margin: 4px 0;
+  }
+  
+  /* Contenedor general de la campana */
+.notificaciones-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Estilo del pop-up */
+.notificaciones-popup {
+    position: absolute;
+    top: 40px; 
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    z-index: 1000;
+    padding: 10px;
+}
+
+.notificaciones-popup ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.notificaciones-popup li {
+    padding: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+.notificaciones-popup li:last-child {
+    border-bottom: none;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    padding: 2px 6px;
+}
+
 /* Responsividad */
 @media (max-width: 768px) {
     .hamburger {
