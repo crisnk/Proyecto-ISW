@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import '@styles/tablaAlumnos.css';
 
-
 const TablaAlumnos = ({ data, columns, onRowSelect }) => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [selectedRow, setSelectedRow] = useState(null);
-    const rowsPerPage = 10;
 
+    // Manejo de ordenación
     const handleSort = (key) => {
         setSortConfig((prevState) => ({
             key,
@@ -19,10 +19,10 @@ const TablaAlumnos = ({ data, columns, onRowSelect }) => {
         if (sortConfig.key === key) {
             return sortConfig.direction === 'asc' ? ' ▲' : ' ▼';
         }
-        return ' ⇅'; 
+        return ' ⇅';
     };
-    
 
+    // Ordenar y dividir datos por página
     const sortedData = [...data].sort((a, b) => {
         if (!sortConfig.key) return 0;
         const aValue = a[sortConfig.key] ?? '';
@@ -38,20 +38,22 @@ const TablaAlumnos = ({ data, columns, onRowSelect }) => {
         currentPage * rowsPerPage
     );
 
+    // Cambiar de página
     const goToPage = (page) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
         }
     };
 
+    // Seleccionar fila
     const handleRowSelect = (row) => {
         setSelectedRow(row);
-        onRowSelect(row); 
+        onRowSelect(row);
     };
 
     return (
-        <div className="table-container">
-            <table className="custom-table">
+        <div className="tablaAlumnos-container">
+            <table className="tablaAlumnos-table">
                 <thead>
                     <tr>
                         <th>Seleccionar</th>
@@ -65,8 +67,12 @@ const TablaAlumnos = ({ data, columns, onRowSelect }) => {
                 </thead>
                 <tbody>
                     {currentPageData.map((row) => (
-                        <tr key={row.ID_atraso} className={selectedRow === row ? 'selected-row' : ''}>
-                            <td>
+                        <tr
+                            key={row.ID_atraso}
+                            className={selectedRow === row ? 'tablaAlumnos-row-selected' : ''}
+                            onClick={() => handleRowSelect(row)}
+                        >
+                            <td onClick={(e) => e.stopPropagation()}>
                                 <input
                                     type="checkbox"
                                     checked={selectedRow === row}
@@ -80,7 +86,9 @@ const TablaAlumnos = ({ data, columns, onRowSelect }) => {
                     ))}
                 </tbody>
             </table>
-            <div className="pagination-controls">
+
+            {/* Paginación */}
+            <div className="tablaAlumnos-pagination">
                 <button onClick={() => goToPage(1)} disabled={currentPage === 1}>
                     Primero
                 </button>
@@ -90,7 +98,7 @@ const TablaAlumnos = ({ data, columns, onRowSelect }) => {
                 {[...Array(totalPages)].map((_, index) => (
                     <button
                         key={index}
-                        className={currentPage === index + 1 ? 'active' : ''}
+                        className={currentPage === index + 1 ? 'tablaAlumnos-active-page' : ''}
                         onClick={() => goToPage(index + 1)}
                     >
                         {index + 1}
@@ -102,6 +110,19 @@ const TablaAlumnos = ({ data, columns, onRowSelect }) => {
                 <button onClick={() => goToPage(totalPages)} disabled={currentPage === totalPages}>
                     Último
                 </button>
+            </div>
+
+            {/* Control de filas por página */}
+            <div className="tablaAlumnos-rows-per-page">
+                <label>
+                    Filas por página:
+                    <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                    </select>
+                </label>
             </div>
         </div>
     );

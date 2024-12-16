@@ -11,8 +11,22 @@ const AtrasosAlumnos = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [justificativoData, setJustificativoData] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
-    const [filterFecha, setFilterFecha] = useState(''); 
     const [filterEstado, setFilterEstado] = useState(''); 
+    const [filterFechaInicio, setFilterFechaInicio] = useState('');
+    const [filterFechaFin, setFilterFechaFin] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            const tableElement = document.querySelector('.tablaAlumnos-table');
+            if (tableElement && !tableElement.contains(event.target)) {
+                setSelectedRow(null); // Desmarca la fila seleccionada
+            }
+        };
+    
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -28,13 +42,21 @@ const AtrasosAlumnos = () => {
         };
         fetchData();
     }, []);
+
     const filtrarAtrasos = () => {
         return atrasos.filter((atraso) => {
-            const cumpleFecha = filterFecha ? atraso.fecha === filterFecha : true;
+            const cumpleFecha = (filterFechaInicio && filterFechaFin)
+                ? new Date(atraso.fecha) >= new Date(filterFechaInicio) &&
+                  new Date(atraso.fecha) <= new Date(filterFechaFin)
+                : true;
             const cumpleEstado = filterEstado ? atraso.estadoJustificativo === filterEstado : true;
-            return cumpleFecha && cumpleEstado;
+            const cumpleBusqueda = searchQuery
+                ? (atraso.nombre.toLowerCase().includes(searchQuery) || atraso.rut.toLowerCase().includes(searchQuery))
+                : true;
+            return cumpleFecha && cumpleEstado && cumpleBusqueda;
         });
     };
+    
     const handleJustificar = async () => {
         if (!selectedRow) {
             console.log('No hay fila seleccionada');
@@ -88,6 +110,21 @@ const AtrasosAlumnos = () => {
             showErrorAlert("Error", "Debe seleccionar una fila antes de aprobar un justificativo.");
             return;
         }
+        const confirmResult = await Swal.fire({
+            title: "Confirmar Aprobación",
+            text: "¿Está seguro de aprobar este justificativo?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, aprobar",
+            cancelButtonText: "Cancelar",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-secondary',
+            },
+        });
+        if (!confirmResult.isConfirmed) return;
+    
         try {
             const email = atrasos.find((atraso) => atraso.ID_atraso === selectedRow.ID_atraso)?.email || null;
             if (!email) {
@@ -109,6 +146,7 @@ const AtrasosAlumnos = () => {
             showErrorAlert("Error", "Ocurrió un problema al intentar aprobar el justificativo.");
         }
     };
+
     const handleRechazar = async () => {
         try {
             const { value: motivo } = await Swal.fire({
@@ -127,19 +165,39 @@ const AtrasosAlumnos = () => {
                     cancelButton: 'btn btn-secondary',
                 },
             });
+    
             if (!motivo) {
                 showErrorAlert("Cancelado", "Debe ingresar un motivo para rechazar el justificativo.");
                 return;
             }
-            const email = atrasos.find((atraso) => atraso.ID_atraso === selectedRow.ID_atraso)?.email || null;
+
+            const confirmResult = await Swal.fire({
+                title: "Confirmar Rechazo",
+                text: "¿Está seguro de rechazar este justificativo?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, rechazar",
+                cancelButtonText: "Cancelar",
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary',
+                },
+            });
+    
+            if (!confirmResult.isConfirmed) return;
+
+                const email = atrasos.find((atraso) => atraso.ID_atraso === selectedRow.ID_atraso)?.email || null;
             if (!email) {
                 showErrorAlert("Error", "No se pudo obtener el email del alumno. Por favor, intenta de nuevo.");
                 return;
             }
+    
             const response = await rechazarJustificativo(selectedRow.ID_atraso, {
                 email: email,
                 motivo: motivo,
             });
+    
             if (response.status === "Success") {
                 Swal.fire("Éxito", "Justificativo rechazado con éxito.", "success");
                 setAtrasos(atrasos.filter(atraso => atraso.ID_atraso !== selectedRow.ID_atraso));
@@ -152,6 +210,8 @@ const AtrasosAlumnos = () => {
             showErrorAlert("Error", error.message || "Error al rechazar el justificativo.");
         }
     };
+    
+
     const columns = [
         { title: 'Nombre', field: 'nombre' },
         { title: 'RUT', field: 'rut' },
@@ -169,11 +229,19 @@ const AtrasosAlumnos = () => {
             </div>
             <div className="filters">
                 <label>
-                    Fecha:
+                    Fecha desde:
                     <input
                         type="date"
-                        value={filterFecha}
-                        onChange={(e) => setFilterFecha(e.target.value)}
+                        value={filterFechaInicio}
+                        onChange={(e) => setFilterFechaInicio(e.target.value)}
+                    />
+                </label>
+                <label>
+                    Fecha hasta:
+                    <input
+                        type="date"
+                        value={filterFechaFin}
+                        onChange={(e) => setFilterFechaFin(e.target.value)}
                     />
                 </label>
                 <label>
@@ -188,6 +256,14 @@ const AtrasosAlumnos = () => {
                         <option value="rechazado">Rechazado</option>
                         <option value="No Justificado">No Justificado</option>
                     </select>
+                </label>
+                <label>
+                    Buscar:
+                    <input
+                        type="text"
+                        placeholder="Nombre o RUT"
+                        onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
+                    />
                 </label>
                 <button
                     className="revisar-button2"
