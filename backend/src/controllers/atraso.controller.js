@@ -32,7 +32,7 @@ export async function registrarAtraso(req, res) {
 
       console.log('socketIdProfesor:', socketId);
         if (socketId) {
-          io.to(socketId).emit('marca-atraso', {
+          io.to(socketId).emit('recibo-notificacion', {
             mensaje: `El alumno ${nombreAlumno} ha registrado un atraso`,
           });
           console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
