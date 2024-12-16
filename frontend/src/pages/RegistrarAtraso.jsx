@@ -3,8 +3,11 @@ import { obtenerInfoAtraso, registrarAtrasos } from '@services/atrasos.service.j
 import '@styles/InfoAtrasoCard.css';
 import "@styles/styles.css";
 import InfoAtrasoCard from "../components/InfoAtrasoCard";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const RegistrarAtraso = () => {
+  const navigate = useNavigate(); // Hook para navegar entre rutas
   const [infoAtraso, setInfoAtraso] = useState(null); // Datos de la clase.
   const [loading, setLoading] = useState(false); // Estado de carga.
   const [error, setError] = useState(""); // Mensajes de error.
@@ -46,6 +49,14 @@ const RegistrarAtraso = () => {
       if (response.status === "Success") { // Verifica si la operación fue exitosa
         setSuccessMessage("Atraso registrado correctamente.");
         setInfoAtraso(null); // Limpia los datos si es necesario
+        Swal.fire({
+          title: "¡Éxito!",
+          text: "El atraso ha sido registrado correctamente.",
+          icon: "success",
+          confirmButtonText: "OK"
+        }).then(() => {
+          navigate("/homeAlumno"); // Redirige a /homeAlumno
+        });
       } else {
         setError(response.message || "Error al registrar el atraso.");
       }

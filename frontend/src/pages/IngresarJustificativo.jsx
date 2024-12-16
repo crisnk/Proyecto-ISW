@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import Form from '../components/Form'; // Importa tu Form
 import { obtenerInfoAtrasosJustificables } from '@services/atrasos.service.js';
 import { justificarAtraso } from '@services/justificativos.service.js';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom'; 
 
 const IngresarJustificativo = () => {
+    const navigate = useNavigate();
     const [atrasosDisponibles, setAtrasosDisponibles] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -70,6 +73,14 @@ const IngresarJustificativo = () => {
         } 
 
         await justificarAtraso(data);
+        Swal.fire({
+            title: '¡Justificativo Creado!',
+            text: 'El justificativo se registró correctamente.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+        }).then(() => {
+            navigate('/homeAlumno'); 
+        });
     } catch (error) {
         console.error('Error al registrar justificativo:', error);
         alert('Hubo un problema al registrar el justificativo. Por favor, inténtalo de nuevo.');
@@ -81,9 +92,8 @@ const IngresarJustificativo = () => {
     }
 
     return (
-        <div className='alumno-funciones'>
-            <div>
-                <h1>Registrar Justificativo</h1>
+        <div className="alumno-funciones">
+            <div className="ingresar-justificativo-container"> {/* Clase adicional */}
                 <Form
                     title="Justificar Atraso"
                     fields={fields}
