@@ -1,0 +1,119 @@
+/* Contenedor general de la tabla */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+    -webkit-overflow-scrolling: touch; /* Suaviza el scroll en móviles */
+}
+
+/* Tabla */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* Encabezados */
+.custom-table th {
+    background-color: #003366;
+    color: white;
+    font-weight: bold;
+    padding: 8px;
+    border: 1px solid #003366;
+}
+
+/* Celdas */
+.custom-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+/* Filas al pasar el mouse */
+.custom-table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* Fila seleccionada */
+.selected-row {
+    background-color: #e0f7fa;
+    font-weight: bold;
+}
+
+/* Controles de paginación */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination-controls button {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: white;
+    color: #003366;
+    border: 1px solid #003366;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.pagination-controls button:hover {
+    background-color: #003366;
+    color: white;
+}
+
+.pagination-controls .active {
+    color: #E4332C;
+    font-weight: bold;
+}
+
+/* Tabla responsive (modo apilado en móviles) */
+@media (max-width: 768px) {
+    .custom-table th,
+    .custom-table td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .custom-table tr {
+        display: flex;
+        flex-direction: column; /* Apila las celdas */
+        border-bottom: 1px solid #ddd;
+    }
+
+    .custom-table th {
+        display: none; /* Oculta los encabezados en pantallas pequeñas */
+    }
+
+    .custom-table td {
+        display: block;
+        width: 100%;
+        text-align: right;
+        position: relative;
+        padding-left: 50%; /* Deja espacio para los encabezados simulados */
+    }
+
+    .custom-table td::before {
+        content: attr(data-label); /* Agrega un encabezado simulado */
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 10px;
+        text-align: left;
+        font-weight: bold;
+        color: #003366;
+    }
+
+    .pagination-controls {
+        flex-wrap: wrap; /* Permite que los botones se ajusten en móviles */
+        gap: 5px;
+    }
+
+    .pagination-controls button {
+        flex: 1; 
+        text-align: center;
+    }
+}

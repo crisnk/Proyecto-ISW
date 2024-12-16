@@ -17,7 +17,7 @@ router.use(authenticateJwt);
 router  
     .post("/generar",  isAuthorized("alumno"), upload, handleFileSizeLimit , generarJustificativo)
     .get('/archivo/:filePath', isAuthorized("alumno"), verArchivoJustificativo)
-    .post("/aprobar/:ID_atraso", manejarAprobarJustificativo)
-    .post("/rechazar/:ID_atraso", manejarRechazarJustificativo)
-    .get("/ver/:ID_atraso", verJustificativo);
+    .post("/aprobar/:ID_atraso", isAuthorized("profesor"), manejarAprobarJustificativo)
+    .post("/rechazar/:ID_atraso", isAuthorized("profesor"), manejarRechazarJustificativo)
+    .get("/ver/:ID_atraso", isAuthorized("profesor"), verJustificativo);
 export default router;

@@ -26,6 +26,10 @@ const JustificativoSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
+    motivoRechazo: {
+      type: "varchar",
+      length: 255,
+      nullable: true },
   },
   relations: {
     ID_atraso: {
