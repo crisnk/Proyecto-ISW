@@ -2,17 +2,26 @@ import { useEffect, useState } from 'react';
 import Form from '../components/Form'; // Importa tu Form
 import { obtenerInfoAtrasosJustificables } from '@services/atrasos.service.js';
 import { justificarAtraso } from '@services/justificativos.service.js';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom'; 
 
 const IngresarJustificativo = () => {
+    const navigate = useNavigate();
     const [atrasosDisponibles, setAtrasosDisponibles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     const fetchAtrasos = async () => {
         try {
             const response = await obtenerInfoAtrasosJustificables(); 
-            setAtrasosDisponibles(response.data);
+            if (response.status === "Success" && response.data.length > 0) {
+                setAtrasosDisponibles(response.data);
+            } else {
+                setError('No tienes atrasos disponibles para justificar');
+            }
         } catch (error) {
             console.error('Error al obtener atrasos:', error);
+            setError('No tienes atrasos disponibles para justificar');
         } finally {
             setLoading(false);
         }
@@ -70,6 +79,14 @@ const IngresarJustificativo = () => {
         } 
 
         await justificarAtraso(data);
+        Swal.fire({
+            title: '¡Justificativo Creado!',
+            text: 'El justificativo se registró correctamente.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+        }).then(() => {
+            navigate('/homeAlumno'); 
+        });
     } catch (error) {
         console.error('Error al registrar justificativo:', error);
         alert('Hubo un problema al registrar el justificativo. Por favor, inténtalo de nuevo.');
@@ -81,15 +98,21 @@ const IngresarJustificativo = () => {
     }
 
     return (
-        <div className='alumno-funciones'>
-            <div>
-                <h1>Registrar Justificativo</h1>
-                <Form
-                    title="Justificar Atraso"
-                    fields={fields}
-                    buttonText="Registrar Justificativo"
-                    onSubmit={handleSubmit}
-                />
+        <div className="alumno-funciones">
+            <div className="page-container">
+                {error && (
+                    <div className="error-box">
+                        <p className="error-message">{error}</p>
+                    </div>
+                )}
+                {!error && (
+                    <Form
+                        title="Justificar Atraso"
+                        fields={fields}
+                        buttonText="Registrar Justificativo"
+                        onSubmit={handleSubmit}
+                    />
+                )}
             </div>
         </div>
     );

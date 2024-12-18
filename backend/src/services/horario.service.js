@@ -6,6 +6,7 @@ import Materia from "../entity/materia.entity.js";
 import User from "../entity/user.entity.js";
 import Pertenece from "../entity/pertenece.entity.js";
 import PDFDocument from 'pdfkit';
+import { Not } from "typeorm";
 import fs from 'fs';
 import { sendEmail } from "./email.service.js";
 import {
@@ -16,6 +17,7 @@ import {
   horarioValidationCurso,
   bloquesHorarios
 } from "../validations/horario.validation.js";
+
 
 export const asignaHorarioCursoService = async (horarioData) => {
   const { ID_curso, horario } = horarioData;
@@ -111,30 +113,37 @@ export const asignaHorarioProfesorService = async (horarioData) => {
     }
 
     validarSincronizacionBloque(bloquehoras.bloque, hora_Inicio, hora_Fin);
-
+    
     const conflictoHorario = await repository.findOne({
       where: {
         dia: bloquehoras.dia,
         bloque: bloquehoras.bloque,
-        hora_Inicio,
-        hora_Fin,
+        ID_curso: bloquehoras.ID_curso, 
+        rut: Not(rut), 
       },
-      relations: ["profesor"], 
+      relations: ["profesor", "curso"],
     });
 
-    if (conflictoHorario && conflictoHorario.rut !== rut) {
+    if (conflictoHorario) {
       const profesorConflictivo = await profesorRepository.findOneBy({ rut: conflictoHorario.rut });
       const nombreProfesor = profesorConflictivo?.nombreCompleto || "Desconocido";
 
       throw new Error(
-        `Conflicto de horario: El bloque ${bloquehoras.bloque} el ${bloquehoras.dia} ya está asignado a ${nombreProfesor}.`
+        `Conflicto de horario: El bloque ${bloquehoras.bloque} el ${bloquehoras.dia} ya está asignado a ${nombreProfesor} en el curso ${bloquehoras.ID_curso}.`
       );
     }
+    const horarioExistente = await repository.findOne({
+      where: {
+        rut,
+        dia: bloquehoras.dia,
+        bloque: bloquehoras.bloque,
+      },
+    });
 
-    if (conflictoHorario) {
-      conflictoHorario.ID_curso = bloquehoras.ID_curso;
-      conflictoHorario.ID_materia = bloquehoras.ID_materia;
-      await repository.save(conflictoHorario);
+    if (horarioExistente) {
+      horarioExistente.ID_curso = bloquehoras.ID_curso;
+      horarioExistente.ID_materia = bloquehoras.ID_materia;
+      await repository.save(horarioExistente);
     } else {
       const nuevoHorario = repository.create({
         rut,
@@ -151,7 +160,6 @@ export const asignaHorarioProfesorService = async (horarioData) => {
 
   return { message: "Horario asignado correctamente para el profesor." };
 };
-
 
 export const getMateriasService = async () => {
   const repository = AppDataSource.getRepository(Materia);

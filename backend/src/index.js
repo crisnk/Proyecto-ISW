@@ -108,8 +108,8 @@ async function setupAPI() {
     await crearMaterias();
     await crearImparticiones();
     await crearAtrasos();
-    await setupServer();
     await crearJustificativos();
+    await setupServer();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }

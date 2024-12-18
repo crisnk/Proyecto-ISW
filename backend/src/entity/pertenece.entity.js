@@ -19,6 +19,10 @@ const PerteneceSchema = new EntitySchema({
       length: 12,
       nullable: true,
     },
+    año: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     user: { 

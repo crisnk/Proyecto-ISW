@@ -3,13 +3,13 @@ import { EntitySchema } from "typeorm";
 
 
 const JustificativoSchema = new EntitySchema({
-  name: "Justificativo", // Nombre de la entidad
-  tableName: "justificativos", // Nombre de la tabla en la base de datos
+  name: "Justificativo", 
+  tableName: "justificativos", 
   columns: {
     ID_justificativo: {
       type: "int",
       primary: true,
-      generated: true, // Generar automáticamente el ID
+      generated: true, 
     },
     motivo: {
       type: "varchar",
@@ -40,17 +40,7 @@ const JustificativoSchema = new EntitySchema({
         referencedColumnName: "ID_atraso" 
       },
       nullable: false, 
-    },
-    rut: {
-      type: "many-to-one",
-      target: "User",
-      joinColumn: {
-        name: "rut",
-        referencedColumnName: "rut"
-      },
-      nullable: false,
-      onDelete: "CASCADE",
-    },
+    }
   },
   indices: [
     {

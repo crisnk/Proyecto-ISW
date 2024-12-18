@@ -2,10 +2,8 @@ import { createJustificativo, aprobarJustificativo, rechazarJustificativo, obten
 import { findAtraso  } from "../services/atraso.service.js";
 import { sendEmailDefault } from "../controllers/email.controller.js";
 import { handleErrorClient, handleSuccess, handleErrorServer } from "../handlers/responseHandlers.js";
-import jwt from "jsonwebtoken";
-import { ACCESS_TOKEN_SECRET, HOST, PORT } from "../config/configEnv.js";
 import { extraerRut } from "../helpers/rut.helper.js";
-import { justificativoValidation } from "../validations/justificativo.validation.js";
+import { justificativoValidation} from "../validations/justificativo.validation.js";
 import moment from "moment-timezone";
 import { drive } from '../config/googleService.js'; // Asegúrate de que esta importación sea correcta
 import { Readable } from 'stream';
@@ -91,40 +89,41 @@ export async function verArchivoJustificativo(req, res) {
 
 export async function manejarAprobarJustificativo(req, res) {
   try {
-    const token = req.cookies.jwt;
+    console.log("Cuerpo de la solicitud recibido:", req.body);
 
-    if (!token) {
-        return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
-    }
-
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-
-    const { email } = decoded;
+    const { email } = req.body;
+    const { ID_atraso } = req.params;
 
     if (!email) {
-        return handleErrorClient(res, 401, "Token inválido o email no presente en el token");
+      return handleErrorClient(res, 400, "El email del alumno es requerido");
     }
 
-    const { ID_atraso } = req.params; 
-    if (!ID_atraso) return handleErrorClient(res, 400, "ID_atraso es requerido");
+    const justificativo = await aprobarJustificativo(ID_atraso);
 
-    const [justificativo, error] = await aprobarJustificativo(ID_atraso);
+    if (!justificativo) {
+      return handleErrorClient(res, 404, "Justificativo no encontrado");
+    }
 
-    if (error) return handleErrorClient(res, 404, error); 
-
-    handleSuccess(res, 200, "Justificativo aprobado", justificativo); 
-    console.log(email);
-    const resEmail = await sendEmailDefault({
+    try {
+      await sendEmailDefault({
         body: {
-            email: email,
-            subject: "Justificativo aprobado",
-            message: "Se le notifica que su atraso fue aprobado",
-        }
-    });
+          email: email,
+          subject: "Justificativo aprobado",
+          message: `Hola, su justificativo con ID ${ID_atraso} ha sido aprobado.`,
+        },
+      });
+    } catch (emailError) {
+      console.error("Error al enviar el correo:", emailError);
+      return handleErrorClient(res, 500, "Justificativo aprobado, pero fallo al enviar el correo.");
+    }
+
+    // Enviar la respuesta al cliente
+    handleSuccess(res, 200, "Justificativo aprobado", justificativo);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
 
 export async function manejarRechazarJustificativo(req, res) {
   try {
@@ -134,24 +133,35 @@ export async function manejarRechazarJustificativo(req, res) {
         return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
     }
 
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-
-    const { email } = decoded;
-
-    if (!email) {
-        return handleErrorClient(res, 401, "Token inválido o email no presente en el token");
-    }
-    const { ID_atraso, motivo } = req.body;
+    const { email, motivo } = req.body;
+    const { ID_atraso } = req.params;
+    
+    const { errorJoi } = justificativoValidation.validate({ motivo, ID_atraso });
+    if (errorJoi) return handleErrorClient(res, 400, errorJoi.details[0].message);
   
-    const [justificativo, error] = await rechazarJustificativo(ID_atraso, motivo);
-    
+    const [justificativo, error] = await rechazarJustificativo();
+    if (!email) return handleErrorClient(res, 400, "El email del alumno es requerido");
+
     if (error) return handleErrorClient(res, 404, error);
+
     
-    handleSuccess(res, 200, "Justificativo rechazado", justificativo); 
+    handleSuccess(res, 200, "Justificativo rechazado", justificativo);
+
+   
+    await sendEmailDefault({
+        body: {
+            email: email, 
+            subject: "Justificativo rechazado",
+            message: `Hola, se le notifica que su justificativo con ID ${ID_atraso} ha sido rechazado. Motivo: ${motivo}`,
+        },
+    });
+
+    console.log(`Correo enviado a ${email} notificando el rechazo del justificativo.`);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
 export async function verJustificativo(req,res) {
   try {
     const { ID_atraso } = req.params;

@@ -51,8 +51,8 @@ export async function createAtrasoService(rut) {
 
     const fechaActual = moment().tz("America/Santiago").format("YYYY-MM-DD");
     const horaActual = moment().tz("America/Santiago").format("HH:mm:ss");
-    const diaSemana = moment.tz("America/Santiago").format('dddd'); // Día de la semana en español
-   
+    const diaSemana = moment.tz("America/Santiago").format('dddd'); 
+    
     const pertenece = await buscarPertenecePorRut(rut);
     if (!pertenece) {
       throw new Error('El alumno no pertenece a un curso.');   
@@ -62,8 +62,34 @@ export async function createAtrasoService(rut) {
     if (!imparte) {
       throw new Error('Alumno no tiene una clase ahora mismo.');   
     }
-
     const atrasoRepository = AppDataSource.getRepository(Atraso);
+    const atrasos = await atrasoRepository.find({
+      select: ["fecha", "hora"], 
+      where: {
+        rut: rut,   
+        fecha: fechaActual,
+      }    
+    });
+
+    const obtenerDiaSemana = (numeroDia) => {
+      const dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+      return dias[numeroDia];
+    };
+
+    for (const atraso of atrasos) {
+      const fecha = new Date(atraso.fecha);    
+      const numeroDia = fecha.getDay(); 
+      const diaSemana = obtenerDiaSemana(numeroDia); 
+      const horaActual = atraso.hora; 
+
+      const imparte = await buscarImparte(atraso.ID_curso, diaSemana, horaActual);
+  
+      if (imparte) {
+        throw new Error(`Ya existe un atraso registrado para la clase actual del alumno.`);
+      }
+    }
+
+
     const nuevoAtraso = atrasoRepository.create({
       rut: rut,  
       fecha: fechaActual,
@@ -92,7 +118,7 @@ export async function createAtrasoService(rut) {
     };
   } catch (error) {
     console.error("Error al registrar el atraso:", error);
-    return [null, error.message]; 
+    throw error; 
   }
 }
 

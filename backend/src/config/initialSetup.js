@@ -54,41 +54,6 @@ export async function crearProfesores(){
   }
 }
 
-export async function crearCursos() {
-  try {
-    const cursoRepository = AppDataSource.getRepository(Curso);
-
-    const count = await cursoRepository.count();
-    if (count > 0) return;
-
-    const cursos = [
-      { nombre: "1ro Medio A", aula: "Sala 1",profesor: "12.345.678-9"},
-      { nombre: "1ro Medio B", aula: "Sala 2",profesor: "11.234.567-8"},
-      { nombre: "1ro Medio C", aula: "Sala 3",profesor: "10.123.456-7"},
-      { nombre: "2do Medio A", aula: "Sala 4",profesor: "9.012.345-6"},
-      { nombre: "2do Medio B", aula: "Sala 5",profesor: "8.901.234-5"},
-      { nombre: "2do Medio C", aula: "Sala 6",profesor: "7.890.123-4"},
-      { nombre: "3ro Medio A", aula: "Sala 7",profesor: "6.789.012-3"},
-      { nombre: "3ro Medio B", aula: "Sala 8",profesor: "5.678.901-2"},
-      { nombre: "3ro Medio C", aula: "Sala 9",profesor: "4.567.890-1"},
-      { nombre: "4to Medio A", aula: "Sala 10",profesor: "3.456.789-0"},
-      { nombre: "4to Medio B", aula: "Sala 11",profesor: "2.345.678-9"},
-      { nombre: "4to Medio C", aula: "Sala 12",profesor: "1.234.567-8"},
-    ];
-
-    for (const { nombre, aula, profesor } of cursos) {
-      const cursoExistente = await cursoRepository.findOneBy({ nombre });
-      if (!cursoExistente) {
-        const nuevoCurso = cursoRepository.create({ nombre, aula, profesor });
-        await cursoRepository.save(nuevoCurso);
-      } else {
-        console.log("Curso ya creado")
-      }
-    }
-  } catch (error) {
-    console.error("Error al crear cursos ", error);    
-  }
-}
 
 export async function createUsers() {
   try {
@@ -401,7 +366,98 @@ export async function createUsers() {
   }
 }
 
+export async function crearCursos() {
+  try {
+    const cursoRepository = AppDataSource.getRepository(Curso);
 
+    const count = await cursoRepository.count();
+    if (count > 0) return;
+
+    const cursos = [
+      { nombre: "1ro Medio A", aula: "Sala 1",profesor: "12.345.678-9"},
+      { nombre: "1ro Medio B", aula: "Sala 2",profesor: "11.234.567-8"},
+      { nombre: "1ro Medio C", aula: "Sala 3",profesor: "10.123.456-7"},
+      { nombre: "2do Medio A", aula: "Sala 4",profesor: "9.012.345-6"},
+      { nombre: "2do Medio B", aula: "Sala 5",profesor: "8.901.234-5"},
+      { nombre: "2do Medio C", aula: "Sala 6",profesor: "7.890.123-4"},
+      { nombre: "3ro Medio A", aula: "Sala 7",profesor: "6.789.012-3"},
+      { nombre: "3ro Medio B", aula: "Sala 8",profesor: "5.678.901-2"},
+      { nombre: "3ro Medio C", aula: "Sala 9",profesor: "4.567.890-1"},
+      { nombre: "4to Medio A", aula: "Sala 10",profesor: "3.456.789-0"},
+      { nombre: "4to Medio B", aula: "Sala 11",profesor: "2.345.678-9"},
+      { nombre: "4to Medio C", aula: "Sala 12",profesor: "1.234.567-8"},
+    ];
+
+    for (const { nombre, aula, profesor } of cursos) {
+      const cursoExistente = await cursoRepository.findOneBy({ nombre });
+      if (!cursoExistente) {
+        const nuevoCurso = cursoRepository.create({ nombre, aula, profesor });
+        await cursoRepository.save(nuevoCurso);
+      } else {
+        console.log("Curso ya creado")
+      }
+    }
+  } catch (error) {
+    console.error("Error al crear cursos ", error);    
+  }
+}
+export async function crearMaterias() {
+  try {
+    const materiaRepository = AppDataSource.getRepository(Materia);
+    const count = await materiaRepository.count();
+    if (count > 0) return;
+
+    const materias = [
+      "Matemáticas",
+      "Historia",
+      "Lenguaje",
+      "Biología",
+      "Química",
+      "Inglés",
+      "Artes",
+      "Física",
+      "Educación Física",
+      "Tecnología",
+      "Mecánica I",
+      "Electricidad I",
+    ];
+
+    for (const nombre of materias) {
+      const materiaExistente = await materiaRepository.findOneBy({ nombre });
+      if (!materiaExistente) {
+        const nuevaMateria = materiaRepository.create({ nombre });
+        await materiaRepository.save(nuevaMateria);
+      }
+    }
+  } catch (error) {
+    console.error("Error al crear materias predeterminadas:", error);
+  }
+}
+export async function crearImparticiones() {
+  try {
+    const imparteRepository = AppDataSource.getRepository(Imparte);
+    const count = await imparteRepository.count();
+    if (count > 0) return;
+
+    const imparticiones = [
+      { ID_curso: 1, ID_materia: 1, rut: "12.345.678-9", dia: "lunes", bloque: "08:00 - 08:45", hora_Inicio: "08:00", hora_Fin: "08:45" },
+      { ID_curso: 1, ID_materia: 2, rut: "11.234.567-8", dia: "lunes", bloque: "08:50 - 09:35", hora_Inicio: "08:50", hora_Fin: "09:35" },
+      { ID_curso: 1, ID_materia: 3, rut: "10.123.456-7", dia: "lunes", bloque: "09:40 - 10:25", hora_Inicio: "09:40", hora_Fin: "10:25" },
+      { ID_curso: 1, ID_materia: 4, rut: "9.012.345-6", dia: "lunes", bloque: "11:20 - 12:05", hora_Inicio: "11:20", hora_Fin: "12:05" },
+      { ID_curso: 1, ID_materia: 5, rut: "8.901.234-5", dia: "lunes", bloque: "12:10 - 12:55", hora_Inicio: "12:10", hora_Fin: "12:55" },
+      { ID_curso: 1, ID_materia: 6, rut: "7.890.123-4", dia: "lunes", bloque: "14:30 - 15:15", hora_Inicio: "14:30", hora_Fin: "15:15" },
+      { ID_curso: 1, ID_materia: 7, rut: "6.789.012-3", dia: "lunes", bloque: "15:20 - 16:05", hora_Inicio: "15:20", hora_Fin: "16:05" },
+      { ID_curso: 1, ID_materia: 8, rut: "5.678.901-2", dia: "lunes", bloque: "16:10 - 16:55", hora_Inicio: "16:10", hora_Fin: "16:55" },
+      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" },
+      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "miércoles", bloque: "15:00 - 17:45", hora_Inicio: "15:00", hora_Fin: "17:45" },
+    ];
+
+    await imparteRepository.save(imparticiones);
+
+  } catch (error) {
+    console.error("Error al crear materias predeterminadas:", error);
+  }
+}
 
 export async function crearEspecialidades() {
   try {
@@ -455,17 +511,60 @@ export async function crearAtrasos() {
     if (count > 0) return;  
 
     const atrasos = [
-      { fecha: "2023-10-01", hora: "08:30:00", estado: "activo", rut: "19.741.384-0" }, // Dilan Alejandro Aranguiz Vejar
-      { fecha: "2023-10-01", hora: "09:00:00", estado: "activo", rut: "21.237.487-3" }, // Esteban Patricio Bravo Suárez
-      { fecha: "2023-10-02", hora: "08:45:00", estado: "activo", rut: "11.111.111-9" }, // Cristobal Alarcon
-      { fecha: "2023-10-02", hora: "09:15:00", estado: "activo", rut: "21.012.009-2" }, // Diego Antonio Vargas Gómez
-      { fecha: "2023-10-03", hora: "08:50:00", estado: "activo", rut: "21.025.001-1" }, // Juan Carlos Silva Pérez
-      { fecha: "2023-10-03", hora: "09:05:00", estado: "activo", rut: "21.025.002-2" }, // Ana María Gómez Torres
-      { fecha: "2023-10-04", hora: "08:40:00", estado: "activo", rut: "21.025.003-3" }, // Pedro Luis Morales Díaz
-      { fecha: "2023-10-04", hora: "09:10:00", estado: "activo", rut: "21.025.004-4" }, // María Isabel López Fuentes
-      { fecha: "2023-10-05", hora: "08:55:00", estado: "activo", rut: "21.025.005-5" }, // Luis Eduardo Fernández Soto
-      { fecha: "2023-10-05", hora: "09:20:00", estado: "activo", rut: "21.025.006-6" },  // Sofía Alejandra Ramírez Gómez
-      { fecha: "2023-10-11", hora: "09:20:00", estado: "activo", rut: "21.237.487-3" }
+   { fecha: "2024-04-01", hora: "08:10:00", estado: "activo", rut: "19.741.384-0" },
+   { fecha: "2024-04-08", hora: "08:25:00", estado: "activo", rut: "19.741.384-0" },
+   { fecha: "2024-04-15", hora: "08:45:00", estado: "activo", rut: "19.741.384-0" },
+
+   { fecha: "2024-04-02", hora: "08:20:00", estado: "activo", rut: "21.237.487-3" },
+   { fecha: "2024-04-09", hora: "09:00:00", estado: "activo", rut: "21.237.487-3" },
+   { fecha: "2024-04-16", hora: "08:15:00", estado: "activo", rut: "21.237.487-3" },
+
+   { fecha: "2024-04-03", hora: "08:50:00", estado: "activo", rut: "11.111.111-9" },
+   { fecha: "2024-04-10", hora: "08:30:00", estado: "activo", rut: "11.111.111-9" },
+   { fecha: "2024-04-17", hora: "09:10:00", estado: "activo", rut: "11.111.111-9" },
+
+   { fecha: "2024-04-04", hora: "08:40:00", estado: "activo", rut: "21.012.009-2" },
+   { fecha: "2024-04-11", hora: "09:00:00", estado: "activo", rut: "21.012.009-2" },
+   { fecha: "2024-04-18", hora: "08:35:00", estado: "activo", rut: "21.012.009-2" },
+   { fecha: "2024-12-16", hora: "08:35:00", estado: "activo", rut: "21.012.009-2" },
+   { fecha: "2024-12-17", hora: "08:35:00", estado: "activo", rut: "21.012.009-2" },
+
+   { fecha: "2024-04-05", hora: "08:20:00", estado: "activo", rut: "21.025.001-1" },
+   { fecha: "2024-04-08", hora: "09:00:00", estado: "activo", rut: "21.025.002-2" },
+   { fecha: "2024-04-09", hora: "08:15:00", estado: "activo", rut: "21.025.003-3" },
+   { fecha: "2024-04-10", hora: "08:50:00", estado: "activo", rut: "21.025.004-4" },
+   { fecha: "2024-04-11", hora: "08:30:00", estado: "activo", rut: "21.025.005-5" },
+   { fecha: "2024-04-12", hora: "09:10:00", estado: "activo", rut: "21.025.006-6" },
+   { fecha: "2024-04-15", hora: "08:40:00", estado: "activo", rut: "21.025.007-7" },
+   { fecha: "2024-04-16", hora: "09:00:00", estado: "activo", rut: "21.025.008-8" },
+   { fecha: "2024-04-17", hora: "08:35:00", estado: "activo", rut: "21.025.009-9" },
+   { fecha: "2024-04-18", hora: "08:20:00", estado: "activo", rut: "21.025.010-0" },
+   { fecha: "2024-04-19", hora: "09:00:00", estado: "activo", rut: "21.025.011-1" },
+   { fecha: "2024-04-22", hora: "08:15:00", estado: "activo", rut: "21.025.012-2" },
+   { fecha: "2024-04-23", hora: "08:50:00", estado: "activo", rut: "21.025.013-3" },
+   { fecha: "2024-04-24", hora: "08:30:00", estado: "activo", rut: "21.025.014-4" },
+   { fecha: "2024-04-25", hora: "09:10:00", estado: "activo", rut: "21.025.015-5" },
+   { fecha: "2024-04-26", hora: "08:40:00", estado: "activo", rut: "21.025.001-1" },
+   { fecha: "2024-04-29", hora: "09:00:00", estado: "activo", rut: "21.025.002-2" },
+   { fecha: "2024-04-30", hora: "08:35:00", estado: "activo", rut: "21.025.003-3" },
+   { fecha: "2024-05-01", hora: "08:20:00", estado: "activo", rut: "21.025.004-4" },
+   { fecha: "2024-05-02", hora: "09:00:00", estado: "activo", rut: "21.025.005-5" },
+   { fecha: "2024-05-03", hora: "08:15:00", estado: "activo", rut: "21.025.006-6" },
+   { fecha: "2024-05-06", hora: "08:50:00", estado: "activo", rut: "21.025.007-7" },
+   { fecha: "2024-05-07", hora: "08:30:00", estado: "activo", rut: "21.025.008-8" },
+   { fecha: "2024-05-08", hora: "08:10:00", estado: "activo", rut: "21.025.009-9" },
+   { fecha: "2024-05-09", hora: "08:25:00", estado: "activo", rut: "21.025.010-0" },
+   { fecha: "2024-05-10", hora: "08:50:00", estado: "activo", rut: "21.025.011-1" },
+   { fecha: "2024-05-13", hora: "08:15:00", estado: "activo", rut: "21.025.012-2" },
+   { fecha: "2024-05-14", hora: "08:40:00", estado: "activo", rut: "21.025.013-3" },
+   { fecha: "2024-05-15", hora: "08:35:00", estado: "activo", rut: "21.025.014-4" },
+   { fecha: "2024-05-16", hora: "08:20:00", estado: "activo", rut: "21.025.015-5" },
+   { fecha: "2024-05-17", hora: "08:50:00", estado: "activo", rut: "21.025.001-1" },
+   { fecha: "2024-05-20", hora: "08:25:00", estado: "activo", rut: "21.025.002-2" },
+   { fecha: "2024-05-21", hora: "08:15:00", estado: "activo", rut: "21.025.003-3" },
+   { fecha: "2024-05-22", hora: "08:50:00", estado: "activo", rut: "21.025.004-4" },
+   { fecha: "2024-05-23", hora: "08:30:00", estado: "activo", rut: "21.025.005-5" },
+   { fecha: "2024-05-24", hora: "09:00:00", estado: "activo", rut: "21.025.006-6" },
     ];
     
     await atrasoRepository.save(atrasos);
@@ -481,79 +580,34 @@ export async function crearJustificativos() {
     if (count > 0) return;
 
     const justificativos = [
-      { motivo: "Problemas de salud", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 1, rut: "19.741.384-0" },
-      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 2, rut: "21.237.487-3" },
-      { motivo: "Evento familiar", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 3, rut: "11.111.111-9" },
-      { motivo: "Problemas de transporte", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 4, rut: "21.012.009-2" },
-      { motivo: "Condiciones climáticas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 5, rut: "21.025.001-1" },
-      { motivo: "Razones médicas", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 6, rut: "21.025.002-2" },
-      { motivo: "Retraso en transporte público", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 7, rut: "21.025.003-3" },
-      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 8, rut: "21.025.004-4" },
-      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 9, rut: "21.025.005-5" },
-      { motivo: "Tránsito lento", documento: "https://drive.google.com/file/d/1pp4IHv73ts4tnmdTXze6IVTDfHn7I4US/view?usp=sharing", estado: "pendiente", ID_atraso: 10, rut: "21.237.487-3" },
-
+      { ID_atraso: 1, motivo: "Olvidó el transporte", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 2, motivo: "Problemas familiares", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 3, motivo: "Enfermedad leve", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+  
+      { ID_atraso: 4, motivo: "Retraso en el trayecto", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 5, motivo: "Clima desfavorable", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 6, motivo: "Falla mecánica", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+  
+      { ID_atraso: 7, motivo: "Despertó tarde", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 8, motivo: "Problemas de conexión", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 9, motivo: "Tráfico inesperado", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+  
+      { ID_atraso: 10, motivo: "Retraso en el trayecto", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 11, motivo: "Enfermedad leve", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 12, motivo: "Clima desfavorable", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+  
+      { ID_atraso: 13, motivo: "Olvidó el transporte", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 14, motivo: "Problemas familiares", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 15, motivo: "Enfermedad leve", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 16, motivo: "Retraso en el trayecto", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 17, motivo: "Clima desfavorable", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 18, motivo: "Despertó tarde", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 19, motivo: "Problemas de conexión", documento: "https://example.com/documento.pdf", estado: "pendiente" },
+      { ID_atraso: 20, motivo: "Tráfico inesperado", documento: "https://example.com/documento.pdf", estado: "pendiente" },
     ];
     
-
     await justificativoRepository.save(justificativos);
   } catch (error) {
     console.error("Error al crear justificativos:", error);
-  }
-}
-
-export async function crearMaterias() {
-  try {
-    const materiaRepository = AppDataSource.getRepository(Materia);
-    const count = await materiaRepository.count();
-    if (count > 0) return;
-
-    const materias = [
-      "Matemáticas",
-      "Historia",
-      "Lenguaje",
-      "Biología",
-      "Química",
-      "Inglés",
-      "Artes",
-      "Física",
-      "Educación Física",
-      "Tecnología",
-      "Mecánica I",
-      "Electricidad I",
-    ];
-
-    for (const nombre of materias) {
-      const materiaExistente = await materiaRepository.findOneBy({ nombre });
-      if (!materiaExistente) {
-        const nuevaMateria = materiaRepository.create({ nombre });
-        await materiaRepository.save(nuevaMateria);
-      }
-    }
-  } catch (error) {
-    console.error("Error al crear materias predeterminadas:", error);
-  }
-}
-export async function crearImparticiones() {
-  try {
-    const imparteRepository = AppDataSource.getRepository(Imparte);
-    const count = await imparteRepository.count();
-    if (count > 0) return;
-
-    const imparticiones = [
-      { ID_curso: 1, ID_materia: 1, rut: "12.345.678-9", dia: "lunes", bloque: "08:00 - 08:45", hora_Inicio: "08:00", hora_Fin: "08:45" },
-      { ID_curso: 1, ID_materia: 2, rut: "11.234.567-8", dia: "lunes", bloque: "08:50 - 09:35", hora_Inicio: "08:50", hora_Fin: "09:35" },
-      { ID_curso: 1, ID_materia: 3, rut: "10.123.456-7", dia: "lunes", bloque: "09:40 - 10:25", hora_Inicio: "09:40", hora_Fin: "10:25" },
-      { ID_curso: 1, ID_materia: 4, rut: "9.012.345-6", dia: "lunes", bloque: "11:20 - 12:05", hora_Inicio: "11:20", hora_Fin: "12:05" },
-      { ID_curso: 1, ID_materia: 5, rut: "8.901.234-5", dia: "lunes", bloque: "12:10 - 12:55", hora_Inicio: "12:10", hora_Fin: "12:55" },
-      { ID_curso: 1, ID_materia: 6, rut: "7.890.123-4", dia: "lunes", bloque: "14:30 - 15:15", hora_Inicio: "14:30", hora_Fin: "15:15" },
-      { ID_curso: 1, ID_materia: 7, rut: "6.789.012-3", dia: "lunes", bloque: "15:20 - 16:05", hora_Inicio: "15:20", hora_Fin: "16:05" },
-      { ID_curso: 1, ID_materia: 8, rut: "5.678.901-2", dia: "lunes", bloque: "16:10 - 16:55", hora_Inicio: "16:10", hora_Fin: "16:55" },
-      { ID_curso: 1, ID_materia: 9, rut: "4.567.890-1", dia: "lunes", bloque: "17:00 - 17:45", hora_Inicio: "17:00", hora_Fin: "17:45" }
-    ];
-
-    await imparteRepository.save(imparticiones);
-
-  } catch (error) {
-    console.error("Error al crear materias predeterminadas:", error);
   }
 }

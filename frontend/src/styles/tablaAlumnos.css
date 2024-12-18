@@ -136,6 +136,7 @@
         font-size: 12px;
     }
 }
+
 .tablaAlumnos-table tr {
     cursor: pointer; /* Hace que el cursor cambie a una mano */
 }

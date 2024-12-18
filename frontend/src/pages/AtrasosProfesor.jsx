@@ -6,6 +6,8 @@ import { verJustificativo, aprobarJustificativo, rechazarJustificativo } from '@
 import TablaAlumnos from '../components/TablaAlumnos';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert';
 import Swal from "sweetalert2";
+import { motivoValidation } from '@helpers/validations';
+
 const AtrasosAlumnos = () => {
     const [atrasos, setAtrasos] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -147,6 +149,18 @@ const AtrasosAlumnos = () => {
         }
     };
 
+    const validateMotivo = (motivo) => {
+        const { required, minLength, maxLength, pattern, errorMessage } = motivoValidation;
+    
+        if (required && !motivo) return errorMessage.required;
+        if (motivo.length < minLength) return errorMessage.minLength;
+        if (motivo.length > maxLength) return errorMessage.maxLength;
+        if (!pattern.test(motivo)) return errorMessage.pattern;
+    
+        return null; 
+    };
+
+    
     const handleRechazar = async () => {
         try {
             const { value: motivo } = await Swal.fire({
@@ -168,6 +182,12 @@ const AtrasosAlumnos = () => {
     
             if (!motivo) {
                 showErrorAlert("Cancelado", "Debe ingresar un motivo para rechazar el justificativo.");
+                return;
+            }
+
+            const validationError = validateMotivo(motivo);
+            if (validationError) {
+                showErrorAlert("Error", validationError);
                 return;
             }
 
