@@ -91,7 +91,7 @@ export default function Practica() {
                                         <img src={UpdateIcon} alt="edit" />
                                     )}
                                 </button>
-                                <button className="practica-button" onClick={handleCreateClick} disabled={dataPractica.length === 0}>
+                                <button className="practica-button" onClick={handleCreateClick}>
                                     Registrar nueva práctica
                                 </button>
                             </>
