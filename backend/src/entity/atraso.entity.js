@@ -32,7 +32,7 @@ const AtrasoSchema = new EntitySchema({
         name: "rut", 
         referencedColumnName: "rut" 
       },
-      nullable: false, // No puede ser nulo, se debe asignar siempre un usuario.  OJO preguntar al tarro acerca de esto
+      nullable: false, 
     },
   },
   indices: [

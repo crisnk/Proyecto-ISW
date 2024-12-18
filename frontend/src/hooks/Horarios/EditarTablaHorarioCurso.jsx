@@ -21,22 +21,38 @@ const EditarTablaHorarioCurso = ({ horario, diasSemana, horas, materias, onMater
             <tr key={hora} className={recreoHoras.includes(hora) ? "recreo-row" : ""}>
               <td className="hora-col">{hora}</td>
               {diasSemana.map((dia) => (
-                <td key={`${dia}-${hora}`} className="contenido-col">
+                <td
+                  key={`${dia}-${hora}`}
+                  className="contenido-col"
+                  style={{
+                    backgroundColor: recreoHoras.includes(hora)
+                      ? "#D0F0FF" 
+                      : horario[dia]?.[hora]?.materia && horario[dia][hora].materia !== "Sin asignar"
+                      ? "#CFFFD0" 
+                      : "#FFFFFF", 
+                  }}
+                >
                   {recreoHoras.includes(hora) ? (
                     <span className="recreo-text">Recreo</span>
                   ) : (
-                    <select
-                      value={horario[dia]?.[hora]?.materia || "Sin asignar"}
-                      onChange={(e) => onMateriaChange(dia, hora, e.target.value)}
-                      className="materia-select"
-                    >
-                      <option value="Sin asignar">Sin asignar</option>
-                      {materias.map((materia) => (
-                        <option key={materia.ID_materia} value={materia.ID_materia}>
-                          {materia.nombre}
-                        </option>
-                      ))}
-                    </select>
+<select
+  value={horario[dia]?.[hora]?.materia || "Sin asignar"}
+  onChange={(e) => {
+    const value = e.target.value;
+    if (onMateriaChange && typeof onMateriaChange === "function") {
+      onMateriaChange(dia, hora, value); 
+    }
+  }}
+  className="materia-select"
+>
+  <option value="Sin asignar">Sin asignar</option>
+  {materias.map((materia) => (
+    <option key={materia.ID_materia} value={materia.ID_materia}>
+      {materia.nombre}
+    </option>
+  ))}
+</select>
+
                   )}
                 </td>
               ))}

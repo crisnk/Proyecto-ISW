@@ -69,7 +69,7 @@ const Register = () => {
                     {
                         label: "Nombre completo",
                         name: "nombreCompleto",
-                        placeholder: "Diego Alexis Salazar Jara",
+                        placeholder: "Nombres Apellidos",
                         fieldType: 'input',
                         type: "text",
                         required: true,

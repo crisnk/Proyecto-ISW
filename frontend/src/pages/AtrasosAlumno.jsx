@@ -5,7 +5,7 @@ import '@styles/atrasos.css';
 import '@styles/modal.css';
 
 import { getAtrasos } from '@services/atrasos.service.js'; // Nueva función de servicio
-import { justificarAtraso } from '@services/justificativo.service.js'; // Nueva función de servicio
+import { justificarAtraso } from '@services/justificativos.service.js'; // Nueva función de servicio
 
 const Atrasos = () => {
     const [atrasos, setAtrasos] = useState([]);
@@ -29,7 +29,7 @@ const Atrasos = () => {
                 console.error("Error al obtener los datos:", error);
             }
         };
-    
+
         fetchData();
     }, []);
 
@@ -57,7 +57,7 @@ const Atrasos = () => {
             alert("Todos los campos son obligatorios.");
             return;
         }
-``
+        ``
         const formData = new FormData();
         formData.append("ID_atraso", selectedAtraso.id); // ID del atraso seleccionado
         formData.append("motivo", motivo); // Motivo ingresado
@@ -88,7 +88,7 @@ const Atrasos = () => {
     ];
 
     return (
-        <div className='main-container'>
+        <div className='alumno-funciones'>
             <div className='table-container'>
                 <div className='top-table'>
                     <h1 className='title-table'>Atrasos</h1>

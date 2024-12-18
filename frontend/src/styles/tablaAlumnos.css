@@ -1,0 +1,148 @@
+/* Contenedor general */
+.tablaAlumnos-container {
+    width: 100%;
+    max-width: 1200px; /* Limita el ancho de la tabla */
+    margin: 0 auto; /* Centra la tabla */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Tabla */
+.tablaAlumnos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+    background-color: #f9f9f9;
+}
+
+.tablaAlumnos-table th,
+.tablaAlumnos-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.tablaAlumnos-table th {
+    background-color: #003366;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tablaAlumnos-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.tablaAlumnos-row-selected {
+    background-color: #e0f7fa;
+    font-weight: bold;
+}
+
+/* Paginación */
+.tablaAlumnos-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    flex-wrap: wrap; /* Evita que los botones se rompan */
+}
+
+.tablaAlumnos-pagination button {
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: white;
+    color: #003366;
+    border: 1px solid #003366;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.tablaAlumnos-pagination button:hover {
+    background-color: #003366;
+    color: white;
+}
+
+.tablaAlumnos-pagination .tablaAlumnos-active-page {
+    color: #E4332C;
+    font-weight: bold;
+}
+
+/* Filas por página reducido */
+.tablaAlumnos-rows-per-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tablaAlumnos-rows-per-page label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.tablaAlumnos-rows-per-page select {
+    width: auto; /* Ajuste automático del ancho */
+    min-width: 60px;
+    padding: 4px 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tablaAlumnos-table {
+        font-size: 12px;
+    }
+
+    .tablaAlumnos-table th,
+    .tablaAlumnos-table td {
+        padding: 6px;
+    }
+
+    .tablaAlumnos-pagination {
+        flex-direction: row;
+        justify-content: center;
+        gap: 3px;
+    }
+
+    .tablaAlumnos-pagination button {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    .tablaAlumnos-rows-per-page {
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tablaAlumnos-table,
+    .tablaAlumnos-pagination {
+        font-size: 11px;
+    }
+
+    .tablaAlumnos-pagination button {
+        padding: 4px 6px;
+    }
+
+    .tablaAlumnos-rows-per-page select {
+        font-size: 12px;
+    }
+}
+
+.tablaAlumnos-table tr {
+    cursor: pointer; /* Hace que el cursor cambie a una mano */
+}
+
+.tablaAlumnos-row-selected {
+    background-color: #e0f7fa; /* Color de fondo para la fila seleccionada */
+    font-weight: bold;
+}

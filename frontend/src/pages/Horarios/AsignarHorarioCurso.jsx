@@ -2,16 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getCursos,
   getMaterias,
-  getHorariosByCurso,
+  getHorariosCurso,
   saveHorarioCurso,
-  notifyCourse,
-  getEmailsByCourse,
+  notificacionCurso,
+  getEmailsCurso,
 } from "../../services/horario.service";
 import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
-import Spinner from "../../hooks/Horarios/Spinner";
+import Spinner from "../../hooks/Horarios/spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
-import "@styles/Horarios/AsignarHorarioCursos.css";
-
+import Swal from "sweetalert2";
+import "@styles/Horarios/asignarHorario.css";
 
 const AsignarHorarioCurso = () => {
   const [curso, setCurso] = useState("");
@@ -19,12 +19,8 @@ const AsignarHorarioCurso = () => {
   const [materias, setMaterias] = useState([]);
   const [horario, setHorario] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
-  const [notificationSuccess, setNotificationSuccess] = useState("");
-  const [notificationError, setNotificationError] = useState("");
 
   const initializeHorario = useCallback(() => {
     const newHorario = {};
@@ -40,68 +36,70 @@ const AsignarHorarioCurso = () => {
   }, []);
 
   const fetchHorarioCurso = useCallback(async () => {
-    if (!curso) return;
+    if (!curso) {
+      setHorario(initializeHorario());
+      return;
+    }
 
     setLoading(true);
     try {
-      const existingHorario = await getHorariosByCurso(curso);
+      const response = await getHorariosCurso(curso);
       const formattedHorario = initializeHorario();
 
-      if (existingHorario.length === 0) {
-        setHorario(formattedHorario);
-        return;
+      if (response && Array.isArray(response)) {
+        response.forEach(({ dia, bloque, ID_materia }) => {
+          if (formattedHorario[dia]?.[bloque]) {
+            formattedHorario[dia][bloque] = {
+              materia: ID_materia?.toString() || "Sin asignar",
+            };
+          }
+        });
       }
 
-      existingHorario.forEach((item) => {
-        if (formattedHorario[item.dia]?.[item.bloque]) {
-          formattedHorario[item.dia][item.bloque] = {
-            materia: item.ID_materia.toString(),
-            nombre_materia: item.nombre_materia,
-          };
-        }
-      });
-
       setHorario(formattedHorario);
-      setError("");
-    } catch (err) {
-      setError("Error al cargar el horario del curso.", err);
+    } catch (error) {
+      console.error("Error al cargar el horario del curso:", error);
       setHorario(initializeHorario());
     } finally {
       setLoading(false);
     }
   }, [curso, initializeHorario]);
 
+  const fetchMaterias = useCallback(async () => {
+    try {
+      const materiasData = await getMaterias();
+      setMaterias(materiasData);
+    } catch (error) {
+      console.error("Error al cargar las materias:", error);
+      Swal.fire("Error", "No se pudieron cargar las materias.", "error");
+    }
+  }, []);
+
+  const fetchCursos = useCallback(async () => {
+    try {
+      const cursosData = await getCursos();
+      setCursos(cursosData);
+    } catch (error) {
+      console.error("Error al cargar los cursos:", error);
+      Swal.fire("Error", "No se pudieron cargar los cursos.", "error");
+    }
+  }, []);
+
   useEffect(() => {
     fetchHorarioCurso();
   }, [curso, fetchHorarioCurso]);
 
   useEffect(() => {
-    const fetchMaterias = async () => {
-      try {
-        const materiasData = await getMaterias();
-        setMaterias(materiasData);
-      } catch {
-        setError("Error al cargar materias.");
-      }
-    };
     fetchMaterias();
-  }, []);
+  }, [fetchMaterias]);
 
   useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const cursosData = await getCursos();
-        setCursos(cursosData);
-      } catch {
-        setError("Error al cargar cursos.");
-      }
-    };
     fetchCursos();
-  }, []);
+  }, [fetchCursos]);
 
   const handleGuardarHorario = async () => {
     if (!curso) {
-      setError("Debes seleccionar un curso antes de guardar.");
+      Swal.fire("Advertencia", "Debes seleccionar un curso antes de guardar.", "warning");
       return;
     }
 
@@ -127,23 +125,23 @@ const AsignarHorarioCurso = () => {
       };
 
       if (payload.horario.length === 0) {
-        setError("No se han asignado bloques válidos para guardar.");
+        Swal.fire("Advertencia", "No hay bloques válidos para guardar.", "warning");
         return;
       }
 
+      console.log("Payload enviado al backend:", payload);
       await saveHorarioCurso(payload);
-      setSuccess("Horario guardado correctamente.");
-      setError("");
-    } catch {
-      setError("Error al guardar el horario.");
+      await fetchHorarioCurso();
+      Swal.fire("Éxito", "Horario guardado correctamente.", "success");
+    } catch (err) {
+      console.error("Error guardando horario:", err);
+      Swal.fire("Error", "No se pudo guardar el horario. Verifica los datos ingresados.", "error");
     } finally {
       setSaving(false);
     }
   };
 
   const handleMateriaChange = (dia, bloque, value) => {
-    const selectedMateria = materias.find((m) => m.ID_materia.toString() === value);
-
     setHorario((prev) => ({
       ...prev,
       [dia]: {
@@ -151,29 +149,32 @@ const AsignarHorarioCurso = () => {
         [bloque]: {
           ...prev[dia]?.[bloque],
           materia: value,
-          nombre_materia: selectedMateria ? selectedMateria.nombre : "Sin asignar",
         },
       },
     }));
   };
 
   const handleSendNotification = async () => {
+    if (!curso) {
+      Swal.fire("Advertencia", "Debes seleccionar un curso antes de enviar la notificación.", "warning");
+      return;
+    }
+
     setNotificationLoading(true);
     try {
-      const { emails } = await getEmailsByCourse(curso);
+      const { emails } = await getEmailsCurso(curso);
 
       if (!emails || emails.length === 0) {
-        setNotificationError("No hay correos electrónicos asociados a este curso.");
+        Swal.fire("Advertencia", "No hay correos electrónicos asociados al curso.", "warning");
         return;
       }
 
       const horarioDetails = `Horario actualizado para el curso: ${cursos.find((c) => c.ID_curso.toString() === curso)?.nombre}`;
-      await notifyCourse(emails, horarioDetails);
-      setNotificationSuccess("Notificación enviada correctamente.");
-      setNotificationError("");
-    } catch {
-      setNotificationError("Error al enviar la notificación.");
-      setNotificationSuccess("");
+      await notificacionCurso(emails, horarioDetails);
+      Swal.fire("Éxito", "Notificación enviada correctamente.", "success");
+    } catch (error) {
+      console.error("Error enviando notificación:", error);
+      Swal.fire("Error", "No se pudo enviar la notificación.", "error");
     } finally {
       setNotificationLoading(false);
     }
@@ -181,18 +182,38 @@ const AsignarHorarioCurso = () => {
 
   return (
     <div>
-      <h2>Asignar Horario a Cursos</h2>
+      <h2 style={{ fontSize: "2rem", textAlign: "center" }}>Asignar Horario a Cursos</h2>
       <div>
-        <label>Curso:</label>
-        <select value={curso} onChange={(e) => setCurso(e.target.value)}>
-          <option value="">Selecciona curso</option>
+        <label
+          style={{
+            fontSize: "1.5rem",
+            display: "block",
+            marginBottom: "8px",
+          }}
+        >
+          Curso:
+        </label>
+        <select
+          value={curso}
+          onChange={(e) => setCurso(e.target.value)}
+          style={{
+            fontSize: "1.5rem",
+            padding: "10px",
+            width: "100%",
+            maxWidth: "400px",
+          }}
+        >
+          <option value="" style={{ fontSize: "1.5rem" }}>
+            Selecciona curso
+          </option>
           {cursos.map((c) => (
-            <option key={c.ID_curso} value={c.ID_curso}>
+            <option key={c.ID_curso} value={c.ID_curso} style={{ fontSize: "1.5rem" }}>
               {c.nombre}
             </option>
           ))}
         </select>
       </div>
+
       {curso && (
         <EditarTablaHorarioCurso
           horario={horario}
@@ -202,16 +223,14 @@ const AsignarHorarioCurso = () => {
           onMateriaChange={handleMateriaChange}
         />
       )}
-      <button onClick={handleGuardarHorario} disabled={loading || saving}>
-        {saving ? "Guardando..." : "Guardar"}
-      </button>
-      <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
-        {notificationLoading ? <Spinner /> : "Enviar Notificación"}
-      </button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      {notificationError && <p style={{ color: "red" }}>{notificationError}</p>}
-      {notificationSuccess && <p style={{ color: "green" }}>{notificationSuccess}</p>}
+      <div className="button-group" style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+        <button onClick={handleGuardarHorario} disabled={saving}>
+          {saving ? <Spinner /> : "Guardar"}
+        </button>
+        <button onClick={handleSendNotification} disabled={notificationLoading || !curso}>
+          {notificationLoading ? <Spinner /> : "Enviar Notificación"}
+        </button>
+      </div>
     </div>
   );
 };

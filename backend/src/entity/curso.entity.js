@@ -19,6 +19,10 @@ const CursoSchema = new EntitySchema({
       type: "varchar",
       length: 30,
     },
+    año: {
+      type: "int",
+      nullable: true,
+    },
     profesor: {
       type: "varchar",
       length: 12,

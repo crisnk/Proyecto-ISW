@@ -1,4 +1,4 @@
-export const diasSemana = ["lunes", "martes", "miércoles", "jueves", "viernes"];
+export const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes"];
 
 export const horas = [
   "08:00 - 08:45",

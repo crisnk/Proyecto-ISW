@@ -1,7 +1,5 @@
 .tabla-horarios-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
+    margin: 0;
   }
   
   .tabla-horarios {
@@ -42,17 +40,30 @@
   
   .materia-select {
     width: 100%;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
-  }
-  
-  .materia-select:focus {
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #ffffff, #f1f1f1);
+    color: #333;
+    font-size: 16px;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.materia-select:hover {
+    border-color: #0056b3;
+    background: linear-gradient(135deg, #f1f1f1, #ffffff);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.materia-select:focus {
     outline: none;
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  }
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
+}
+
   @media (max-width: 768px) {
     .tabla-horarios-container {
       flex-direction: column;

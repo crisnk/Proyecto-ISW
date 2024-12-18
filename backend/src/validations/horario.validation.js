@@ -3,24 +3,30 @@ import Joi from "joi";
 
 export const materiaValidation = Joi.object({
   nombre: Joi.string()
+    .trim() 
+    .pattern(/^[a-zA-ZÀ-ÿ0-9 ]+$/) 
     .max(55)
     .required()
     .messages({
       "any.required": "El nombre de la materia es obligatorio.",
       "string.empty": "El nombre de la materia no puede estar vacío.",
+      "string.pattern.base": "El nombre de la materia solo puede contener letras, números y espacios.",
       "string.max": "El nombre de la materia no puede tener más de 55 caracteres.",
+      "string.trim": "El nombre de la materia no debe tener espacios al principio o al final.",
     }),
 });
 
+
 export const cursoValidation = Joi.object({
   nombre: Joi.string()
-    .pattern(/^(1ro|2do|3ro|4to) medio [A-D]$/)
+    .trim() 
+    .pattern(/^(1ro|2do|3ro|4to) Medio [A-G]$/) 
     .required()
     .messages({
       "any.required": "El nombre del curso es obligatorio.",
       "string.empty": "El nombre del curso no puede estar vacío.",
-      "string.pattern.base":
-        "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a D. Ejemplo: '1ro medio A'.",
+      "string.pattern.base": "El nombre del curso debe ser de 1ro a 4to medio con secciones de A a G. Ejemplo: '1ro Medio A'.",
+      "string.trim": "El nombre del curso no debe tener espacios al principio o al final.",
     }),
   aula: Joi.number()
     .integer()
@@ -29,7 +35,8 @@ export const cursoValidation = Joi.object({
     .required()
     .messages({
       "any.required": "El número del aula es obligatorio.",
-      "number.base": "El aula debe ser un número.",
+      "number.base": "El aula debe ser un número entero.",
+      "number.integer": "El aula debe ser un número entero sin decimales.",
       "number.min": "El número del aula debe ser al menos 1.",
       "number.max": "El número del aula no puede ser mayor a 100.",
     }),
@@ -40,12 +47,20 @@ export const horarioValidationCurso = Joi.object({
     "any.required": "El ID_materia es obligatorio.",
   }),
   dia: Joi.string()
-    .valid("lunes", "martes", "miércoles", "jueves", "viernes")
-    .required()
-    .messages({
-      "any.required": "El día es obligatorio.",
-      "any.only": "El día debe ser uno de los siguientes: lunes, martes, miércoles, jueves, viernes.",
-    }),
+  .custom((value, helpers) => {
+    const normalizado = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const diasValidos = ["lunes", "martes", "miercoles", "jueves", "viernes"];
+    if (!diasValidos.includes(normalizado)) {
+      return helpers.error("any.only", { value });
+    }
+    return normalizado; 
+  })
+  .required()
+  .messages({
+    "any.required": "El día es obligatorio.",
+    "any.only": "El día debe ser uno de los siguientes: lunes, martes, miercoles, jueves, viernes.",
+  }),
+
   bloque: Joi.string().required().messages({
     "any.required": "El bloque es obligatorio.",
   }),
@@ -82,8 +97,9 @@ export const horarioValidationProfesor = Joi.object({
           "any.required": "El ID_curso es obligatorio.",
         }),
         dia: Joi.string()
-          .valid("lunes", "martes", "miércoles", "jueves", "viernes")
+          .valid("lunes", "martes", "miercoles", "jueves", "viernes")
           .required()
+          .custom((value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "")) 
           .messages({
             "any.required": "El día es obligatorio.",
           }),
@@ -102,19 +118,16 @@ export const horarioValidationProfesor = Joi.object({
           .messages({
             "string.pattern.base": "La hora de fin debe estar en formato HH:mm.",
           }),
-      }).unknown(true)
+      })
     )
-    .required(),
+    .required()
+    .messages({
+      "any.required": "El arreglo de horario es obligatorio.",
+    }),
 });
 
-export const paginationAndFilterValidation = Joi.object({
-  page: Joi.number().integer().min(1).optional(),
-  limit: Joi.number().integer().min(1).optional(),
-  curso: Joi.string().allow("").optional(),
-  profesor: Joi.string().allow("").optional(),
-});
 
-const BLOQUES_HORARIOS = {
+export const bloquesHorarios = {
   "08:00 - 08:45": { hora_Inicio: "08:00", hora_Fin: "08:45" },
   "08:50 - 09:35": { hora_Inicio: "08:50", hora_Fin: "09:35" },
   "09:40 - 10:25": { hora_Inicio: "09:40", hora_Fin: "10:25" },
@@ -128,7 +141,7 @@ const BLOQUES_HORARIOS = {
 
 
 export const validarSincronizacionBloque = (bloque, hora_Inicio, hora_Fin) => {
-  const rango = BLOQUES_HORARIOS[bloque];
+  const rango = bloquesHorarios[bloque];
   if (!rango) {
     throw new Error(`El bloque "${bloque}" no es válido.`);
   }
