@@ -85,7 +85,7 @@ body {
 
 .profesor-funciones {
   position: relative; /* Necesario para que el ::before se posicione relativo a este contenedor */
-  background-image: url('../assets/fondoProfesor.webp');
+  background-image: url('../assets/fondoProfesor.webp') !important;
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;

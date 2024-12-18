@@ -10,11 +10,13 @@ import User from "../entity/user.entity.js";
 
 export async function createJustificativo(justificativoData){
   try{
+    const { rut, ...justificativoSinRut } = justificativoData;
     const justificativoRepository = AppDataSource.getRepository(Justificativo);
-    const nuevoJustificativo = justificativoRepository.create(justificativoData);
+    const nuevoJustificativo = justificativoRepository.create(justificativoSinRut);
     await justificativoRepository.save(nuevoJustificativo);
-    
-    const pertenece = await buscarPertenecePorRut(justificativoData.rut);
+    console.log('Justificativo creado:', nuevoJustificativo);
+    console.log('RUT:', rut);
+    const pertenece = await buscarPertenecePorRut(rut);
     if (!pertenece) {
       throw new Error('El alumno no pertenece a un curso.');   
     }
@@ -32,7 +34,7 @@ export async function createJustificativo(justificativoData){
     const userRepository = AppDataSource.getRepository(User);
     const user = await userRepository.findOne({
       where: {
-        rut: justificativoData.rut
+        rut: rut
       }
     });
     if (!user) {
@@ -134,12 +136,11 @@ export async function aprobarJustificativo(ID_atraso) {
     }
   }
 
-  export async function findJustificativo(rut, ID_atraso){
+  export async function findJustificativo(ID_atraso){
     try{
       const justificativoRepository = AppDataSource.getRepository(Justificativo);
       const justificativo = await justificativoRepository.findOne({
         where: {
-          rut: rut,
           ID_atraso: ID_atraso,
         },
       });

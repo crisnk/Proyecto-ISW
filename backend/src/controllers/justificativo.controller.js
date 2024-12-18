@@ -25,7 +25,7 @@ import { getUserSocketId } from '../services/socket.service.js';
         return handleErrorClient(res, 404, 'Atraso no encontrado');
       }
   
-      const justificativo = await findJustificativo(rut, ID_atraso);    
+      const justificativo = await findJustificativo(ID_atraso);    
       if (justificativo) {
         return handleErrorClient(res, 404, 'Atraso ya tiene asociado un justificativo');
       }    

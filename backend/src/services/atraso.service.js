@@ -312,7 +312,7 @@ export async function findAtrasosJustificables(rut){
         const diasSemana = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
         const nombreDia = diasSemana[diaSemana - 1]; 
         
-        const justificativo = await findJustificativo(rut, atraso.ID_atraso);    
+        const justificativo = await findJustificativo(atraso.ID_atraso);    
         if (justificativo) {
           console.warn(`atraso ya registra un justificativo asociado.`);
           continue;         
