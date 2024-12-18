@@ -78,13 +78,13 @@ import { getUserSocketId } from '../services/socket.service.js';
       console.log(nombreAlumno);
 
       const io = req.app.get('socketio'); 
-
+      const apiNamespace = io.of("/api");
       // Verificamos si el profesor está conectado
       const socketId = getUserSocketId(rutProfesor);
 
       console.log('socketIdProfesor:', socketId);
         if (socketId) {
-          io.to(socketId).emit('recibo-notificacion', {
+          apiNamespace.to(socketId).emit("recibo-notificacion", {
             mensaje: `El alumno ${nombreAlumno} ha subido un justificativo`,
           });
           console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
@@ -129,11 +129,9 @@ export async function manejarAprobarJustificativo(req, res) {
 
     try {
       await sendEmailDefault({
-        body: {
-          email: email,
-          subject: "Justificativo aprobado",
-          message: `Hola, su justificativo con ID ${ID_atraso} ha sido aprobado.`,
-        },
+        email: email,
+        subject: "Justificativo aprobado",
+        message: `Hola, su justificativo con ID ${ID_atraso} ha sido aprobado.`,
       });
     } catch (emailError) {
       console.error("Error al enviar el correo:", emailError);
@@ -172,11 +170,9 @@ export async function manejarRechazarJustificativo(req, res) {
 
    
     await sendEmailDefault({
-        body: {
-            email: email, 
-            subject: "Justificativo rechazado",
-            message: `Hola, se le notifica que su justificativo con ID ${ID_atraso} ha sido rechazado. Motivo: ${motivo}`,
-        },
+      email: email,
+      subject: "Justificativo rechazado",
+      message: `Hola, se le notifica que su justificativo con ID ${ID_atraso} ha sido rechazado. Motivo: ${motivo}`,
     });
 
     console.log(`Correo enviado a ${email} notificando el rechazo del justificativo.`);

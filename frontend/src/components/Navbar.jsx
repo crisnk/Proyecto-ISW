@@ -17,14 +17,14 @@ const Navbar = () => {
     useEffect(() => {
         const socket = initSocket();
         if (socket) {
-            socket.on('recibo-notificacion', (data) => {
+            socket.on("recibo-notificacion", (data) => {
                 console.log('Notificación recibida:', data);
                 setNotificaciones((prev) => [...prev, data.mensaje]); // Agrega la nueva notificación
             });
 
             return () => {
                 if (socket) {
-                    socket.off('recibo-notificacion'); // Desconectar el evento
+                    socket.off("recibo-notificacion"); // Desconectar el evento
                 }
             };
         }
