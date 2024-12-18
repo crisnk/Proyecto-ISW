@@ -4,14 +4,50 @@ import Atraso from "../entity/atraso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import fs from 'fs';
 import path from 'path';
+import { buscarPertenecePorRut } from "../services/atraso.service.js";
+import Curso from "../entity/curso.entity.js";
+import User from "../entity/user.entity.js";
 
 export async function createJustificativo(justificativoData){
   try{
     const justificativoRepository = AppDataSource.getRepository(Justificativo);
     const nuevoJustificativo = justificativoRepository.create(justificativoData);
     await justificativoRepository.save(nuevoJustificativo);
+    
+    const pertenece = await buscarPertenecePorRut(justificativoData.rut);
+    if (!pertenece) {
+      throw new Error('El alumno no pertenece a un curso.');   
+    }
 
-    return nuevoJustificativo;
+    const cursoRepository = AppDataSource.getRepository(Curso);
+    const curso = await cursoRepository.findOne({
+      select: ["profesor"],
+      where: { ID_curso: pertenece.ID_curso }
+    });
+    if (!curso || !curso.profesor) {
+      throw new Error('No se encontró un profesor asociado al curso.');
+    }
+    const rutProfesor = curso.profesor;
+
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: {
+        rut: justificativoData.rut
+      }
+    });
+    if (!user) {
+      throw new Error('No se encontró el alumno.');
+    }
+    const nombreAlumno = user.nombreCompleto || 'Sin nombre';
+    return {
+      justificativo: nuevoJustificativo,
+      profesor: {
+        rut: rutProfesor
+      },
+      alumno: {
+        nombre: nombreAlumno
+      }
+    };
 
   }catch (error){
     console.error('Error al crear justificativo:', error);

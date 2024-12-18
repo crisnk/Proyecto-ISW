@@ -233,3 +233,19 @@ input {
 	height: 25px;
 	margin-top: 4px;
 }
+
+.ingresar-justificativo-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    min-height: 100vh; /* Ocupa toda la altura de la pantalla */
+    padding: 20px; /* Añade un pequeño espaciado */
+    box-sizing: border-box;
+}
+
+.ingresar-justificativo-container .form {
+    width: 30%; /* Ancho máximo del formulario */
+    max-width: 600px; /* Establece un ancho máximo */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Opcional: sombra para resaltar */
+    border-radius: 10px; /* Bordes redondeados */
+}
