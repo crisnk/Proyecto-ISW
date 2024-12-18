@@ -33,7 +33,6 @@ export async function crearPracticaService(data) {
 
     await practicaRepository.save(nuevaPractica);
 
-    console.log(nuevaPractica);
     return [nuevaPractica, null];
   } catch (error) {
     console.error("Error al crear la práctica:", error);
@@ -126,11 +125,11 @@ export async function obtenerPracticaService(ID_practica) {
   }
 }
 
-export async function eliminarPracticaService(ID_practica) {
+export async function eliminarPracticaService(ID_postulacion) {
   try {
     const practicaRepository = AppDataSource.getRepository(Practica);
 
-    const practicaEncontrada = await practicaRepository.findOne({ where: { ID_practica } });
+    const practicaEncontrada = await practicaRepository.findOne({ where: { ID_postulacion } });
 
     const createErrorMessage = (dataInfo, message) => ({
       dataInfo,
@@ -138,10 +137,10 @@ export async function eliminarPracticaService(ID_practica) {
     });
 
     if (!practicaEncontrada) {
-      return [null, createErrorMessage(ID_practica, "No se ha encontrado una práctica con ese ID")];
+      return [null, createErrorMessage(ID_postulacion, "No se ha encontrado una postulación con ese ID")];
     }
 
-    await practicaRepository.delete(ID_practica);
+    await practicaRepository.delete(ID_postulacion);
     return [practicaEncontrada, null];
   } catch (error) {
     console.error("Error al eliminar la práctica:", error);
@@ -190,6 +189,7 @@ export async function postularPracticaService(data) {
     const nuevaPostulacion = postulaRepository.create({
       rut,
       ID_practica,
+      estado: "Pendiente"
     });
 
     await postulaRepository.save(nuevaPostulacion);
@@ -238,6 +238,41 @@ export async function cancelarPostulacionService(ID_practica, rut) {
     return [postulacionEncontrada, null];
   } catch (error) {
     console.error("Error al cancelar la postulación:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function obtenerPostulacionesService(rut) {
+  try {
+    const postulaRepository = AppDataSource.getRepository(Postula);
+
+    const postulaciones = await postulaRepository.find({
+      where: { rut },
+      relations: {
+        ID_practica: {
+          ID_especialidad: true,
+        }
+      },
+      select: {
+        ID_postulacion: true,
+        estado: true,
+        ID_practica: {
+          ID_practica: true,
+          nombre: true,
+          descripcion: true,
+          cupo: true,
+          createdAt: true,
+          direccion: true,
+          ID_especialidad: {
+            nombre: true,
+          }
+        },
+      },
+    });
+
+    return [postulaciones, null];
+  } catch (error) {
+    console.error("Error al obtener las postulaciones del alumno:", error);
     return [null, "Error interno del servidor"];
   }
 }

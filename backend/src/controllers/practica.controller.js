@@ -6,7 +6,8 @@ import {
   obtenerPracticaService,
   eliminarPracticaService,
   postularPracticaService,
-  cancelarPostulacionService
+  cancelarPostulacionService,
+  obtenerPostulacionesService
 } from "../services/practica.service.js";
 import { practicaValidation } from "../validations/practica.validation.js";
 import { postulaValidation } from "../validations/postula.validation.js";
@@ -137,7 +138,7 @@ export async function postularPractica(req, res) {
 
 export async function cancelarPostulacion(req, res) {
   try {
-    const { ID_practica } = req.params;
+    const { ID_postulacion } = req.params;
 
     const token = req.cookies.jwt;
     if (!token) {
@@ -147,13 +148,39 @@ export async function cancelarPostulacion(req, res) {
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
     const { rut } = decoded;
 
-    const [postulacionEliminada, errorEliminar] = await cancelarPostulacionService(ID_practica, rut);
+    const [postulacionEliminada, errorEliminar] = await cancelarPostulacionService(ID_postulacion, rut);
 
     if (errorEliminar) {
       return handleErrorClient(res, 400, "Error al cancelar la postulación", errorEliminar);
     }
 
     handleSuccess(res, 200, "Postulación cancelada con éxito", postulacionEliminada);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function obtenerPostulaciones(req, res) {
+  try {
+    const token = req.cookies.jwt;
+    if (!token) {
+      return handleErrorClient(res, 401, "No se ha proporcionado un token de autenticación");
+    }
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const { rut } = decoded;
+
+    const [postulaciones, error] = await obtenerPostulacionesService(rut);
+
+    if (error) {
+      return handleErrorClient(res, 400, "Error obteniendo las postulaciones", error);
+    }
+
+    const message = postulaciones.length === 0
+      ? "No tienes postulaciones registradas"
+      : "Postulaciones obtenidas con éxito";
+
+    handleSuccess(res, 200, message, postulaciones);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

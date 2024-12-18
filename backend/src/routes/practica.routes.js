@@ -9,6 +9,7 @@ import {
     eliminarPractica,
     postularPractica,
     cancelarPostulacion,
+    obtenerPostulaciones,
 } from "../controllers/practica.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { isAuthorized } from "../middlewares/authorization.middleware.js";
@@ -20,16 +21,16 @@ router
     // Sólo EDP, jefeUTP y admin
     .post("/crear", isAuthorized("EDP", "jefeUTP", "administrador"), crearPractica)
     .put("/modificar/:ID_practica", isAuthorized("EDP", "jefeUTP", "administrador"), modificarPractica)
-    .delete("/:ID_practica", isAuthorized("EDP", "jefeUTP","administrador"), eliminarPractica)
+    .delete("/:ID_practica", isAuthorized("EDP", "jefeUTP", "administrador"), eliminarPractica)
+
+    // Alumnos
+    .post("/postular/:ID_practica", isAuthorized("alumno"), postularPractica)
+    .delete("/postulacion/:ID_practica", isAuthorized("alumno"), cancelarPostulacion)
+    .get("/postulaciones", isAuthorized("alumno"), obtenerPostulaciones)
 
     // Usuarios
     .get("/all", obtenerPracticas)
-    .get("/:ID_practica", obtenerPractica)
-    .put("/modificar/:ID_practica", modificarPractica)
-    .delete("/:ID_practica", eliminarPractica)
-
-    .post("/postular/:ID_practica", postularPractica)
-    .delete("/postulacion/:ID_practica", cancelarPostulacion);
+    .get("/:ID_practica", obtenerPractica);
 
 
 export default router;

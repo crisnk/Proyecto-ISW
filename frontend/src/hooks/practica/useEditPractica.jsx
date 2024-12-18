@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { updatePractica, getPracticas } from '@services/practica.service.js';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+import { getTimeAgo } from '../../helpers/getTimeAgo';
 
 const useEditPractica = (setPracticas) => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -24,19 +25,28 @@ const useEditPractica = (setPracticas) => {
                 estado: updatedPracticaData.estado,
                 ID_especialidad: Number(updatedPracticaData.ID_especialidad),
             }
-            const updatedPractica = await updatePractica(ID_practica, formattedData);
+            
+            const statusCode = await updatePractica(ID_practica, formattedData);
 
-            showSuccessAlert('¡Actualizado!', 'La práctica ha sido actualizada correctamente.');
-            setIsPopupOpen(false);
+            if (statusCode === 200) {
+                showSuccessAlert('¡Actualizado!', 'La práctica ha sido actualizada correctamente.');
+                setIsPopupOpen(false);
+            }
 
-            setPracticas(prevPracticas => prevPracticas.map(practica => {
-                console.log("Práctica actual:", practica);
-                if (practica.ID === updatedPractica.ID_practica) {
-                    return updatedPractica;
-                }
-                return practica;
+            const allPracticas = await getPracticas();
+            const formattedPracticas = allPracticas.map(practica => ({
+                ID: practica.ID_practica,
+                nombre: practica.nombre,
+                descripcion: practica.descripcion,
+                direccion: practica.direccion,
+                fechaPublicacion: getTimeAgo(practica.createdAt),
+                cupo: practica.cupo,
+                estado: practica.estado,
+                nombreEspecialidad: practica.ID_especialidad.nombre,
+                ID_especialidad: practica.ID_especialidad.ID_especialidad,
             }));
 
+            setPracticas(formattedPracticas);
             setDataPractica([]);
         } catch (error) {
             console.error('Error al actualizar la práctica:', error);
@@ -54,4 +64,4 @@ const useEditPractica = (setPracticas) => {
     };
 };
 
-export default useEditPractica
+export default useEditPractica;

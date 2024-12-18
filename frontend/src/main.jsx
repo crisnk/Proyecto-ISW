@@ -27,6 +27,7 @@ import CrearMateria from '@pages/Horarios/CrearMateria';
 import CrearCurso from '@pages/Horarios/CrearCurso';
 import MateriasExistentes from '@pages/Horarios/MateriasExistentes';
 import CursosExistentes from '@pages/Horarios/CursosExistentes';
+import Postulaciones from '@pages/Postulaciones';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -67,7 +68,14 @@ const router = createBrowserRouter([
             <Practica />
           </ProtectedRoute>
         ),
-
+      },
+      {
+        path: '/practica/postulaciones',
+        element: (
+          <ProtectedRoute allowedRoles={['alumno']}>
+            <Postulaciones />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/atrasos',
