@@ -21,25 +21,24 @@ import {
         }
     }
     
-    export async function sendEmailDefault(req) {
-        const { email, message, subject } = req.body;
-    
+    export async function sendEmailDefault({ email, subject, message }) {
         try {
-            const info = await sendEmail(
-                email,
-                subject,
-                message,
-                `<p>${message}</p>`
-            );
-    
-            return {
-                success: true,
-                data: info
-            };
+          const info = await sendEmail(
+            email,
+            subject,
+            message,
+            `<p>${message}</p>`
+          );
+      
+          return {
+            success: true,
+            data: info
+          };
         } catch (error) {
-            return {
-                success: false,
-                error: error.message
-            };
+          return {
+            success: false,
+            error: error.message
+          };
         }
-    }
+      }
+      

@@ -129,11 +129,9 @@ export async function manejarAprobarJustificativo(req, res) {
 
     try {
       await sendEmailDefault({
-        body: {
-          email: email,
-          subject: "Justificativo aprobado",
-          message: `Hola, su justificativo con ID ${ID_atraso} ha sido aprobado.`,
-        },
+        email: email,
+        subject: "Justificativo aprobado",
+        message: `Hola, su justificativo con ID ${ID_atraso} ha sido aprobado.`,
       });
     } catch (emailError) {
       console.error("Error al enviar el correo:", emailError);
@@ -172,11 +170,9 @@ export async function manejarRechazarJustificativo(req, res) {
 
    
     await sendEmailDefault({
-        body: {
-            email: email, 
-            subject: "Justificativo rechazado",
-            message: `Hola, se le notifica que su justificativo con ID ${ID_atraso} ha sido rechazado. Motivo: ${motivo}`,
-        },
+      email: email,
+      subject: "Justificativo rechazado",
+      message: `Hola, se le notifica que su justificativo con ID ${ID_atraso} ha sido rechazado. Motivo: ${motivo}`,
     });
 
     console.log(`Correo enviado a ${email} notificando el rechazo del justificativo.`);
