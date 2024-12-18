@@ -1,26 +1,33 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-
 const PostulaSchema = new EntitySchema({
   name: "Postula",
   tableName: "postulaciones",
   columns: {
+    ID_postulacion: {
+      type: "int",
+      primary: true,
+      generated: true,
+    },
     rut: {
       type: "varchar",
-      primaryKey: true,
+      primary: true,
       length: 12,
       nullable: false,
-      unique: true,
     },
     ID_practica: {
       type: "int",
       primary: true,
     },
+    estado: {
+      type: "varchar",
+      length: 15,
+    }
   },
   relations: {
     rut: {
-      type: "many-to-many",
+      type: "many-to-one",
       target: "User",
       joinColumn: {
         name: "rut",
@@ -28,7 +35,7 @@ const PostulaSchema = new EntitySchema({
       },
     },
     ID_practica: {
-      type: "many-to-many",
+      type: "many-to-one",
       target: "Practica",
       joinColumn: {
         name: "ID_practica",

@@ -5,7 +5,23 @@
 .search-input-table{
     height:20px;
 }
-.practica-register-button{
-    margin-right:70px;
-    background-color:#28a745 !important;
+
+.practica-button{
+    background-color: #003366;
+    transition: background-color 0.3s ease;
+}
+.practica-button:disabled{
+    background-color: #ccc;
+}
+
+.postulacion-cancelar-button{
+    background-color: #E4332C;
+    transition: background-color 0.3s ease;
+}
+.postulacion-cancelar-button:hover:not(:disabled){
+    background-color: red;
+    transition: background-color 0.3s ease;
+}
+.postulacion-cancelar-button:disabled{
+    background-color: #ccc;
 }
