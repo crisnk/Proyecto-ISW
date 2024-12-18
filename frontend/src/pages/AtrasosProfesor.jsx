@@ -24,7 +24,7 @@ const AtrasosAlumnos = () => {
         const handleClickOutside = (event) => {
             const tableElement = document.querySelector('.tablaAlumnos-table');
             if (tableElement && !tableElement.contains(event.target)) {
-                setSelectedRow(null); // Desmarca la fila seleccionada
+                setSelectedRow(null); 
             }
         };
 
