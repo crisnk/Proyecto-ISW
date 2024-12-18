@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "@components/Navbar";
 import Sidebar from "@components/Sidebar";
 import { AuthProvider } from "@context/AuthContext";
-import "@styles/sidebar.css";
+import "@styles/Sidebar.css";
 
 function Root() {
   return (

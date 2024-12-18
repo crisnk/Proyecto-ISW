@@ -8,7 +8,7 @@ import {
   getEmailsCurso,
 } from "../../services/horario.service";
 import EditarTablaHorarioCurso from "../../hooks/Horarios/EditarTablaHorarioCurso";
-import Spinner from "../../hooks/Horarios/spinner";
+import Spinner from "../../hooks/Horarios/Spinner";
 import { diasSemana, horas, recreoHoras } from "../../hooks/Horarios/HorariosConfig";
 import Swal from "sweetalert2";
 import "@styles/Horarios/asignarHorario.css";

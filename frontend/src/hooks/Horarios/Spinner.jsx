@@ -1,4 +1,4 @@
-import "@styles/Horarios/spinner.css";
+import "@styles/Horarios/Spinner.css";
 
 const Spinner = () => {
   return (

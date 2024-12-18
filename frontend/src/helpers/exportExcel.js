@@ -1,5 +1,15 @@
 import ExcelJS from "exceljs";
-
+import { Chart, registerables } from "chart.js";
+Chart.register(...registerables);
+import ChartDataLabels from "chartjs-plugin-datalabels";
+Chart.register(ChartDataLabels);
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import "dayjs/locale/es"
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("es");
 export const exportarExcel = (periodo, atrasos, nombreCurso) => {
     const hoy = new Date();
     const fechaInicio =
@@ -27,43 +37,48 @@ export const exportarExcel = (periodo, atrasos, nombreCurso) => {
 const calcularEstadisticasGenerales = (data) => {
     const totalAtrasos = data.length;
 
+    // Cálculo de la hora promedio
     const horas = data.map((atraso) => parseInt(atraso.hora.split(":")[0], 10));
     const horaPromedio = Math.round(horas.reduce((a, b) => a + b, 0) / horas.length);
 
-    // Análisis de días
+    // Análisis de días usando dayjs y filtrando días vacíos
     const diasFrecuentes = data.reduce((acc, { fecha }) => {
-        const dia = new Date(fecha).toLocaleDateString("es-ES", { weekday: "long" });
+        const dia = dayjs(fecha, "DD-MM-YYYY").tz("America/Santiago").locale("es").format("dddd");
         acc[dia] = (acc[dia] || 0) + 1;
         return acc;
     }, {});
 
     const diasOrdenados = Object.entries(diasFrecuentes)
+        .filter(([_, valor]) => valor > 0) // Filtra días con valor > 0
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);  // Top 5 días
+        .slice(0, 5); // Top 5 días
 
-    // Análisis de horas
+    const diaMasFrecuente = diasOrdenados[0] ? diasOrdenados[0][0] : "No determinado";
+
+    // Análisis de horas críticas
     const horasFrecuentes = data.reduce((acc, { hora }) => {
-        acc[hora] = (acc[hora] || 0) + 1;
+        acc[hora] = (acc[hora] || 0) + 1; // Incrementar la frecuencia de cada hora
         return acc;
     }, {});
 
     const horasOrdenadas = Object.entries(horasFrecuentes)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);  // Top 5 horas
+        .slice(0, 5); // Top 5 horas críticas
 
-    const diaMasFrecuente = diasOrdenados[0] ? diasOrdenados[0][0] : "No determinado";
     const horaCritica = horasOrdenadas[0] ? horasOrdenadas[0][0] : "No determinada";
 
     return {
         totalAtrasos,
         horaPromedio,
         diaMasFrecuente,
-        horaCritica,
         diasFrecuentes: Object.fromEntries(diasOrdenados),
-        horasFrecuentes: Object.fromEntries(horasOrdenadas),
+        horasFrecuentes: Object.fromEntries(horasOrdenadas), // Horas críticas
+        horaCritica,
         alumnosUnicos: new Set(data.map((atraso) => atraso.rut)).size,
     };
 };
+
+
 
 const calcularResumenPorAlumno = (data) => {
     const alumnos = data.reduce((acc, { rut, nombre, hora, fecha }) => {
@@ -76,8 +91,10 @@ const calcularResumenPorAlumno = (data) => {
         };
         acc[rut].totalAtrasos += 1;
 
-        const dia = new Date(fecha).toLocaleDateString("es-ES", { weekday: "long" });
+        // Obtener el día correctamente formateado en español y con la zona horaria
+        const dia = dayjs(fecha, "DD-MM-YYYY").tz("America/Santiago").format("dddd");
         acc[rut].dias[dia] = (acc[rut].dias[dia] || 0) + 1;
+
         acc[rut].horas[hora] = (acc[rut].horas[hora] || 0) + 1;
 
         return acc;
@@ -94,6 +111,125 @@ const calcularResumenPorAlumno = (data) => {
             alumno.horas[a] > alumno.horas[b] ? a : b
         ),
     }));
+};
+
+const generarGraficoComoBase64 = (datos, etiquetas, titulo) => {
+    // Filtrar valores y etiquetas con datos > 0
+    const datosFiltrados = datos.filter(valor => valor > 0);
+    const etiquetasFiltradas = etiquetas.filter((_, index) => datos[index] > 0);
+
+    // Crear un canvas virtual
+    const canvas = document.createElement("canvas");
+    canvas.width = 500;
+    canvas.height = 500;
+    const ctx = canvas.getContext("2d");
+
+    // Generar el gráfico circular (pie)
+    new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: etiquetasFiltradas,
+            datasets: [
+                {
+                    label: titulo,
+                    data: datosFiltrados,
+                    backgroundColor: ["#FF6384", "#FFCD56", "#36A2EB", "#4BC0C0", "#9966FF"],
+                },
+            ],
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { display: true, position: "bottom" },
+                title: { display: true, text: titulo, font: { size: 16 } },
+                datalabels: {
+                    color: "#fff",
+                    formatter: (value) => `${value}%`,
+                    font: { weight: "bold", size: 14 },
+                },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const base64 = canvas.toDataURL("image/png");
+            resolve(base64);
+        }, 500);
+    });
+};
+
+const generarGraficoLineasComoBase64 = (datos, etiquetas, titulo) => {
+    // Crear un canvas virtual
+    const canvas = document.createElement("canvas");
+    canvas.width = 600;
+    canvas.height = 400;
+    const ctx = canvas.getContext("2d");
+
+    // Ordenar las etiquetas (horas) en orden ascendente
+    const orden = etiquetas.map((hora, i) => ({ hora, valor: datos[i] }))
+                           .sort((a, b) => a.hora.localeCompare(b.hora));
+
+    const etiquetasOrdenadas = orden.map(item => item.hora);
+    const datosOrdenados = orden.map(item => item.valor);
+
+    // Generar el gráfico de líneas
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: etiquetasOrdenadas, // Horas ordenadas (X)
+            datasets: [
+                {
+                    label: titulo,
+                    data: datosOrdenados, // Frecuencia de atrasos (Y)
+                    borderColor: "#FF6384",
+                    backgroundColor: "rgba(255, 99, 132, 0.2)",
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#FF6384",
+                },
+            ],
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { display: true, position: "top" },
+                title: { display: true, text: titulo, font: { size: 16 } },
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: "Horas Críticas" },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: "Frecuencia" },
+                    ticks: {
+                        stepSize: 1, // Solo números enteros
+                        precision: 0, // Evita decimales
+                    },
+                },
+            },
+        },
+    });
+
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const base64 = canvas.toDataURL("image/png");
+            resolve(base64);
+        }, 500);
+    });
+};
+
+
+
+const agregarImagenAlExcel = (workbook, worksheet, imageData, position) => {
+    const imageId = workbook.addImage({
+        base64: imageData,
+        extension: "png",
+    });
+    worksheet.addImage(imageId, position); // Por ejemplo: "B10:F20"
 };
 
 const generarExcel = async (estadisticas, resumenAlumnos, periodo, nombreCurso) => {
@@ -114,20 +250,32 @@ const generarExcel = async (estadisticas, resumenAlumnos, periodo, nombreCurso) 
         { estadistica: "Número de Alumnos con Atrasos", valor: estadisticas.alumnosUnicos },
     ]);
 
-    // Tabla de días frecuentes
-    wsGeneral.addRow([]);
-    wsGeneral.addRow(["Días con Más Atrasos", "Cantidad"]);
-    Object.entries(estadisticas.diasFrecuentes).forEach(([dia, cantidad]) => {
-        wsGeneral.addRow([dia, cantidad]);
-    });
+    // Generar gráfico de días frecuentes
+    const graficoBase64 = await generarGraficoComoBase64(
+        Object.values(estadisticas.diasFrecuentes),
+        Object.keys(estadisticas.diasFrecuentes),
+        "Días con Más Atrasos"
+    );
+    const imagenLimpia = graficoBase64.replace(/^data:image\/\w+;base64,/, "");
 
-    // Tabla de horas frecuentes
-    wsGeneral.addRow([]);
-    wsGeneral.addRow(["Horas con Más Atrasos", "Cantidad"]);
-    Object.entries(estadisticas.horasFrecuentes).forEach(([hora, cantidad]) => {
-        wsGeneral.addRow([hora, cantidad]);
-    });
+    // Agregar el gráfico al Excel
+    agregarImagenAlExcel(workbook, wsGeneral, imagenLimpia , "A10:F35");
 
+   // Generar gráfico de horas críticas
+const horasCriticasDatos = Object.values(estadisticas.horasFrecuentes);
+const horasCriticasEtiquetas = Object.keys(estadisticas.horasFrecuentes);
+
+if (horasCriticasDatos.length > 0) {
+    const graficoLineasBase64 = await generarGraficoLineasComoBase64(
+        horasCriticasDatos,
+        horasCriticasEtiquetas,
+        "Horas Críticas Más Frecuentes"
+    );
+
+    // Agregar el gráfico al Excel en otra posición
+    agregarImagenAlExcel(workbook, wsGeneral, graficoLineasBase64, "H10:Q35");
+}
+ 
     // Hoja 2: Resumen por Alumno
     const wsAlumnos = workbook.addWorksheet("Resumen por Alumno");
     wsAlumnos.columns = [
@@ -140,15 +288,12 @@ const generarExcel = async (estadisticas, resumenAlumnos, periodo, nombreCurso) 
 
     wsAlumnos.addRows(resumenAlumnos);
 
-    // Nombre de archivo dinámico
-    const fechaActual = new Date().toISOString().split("T")[0];
-    const nombreArchivo = `Atrasos_${nombreCurso}_${periodo}_${fechaActual}.xlsx`;
-
     // Descargar Excel
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/octet-stream" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = nombreArchivo;
+    link.download = `Atrasos_${nombreCurso}_${periodo}_${new Date().toISOString().split("T")[0]}.xlsx`;
     link.click();
 };
+

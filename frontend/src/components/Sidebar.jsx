@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "@styles/sidebar.css";
+import "@styles/Sidebar.css";
 
 const Sidebar = ({ isVisible, toggleSidebar }) => {
   const user = JSON.parse(sessionStorage.getItem("usuario")) || {};
