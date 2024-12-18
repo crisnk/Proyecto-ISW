@@ -78,13 +78,13 @@ import { getUserSocketId } from '../services/socket.service.js';
       console.log(nombreAlumno);
 
       const io = req.app.get('socketio'); 
-
+      const apiNamespace = io.of("/api");
       // Verificamos si el profesor está conectado
       const socketId = getUserSocketId(rutProfesor);
 
       console.log('socketIdProfesor:', socketId);
         if (socketId) {
-          io.to(socketId).emit('recibo-notificacion', {
+          apiNamespace.to(socketId).emit("recibo-notificacion", {
             mensaje: `El alumno ${nombreAlumno} ha subido un justificativo`,
           });
           console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);

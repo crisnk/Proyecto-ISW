@@ -70,12 +70,14 @@ async function setupServer() {
 
     const io = new Server(httpServer, {
       cors: {
-        origin: true,
+        origin: "*",
         methods: ["GET", "POST"]
       }
     });
 
-    io.on('connection', (socket) => {
+    const apiNamespace = io.of("/api");
+
+    apiNamespace.on('connect', (socket) => {
       console.log("Usuario conectado:", socket.id);
       
       socket.on('register-user', (rut) => {

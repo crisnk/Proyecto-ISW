@@ -67,7 +67,6 @@
   margin-top: 20px;
 }
 
-<<<<<<< HEAD
 .mensaje-error {
   font-size: 1.2rem;
   color: #d9534f;
@@ -98,7 +97,8 @@
   .ver-horarios-menu a {
     font-size: 1rem;
     padding: 8px 15px;
-=======
+  }
+}
 .pagination button {
   background-color: #0066cc;
   color: white;
@@ -143,7 +143,6 @@
 
   .pagination span {
     font-size: 1rem;
->>>>>>> cris
   }
 }
 

@@ -26,13 +26,12 @@ export async function registrarAtraso(req, res) {
     if(res.status(201)) {
     
       const io = req.app.get('socketio'); 
-
+      const apiNamespace = io.of("/api");
       // Verificamos si el profesor está conectado
       const socketId = getUserSocketId(rutProfesor);
 
-      console.log('socketIdProfesor:', socketId);
         if (socketId) {
-          io.to(socketId).emit('recibo-notificacion', {
+          apiNamespace.to(socketId).emit("recibo-notificacion", {
             mensaje: `El alumno ${nombreAlumno} ha registrado un atraso`,
           });
           console.log(`Notificación enviada al profesor con RUT: ${rutProfesor} (Socket ID: ${socketId})`);
