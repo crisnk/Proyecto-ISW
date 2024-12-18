@@ -6,8 +6,13 @@
     height:20px;
 }
 
+.practica-title-table{
+    margin-left: 70px;
+}
+
 .practica-button{
     background-color: #003366;
+    margin-right: 70px;
     transition: background-color 0.3s ease;
 }
 .practica-button:disabled{

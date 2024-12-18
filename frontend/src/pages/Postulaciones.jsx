@@ -13,8 +13,8 @@ export default function Postulaciones() {
     const [dataPostulacion, setDataPostulacion] = useState('');
 
     const columns = [
-        { title: "Nombre", field: "nombre", width: 250, responsive: 0 },
-        { title: "Descripción", field: "descripcion", width: 350, responsive: 2 },
+        { title: "Nombre", field: "nombre", width: 200, responsive: 0 },
+        { title: "Descripción", field: "descripcion", width: 250, responsive: 3 },
         { title: "Especialidad", field: "nombreEspecialidad", width: 200, responsive: 2 },
         { title: "Dirección", field: "direccion", width: 200, responsive: 2 },
         { title: "Publicado hace", field: "publicadoHace", width: 150, responsive: 2 },
@@ -53,10 +53,10 @@ export default function Postulaciones() {
         <div className="main-container">
             <div className="table-container">
                 <div className="top-table">
-                    <h1 className="title-table">Mis postulaciones</h1>
+                    <h1 className="title-table practica-title-table">Mis postulaciones</h1>
                     <div className="filter-actions">
                         <Search value={filterPostulacion} onChange={handlePostulacionFilterChange} placeholder={'Buscar'} />
-                        <button className="postulacion-cancelar-button" onClick={handleCancelarPostulacionClick} disabled={dataPostulacion.length === 0}>
+                        <button className="postulacion-cancelar-button practica-button" onClick={handleCancelarPostulacionClick} disabled={dataPostulacion.length === 0}>
                             Cancelar postulación
                         </button>
                     </div>

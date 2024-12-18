@@ -39,8 +39,8 @@ export default function Practica() {
     const isAlumno = userRole === 'alumno';
 
     const columns = [
-        { title: "Nombre", field: "nombre", width: 250, responsive: 0 },
-        { title: "Descripción", field: "descripcion", width: 350, responsive: 3 },
+        { title: "Nombre", field: "nombre", width: 200, responsive: 0 },
+        { title: "Descripción", field: "descripcion", width: 250, responsive: 3 },
         { title: "Especialidad", field: "nombreEspecialidad", width: 200, responsive: 2 },
         { title: "Dirección", field: "direccion", width: 200, responsive: 2 },
         { title: "Publicado hace", field: "fechaPublicacion", width: 150, responsive: 2 },
@@ -58,6 +58,7 @@ export default function Practica() {
 
     const handleCreateClick = () => {
         setIsCreatePopupOpen(true);
+        fetchPracticas();
     };
 
     const handlePostularClick = async () => {
@@ -65,8 +66,8 @@ export default function Practica() {
         try {
             const response = await postularPractica(ID_practica);
             if (response.status === 201) {
-                showSuccessAlert('Postulación enviada')
                 fetchPracticas();
+                showSuccessAlert('Postulación enviada')
             } else {
                 showErrorAlert('Error', response.message)
             }
@@ -79,7 +80,7 @@ export default function Practica() {
         <div className="main-container">
             <div className="table-container">
                 <div className="top-table">
-                    <h1 className="title-table">Prácticas</h1>
+                    <h1 className="title-table practica-title-table">Prácticas</h1>
                     <div className="filter-actions">
                         <Search value={filterPractica} onChange={handlePracticaFilterChange} placeholder={'Buscar'} />
                         {canEditPracticas && (
@@ -98,7 +99,7 @@ export default function Practica() {
                         )}
                         {isAlumno && (
                             <>
-                                <button className="practica-button" onClick={handlePostularClick} disabled={dataPractica.length === 0}>
+                                <button className="practica-button" onClick={handlePostularClick}>
                                     Postular a práctica
                                 </button>
                             </>
