@@ -10,6 +10,7 @@ export function handleSuccess(res, statusCode, message, data = {}) {
 
 export function handleErrorClient(res, statusCode, message, details= {}) {
   return res.status(statusCode).json({
+    statusCode,
     status: "Client error",
     message,
     details

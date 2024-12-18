@@ -77,12 +77,17 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
       },
     },
     {
-      label: "Practicas",
+      label: "Practica",
       options: () => {
         switch (userRole) {
-          case "profesor":
+          case "alumno":
             return [
-              { path: "/practica", label: "Publicar practica" },
+              { path: "/practica", label: "Ver practicas" },
+              { path: "/practica/postulaciones", label: "Mis postulaciones" },
+            ];
+          case "EDP":
+            return [
+              { path: "/practica", label: "Ver practicas" },
             ];
           default:
             return [];

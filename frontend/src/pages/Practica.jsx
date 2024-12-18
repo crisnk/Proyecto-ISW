@@ -5,13 +5,15 @@ import PopupPractica from '../components/PopupPractica';
 import PopupCreatePractica from '../components/PopupCreatePractica';
 import { useCallback, useState, useEffect } from 'react';
 import useEditPractica from "@hooks/practica/useEditPractica";
-import usePractica from "@hooks/practica/useGetPracticas.jsx";
+import useGetPracticas from "@hooks/practica/useGetPracticas.jsx";
 import useCreatePractica from "@hooks/practica/useCreatePractica";
 import UpdateIcon from '../assets/updateIcon.svg';
 import UpdateIconDisable from '../assets/updateIconDisabled.svg';
+import { postularPractica } from '../services/practica.service.js';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 
 export default function Practica() {
-    const { practicas, fetchPracticas, setPracticas } = usePractica();
+    const { practicas, fetchPracticas, setPracticas } = useGetPracticas();
     const [filterPractica, setFilterPractica] = useState('');
     const [userRole, setUserRole] = useState(null);
 
@@ -22,7 +24,7 @@ export default function Practica() {
         setIsPopupOpen,
         dataPractica,
         setDataPractica
-    } = useEditPractica(setPracticas);
+    } = useEditPractica(setPracticas, useGetPracticas);
 
     const { handleCreate } = useCreatePractica(setPracticas);
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
@@ -33,12 +35,12 @@ export default function Practica() {
         setUserRole(role);
     }, []);
 
-    const isAllowed = userRole === 'EDP' || userRole === 'administrador';
-    const searchStyle = userRole && !['EDP', 'administrador'].includes(userRole) ? { marginRight: '70px' } : {};
+    const canEditPracticas = userRole === 'EDP' || userRole === 'administrador';
+    const isAlumno = userRole === 'alumno';
 
     const columns = [
-        { title: "Nombre", field: "nombre", width: 450, responsive: 0 },
-        { title: "Descripción", field: "descripcion", width: 300, responsive: 3 },
+        { title: "Nombre", field: "nombre", width: 250, responsive: 0 },
+        { title: "Descripción", field: "descripcion", width: 350, responsive: 3 },
         { title: "Especialidad", field: "nombreEspecialidad", width: 200, responsive: 2 },
         { title: "Dirección", field: "direccion", width: 200, responsive: 2 },
         { title: "Publicado hace", field: "fechaPublicacion", width: 150, responsive: 2 },
@@ -58,14 +60,29 @@ export default function Practica() {
         setIsCreatePopupOpen(true);
     };
 
+    const handlePostularClick = async () => {
+        const ID_practica = dataPractica[0].ID;
+        try {
+            const response = await postularPractica(ID_practica);
+            if (response.status === 201) {
+                showSuccessAlert('Postulación enviada')
+                fetchPracticas();
+            } else {
+                showErrorAlert('Error', response.message)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <div className="main-container">
             <div className="table-container">
                 <div className="top-table">
                     <h1 className="title-table">Prácticas</h1>
                     <div className="filter-actions">
-                        <Search value={filterPractica} onChange={handlePracticaFilterChange} placeholder={'Buscar'} style={searchStyle} />
-                        {isAllowed && (
+                        <Search value={filterPractica} onChange={handlePracticaFilterChange} placeholder={'Buscar'} />
+                        {canEditPracticas && (
                             <>
                                 <button className="practica-edit-button" onClick={handleClickUpdate} disabled={dataPractica.length === 0}>
                                     {dataPractica.length === 0 ? (
@@ -74,8 +91,15 @@ export default function Practica() {
                                         <img src={UpdateIcon} alt="edit" />
                                     )}
                                 </button>
-                                <button className="practica-register-button" onClick={handleCreateClick}>
+                                <button className="practica-button" onClick={handleCreateClick} disabled={dataPractica.length === 0}>
                                     Registrar nueva práctica
+                                </button>
+                            </>
+                        )}
+                        {isAlumno && (
+                            <>
+                                <button className="practica-button" onClick={handlePostularClick} disabled={dataPractica.length === 0}>
+                                    Postular a práctica
                                 </button>
                             </>
                         )}
