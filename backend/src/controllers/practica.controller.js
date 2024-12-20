@@ -7,7 +7,8 @@ import {
   eliminarPracticaService,
   postularPracticaService,
   cancelarPostulacionService,
-  obtenerPostulacionesService
+  obtenerPostulacionesService,
+  updatePostulacionService
 } from "../services/practica.service.js";
 import { practicaValidation } from "../validations/practica.validation.js";
 import { postulaValidation } from "../validations/postula.validation.js";
@@ -168,9 +169,9 @@ export async function obtenerPostulaciones(req, res) {
     }
 
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-    const { rut } = decoded;
+    const { rut, rol } = decoded;
 
-    const [postulaciones, error] = await obtenerPostulacionesService(rut);
+    const [postulaciones, error] = await obtenerPostulacionesService(rut, rol);
 
     if (error) {
       return handleErrorClient(res, 400, "Error obteniendo las postulaciones", error);
@@ -181,6 +182,24 @@ export async function obtenerPostulaciones(req, res) {
       : "Postulaciones obtenidas con éxito";
 
     handleSuccess(res, 200, message, postulaciones);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function updatePostulacion(req, res) {
+  try {
+    const data = req.body;
+
+    const { error } = postulaValidation.validate(data);
+    if (error) return handleErrorClient(res, 400, "Error al validar el formato de la postulación", error.message);
+
+    const [postulacionModificada, errorPostulacionModificada] = await updatePostulacionService(data);
+
+    if (errorPostulacionModificada)
+      return handleErrorClient(res, 400, "Error modificando la postulación", errorPostulacionModificada);
+
+    handleSuccess(res, 200, "Postulación modificada con éxito", postulacionModificada);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

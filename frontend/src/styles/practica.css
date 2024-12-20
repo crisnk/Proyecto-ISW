@@ -6,13 +6,29 @@
     height:20px;
 }
 
-.practica-title-table{
-    margin-left: 70px;
+.tablaAlumnos-container {
+    max-width: none;
+}
+.tablaAlumnos-row-selected{
+    font-weight: normal;
+}
+
+.practica-title-table {
+    color: #003366;
+}
+.practica-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.practica-top-table {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .practica-button{
     background-color: #003366;
-    margin-right: 70px;
     transition: background-color 0.3s ease;
 }
 .practica-button:disabled{

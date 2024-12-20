@@ -2,9 +2,10 @@ import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 
-export default function PopupCreatePractica({ show, setShow, action }) {
+export default function PopupCreatePractica({ show, setShow, action}) {
     const handleSubmit = (formData) => {
         action(formData);
+        setShow(false);
     };
 
     return (
@@ -26,7 +27,7 @@ export default function PopupCreatePractica({ show, setShow, action }) {
                                     type: "text",
                                     required: true,
                                     minLength: 3,
-                                    maxLength: 100,
+                                    maxLength: 255,
                                 },
                                 {
                                     label: "Descripción",
@@ -34,8 +35,8 @@ export default function PopupCreatePractica({ show, setShow, action }) {
                                     placeholder: 'Descripción detallada de la práctica',
                                     fieldType: 'textarea',
                                     required: true,
-                                    minLength: 5,
-                                    maxLength: 500,
+                                    minLength: 10,
+                                    maxLength: 255,
                                 },
                                 {
                                     label: "Dirección",
@@ -45,7 +46,7 @@ export default function PopupCreatePractica({ show, setShow, action }) {
                                     type: "text",
                                     required: true,
                                     minLength: 5,
-                                    maxLength: 200,
+                                    maxLength: 255,
                                 },
                                 {
                                     label: "Cupo",

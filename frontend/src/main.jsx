@@ -72,7 +72,7 @@ const router = createBrowserRouter([
       {
         path: '/practica/postulaciones',
         element: (
-          <ProtectedRoute allowedRoles={['alumno']}>
+          <ProtectedRoute allowedRoles={['alumno', 'EDP']}>
             <Postulaciones />
           </ProtectedRoute>
         ),

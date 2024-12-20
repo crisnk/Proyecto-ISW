@@ -1,9 +1,8 @@
 import "../styles/practica.css";
-import Table from '@components/Table';
 import Search from '../components/Search';
 import PopupPractica from '../components/PopupPractica';
 import PopupCreatePractica from '../components/PopupCreatePractica';
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useEditPractica from "@hooks/practica/useEditPractica";
 import useGetPracticas from "@hooks/practica/useGetPracticas.jsx";
 import useCreatePractica from "@hooks/practica/useCreatePractica";
@@ -11,11 +10,15 @@ import UpdateIcon from '../assets/updateIcon.svg';
 import UpdateIconDisable from '../assets/updateIconDisabled.svg';
 import { postularPractica } from '../services/practica.service.js';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+import TablaAlumnos from "../components/TablaAlumnos.jsx";
+import getColumns from "../helpers/columnHelper";
 
 export default function Practica() {
     const { practicas, fetchPracticas, setPracticas } = useGetPracticas();
     const [filterPractica, setFilterPractica] = useState('');
     const [userRole, setUserRole] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [columns, setColumns] = useState([]);
 
     const {
         handleClickUpdate,
@@ -24,45 +27,31 @@ export default function Practica() {
         setIsPopupOpen,
         dataPractica,
         setDataPractica
-    } = useEditPractica(setPracticas, useGetPracticas);
+    } = useEditPractica(useGetPracticas);
 
-    const { handleCreate } = useCreatePractica(setPracticas);
+    const { handleCreate } = useCreatePractica(setPracticas, fetchPracticas);
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem("usuario")) || {};
         const role = user.rol;
         setUserRole(role);
+        setColumns(getColumns(role, 'Practica'));
     }, []);
 
     const canEditPracticas = userRole === 'EDP' || userRole === 'administrador';
     const isAlumno = userRole === 'alumno';
 
-    const columns = [
-        { title: "Nombre", field: "nombre", width: 200, responsive: 0 },
-        { title: "Descripción", field: "descripcion", width: 250, responsive: 3 },
-        { title: "Especialidad", field: "nombreEspecialidad", width: 200, responsive: 2 },
-        { title: "Dirección", field: "direccion", width: 200, responsive: 2 },
-        { title: "Publicado hace", field: "fechaPublicacion", width: 150, responsive: 2 },
-        { title: "Cupo", field: "cupo", width: 80, responsive: 2 },
-        { title: "Estado", field: "estado", width: 100, responsive: 2 },
-    ];
-
     const handlePracticaFilterChange = (e) => {
         setFilterPractica(e.target.value);
     };
 
-    const handleSelectionChange = useCallback((selectedPracticas) => {
-        setDataPractica(selectedPracticas);
-    }, [setDataPractica]);
-
     const handleCreateClick = () => {
         setIsCreatePopupOpen(true);
-        fetchPracticas();
     };
 
     const handlePostularClick = async () => {
-        const ID_practica = dataPractica[0].ID;
+        const ID_practica = selectedRow.ID;
         try {
             const response = await postularPractica(ID_practica);
             if (response.status === 201) {
@@ -78,28 +67,30 @@ export default function Practica() {
 
     return (
         <div className="main-container">
-            <div className="table-container">
-                <div className="top-table">
-                    <h1 className="title-table practica-title-table">Prácticas</h1>
-                    <div className="filter-actions">
+            <div className="practica-table-container">
+                <div className="practica-top-table">
+                    <div className="practica-title-container">
+                        <h1 className="practica-title-table">Prácticas</h1>
+                    </div>
+                    <div className="practica-filter-actions">
                         <Search value={filterPractica} onChange={handlePracticaFilterChange} placeholder={'Buscar'} />
                         {canEditPracticas && (
                             <>
-                                <button className="practica-edit-button" onClick={handleClickUpdate} disabled={dataPractica.length === 0}>
-                                    {dataPractica.length === 0 ? (
+                                <button className="edit-button" onClick={handleClickUpdate} disabled={selectedRow === null}>
+                                    {selectedRow === null ? (
                                         <img src={UpdateIconDisable} alt="edit-disabled" />
                                     ) : (
                                         <img src={UpdateIcon} alt="edit" />
                                     )}
                                 </button>
-                                <button className="practica-button" onClick={handleCreateClick}>
+                                <button className="practica-button button-margin-right" onClick={handleCreateClick}>
                                     Registrar nueva práctica
                                 </button>
                             </>
                         )}
                         {isAlumno && (
                             <>
-                                <button className="practica-button" onClick={handlePostularClick}>
+                                <button className="practica-button " onClick={handlePostularClick}>
                                     Postular a práctica
                                 </button>
                             </>
@@ -107,12 +98,10 @@ export default function Practica() {
 
                     </div>
                 </div>
-                <Table
+                <TablaAlumnos
                     data={practicas}
                     columns={columns}
-                    filter={filterPractica}
-                    initialSortName={'fechaPublicacion'}
-                    onSelectionChange={handleSelectionChange}
+                    onRowSelect={(row) => { setSelectedRow(row); }}
                 />
             </div>
 

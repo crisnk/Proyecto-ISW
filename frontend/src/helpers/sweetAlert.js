@@ -12,6 +12,18 @@ export async function deleteDataAlert() {
   })
 }
 
+export async function showWarningAlert(titleMessage, message) {
+  return Swal.fire({
+    title: titleMessage,
+    text: message,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Continuar',
+    cancelButtonText: 'Cancelar'
+  }
+  );
+};
+
 export const showSuccessAlert = (titleMessage, message) => {
   Swal.fire(
     titleMessage,

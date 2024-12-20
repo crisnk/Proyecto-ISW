@@ -88,6 +88,7 @@ const Sidebar = ({ isVisible, toggleSidebar }) => {
           case "EDP":
             return [
               { path: "/practica", label: "Ver practicas" },
+              { path: "/practica/postulaciones", label: "Revisar postulaciones" },
             ];
           default:
             return [];

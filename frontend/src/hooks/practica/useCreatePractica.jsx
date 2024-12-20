@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import { createPractica } from '@services/practica.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
 
-const useCreatePractica = (setPracticas) => {
-    const [isLoading, setIsLoading] = useState(false);
-
+const useCreatePractica = (fetchPracticas) => {
     const handleCreate = async (newPracticaData) => {
         try {
-            setIsLoading(true);
             const formattedData = {
                 nombre: newPracticaData.nombre,
                 descripcion: newPracticaData.descripcion,
@@ -17,20 +13,22 @@ const useCreatePractica = (setPracticas) => {
                 ID_especialidad: Number(newPracticaData.ID_especialidad),
             };
             
-            const newPractica = await createPractica(formattedData);
+            const response = await createPractica(formattedData);
 
-            showSuccessAlert('¡Registrado!', 'La práctica ha sido registrada correctamente.');
+            if (response.status === 201) {
+                showSuccessAlert('¡Registrado!', 'La práctica ha sido registrada correctamente.');
+                fetchPracticas();
+            } else {
+                showErrorAlert('Error', response.details);
+            }
 
-            setPracticas(prevPracticas => [...prevPracticas, newPractica]);
         } catch (error) {
             console.error('Error al crear la práctica:', error);
             showErrorAlert('Error', 'Ocurrió un error al crear la práctica.');
-        } finally {
-            setIsLoading(false);
         }
     };
 
-    return { handleCreate, isLoading };
+    return { handleCreate };
 };
 
 export default useCreatePractica;

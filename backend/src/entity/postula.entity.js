@@ -23,7 +23,18 @@ const PostulaSchema = new EntitySchema({
     estado: {
       type: "varchar",
       length: 15,
-    }
+    },
+    createdAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+    updatedAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
   },
   relations: {
     rut: {

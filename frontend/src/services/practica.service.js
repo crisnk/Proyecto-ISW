@@ -21,7 +21,7 @@ export async function updatePractica(ID_practica, data) {
 export async function createPractica(data) {
     try {
         const response = await axios.post("/practica/crear", data);
-        return response.data.data;
+        return response;
     } catch (error) {
         return error.response.data;
     }
@@ -38,7 +38,7 @@ export async function postularPractica(ID_practica) {
 
 export async function cancelarPostulacion(ID_practica) {
     try {
-        const response = await axios.delete(`/practica/postulacion/${ID_practica}`);
+        const response = await axios.delete(`/practica/postulacion/delete/${ID_practica}`);
         return response;
     } catch (error) {
         return error.response.data;
@@ -49,6 +49,15 @@ export async function getPostulaciones() {
     try {
         const response = await axios.get(`/practica/postulaciones`);
         return response.data.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+
+export async function updatePostulacion(data) {
+    try {
+        const response = await axios.patch('/practica/postulacion/update', data);
+        return response;
     } catch (error) {
         return error.response.data;
     }
