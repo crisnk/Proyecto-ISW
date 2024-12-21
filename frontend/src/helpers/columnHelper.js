@@ -1,7 +1,17 @@
 export default function getColumnsByRole(rol, pageName) {
-    if (rol === "alumno") {
+  if (rol === "alumno" && pageName === 'Practica') {
+    return [
+      { title: "Nombre", field: "nombre", width: 300},
+      { title: "Descripción", field: "descripcion", width: 250},
+      { title: "Especialidad", field: "nombreEspecialidad", width: 200},
+      { title: "Dirección", field: "direccion", width: 210},
+      { title: "Publicado hace", field: "fechaPublicacion", width: 160},
+      { title: "Cupo", field: "cupo", width: 100},
+    ];
+  }
+    if (rol === "alumno" && pageName === 'Postulaciones') {
       return [
-        { title: "Nombre", field: "nombre", width: 200, responsive: 0 },
+        { title: "Nombre", field: "nombrePractica", width: 200, responsive: 0 },
         { title: "Descripción", field: "descripcion", width: 250, responsive: 3 },
         { title: "Especialidad", field: "nombreEspecialidad", width: 200, responsive: 2 },
         { title: "Dirección", field: "direccion", width: 200, responsive: 2 },

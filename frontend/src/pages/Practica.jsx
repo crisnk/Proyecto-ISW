@@ -25,11 +25,9 @@ export default function Practica() {
         handleUpdate,
         isPopupOpen,
         setIsPopupOpen,
-        dataPractica,
-        setDataPractica
-    } = useEditPractica(useGetPracticas);
+    } = useEditPractica(fetchPracticas);
 
-    const { handleCreate } = useCreatePractica(setPracticas, fetchPracticas);
+    const { handleCreate } = useCreatePractica(fetchPracticas);
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 
     useEffect(() => {
@@ -105,7 +103,7 @@ export default function Practica() {
                 />
             </div>
 
-            <PopupPractica show={isPopupOpen} setShow={setIsPopupOpen} data={dataPractica} action={handleUpdate} />
+            <PopupPractica show={isPopupOpen} setShow={setIsPopupOpen} data={selectedRow} action={handleUpdate} />
             <PopupCreatePractica show={isCreatePopupOpen} setShow={setIsCreatePopupOpen} action={handleCreate} />
         </div>
     );

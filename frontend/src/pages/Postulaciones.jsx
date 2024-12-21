@@ -55,7 +55,7 @@ export default function Postulaciones() {
                 try {
                     const response = await updatePostulacion(data);
                     if (response.status === 200) {
-                        showSuccessAlert('Alumno aceptado exitosamente');
+                        showSuccessAlert('Alumno rechazado exitosamente');
                         fetchPostulaciones();
                     } else {
                         showErrorAlert('Error', response.details.message);

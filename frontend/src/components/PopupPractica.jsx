@@ -4,7 +4,7 @@ import CloseIcon from '@assets/XIcon.svg';
 import QuestionIcon from '@assets/QuestionCircleIcon.svg';
 
 export default function Popup({ show, setShow, data, action }) {
-    const practicaData = data[0];
+    const practicaData = data;
 
     const handleSubmit = (formData) => {
         action(formData);
